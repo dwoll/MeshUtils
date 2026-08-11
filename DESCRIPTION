@@ -1,0 +1,32 @@
+Type: Package
+Package: MeshUtils
+Title: Utility Functions for Meshes Based on 'CGAL'
+Version: 0.0.1
+Authors@R:
+  c(person("Daniel", "Wollschlaeger", role=c("aut", "cre"), email="wollschlaeger@uni-mainz.de"),
+    person("Stéphane", "Laurent", role=c("aut")))
+Maintainer: Daniel Wollschlaeger <wollschlaeger@uni-mainz.de>
+Description: An adaptation of code from packages 'Boov', 'PolygonSoup',
+    and 'cgalMeshes' developed by Stéphane Laurent.
+    Basic processing of 3D meshes as well as Boolean operations
+    (union, difference and intersection) using as backend
+    the 'C++' library 'CGAL' <https://www.cgal.org/>.
+License: GPL-3
+URL: https://github.com/dwoll/MeshUtils
+BugReports: https://github.com/dwoll/MeshUtils/issues
+Depends:
+    R (>= 2.10)
+Imports:
+    data.table,
+    Rcpp (>= 1.0.9),
+    rgl,
+    Rvcg
+LinkingTo:
+    BH,
+    Rcpp,
+    RcppCGAL,
+    RcppEigen
+Encoding: UTF-8
+LazyData: true
+SystemRequirements: C++ 17, mpfr
+Config/roxygen2/version: 8.1.0
