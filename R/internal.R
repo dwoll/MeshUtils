@@ -126,16 +126,16 @@ fromCPP <- function(x) {
   }
 
   attr(x, "toRGL") <- FALSE
-  if(is.matrix(mesh[["faces"]])) {
+  if(is.matrix(x[["faces"]])) {
     x[["faces"]] <- t(x[["faces"]])
     if(ncol(x[["faces"]]) %in% c(3L, 4L)) {
       attr(x, "toRGL") <- ncol(x[["faces"]])
     }
   } else {
-    n_verts   <- lengths(mesh[["faces"]])
+    n_verts   <- lengths(x[["faces"]])
     n_verts_u <- unique(n_verts)
     if(length(n_verts_u) == 1L) {
-      mesh[["faces"]]  <- do.call(rbind, mesh[["faces"]])
+      x[["faces"]]     <- do.call(rbind, x[["faces"]])
       attr(x, "toRGL") <- n_verts_u
     } else {
       if(all(n_verts_u %in% c(3L, 4L))) {
