@@ -29,6 +29,8 @@ and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
 are already triangle.}
 
 \item{normals}{Boolean, whether to compute the normals.}
+
+\item{clean}{Boolean, whether to do some mesh cleaning.}
 }
 \value{
 A list of class \code{CGALmesh} giving the vertices, the edges, the faces

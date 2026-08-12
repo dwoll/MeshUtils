@@ -52,6 +52,7 @@ print.CGALmesh <- function(x, ...) {
 #' @param triangulate Boolean, whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
 #' @param normals Boolean, whether to compute the normals.
+#' @param clean Boolean, whether to do some mesh cleaning.
 #'
 #' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 #'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.

@@ -31,7 +31,7 @@ use the \code{\link[MeshUtils]{getSomeNormals}} function.}
 
 \item{out}{Character to indicate output mesh format.}
 
-\item{Spacing}{Size parameter. Smaller values increase the precision of the
+\item{spacing}{Size parameter. Smaller values increase the precision of the
 output mesh at the cost of higher computation time. Set to \code{NULL}
 (the default) for a reasonable automatic value: an average spacing whose
 value will be displayed in a message and that you can also get in the
