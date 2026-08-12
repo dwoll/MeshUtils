@@ -191,19 +191,19 @@ template EMesh3 csoup_to_mesh<EMesh3, EPoint3>(
 EMesh3 vf_to_emesh(const Rcpp::NumericMatrix vertices,
                    const Rcpp::List faces) {
   EMesh3 mesh;
-  const int nv = vertices.ncol();
-  for(int j = 0; j < nv ; j++) {
+  const size_t nv = vertices.ncol();
+  for(size_t j = 0; j < nv; j++) {
     Rcpp::NumericVector vertex = vertices(Rcpp::_, j);
     EPoint3 pt = EPoint3(vertex(0), vertex(1), vertex(2));
     mesh.add_vertex(pt);
   }
-  const int nf = faces.size();
-  for(int i = 0; i < nf; i++) {
+  const size_t nf = faces.size();
+  for(size_t i = 0; i < nf; i++) {
     Rcpp::IntegerVector intface = Rcpp::as<Rcpp::IntegerVector>(faces(i));
-    const int sf = intface.size();
+    const size_t sf = intface.size();
     std::vector<EMesh3::Vertex_index> face;
     face.reserve(sf);
-    for(int k = 0; k < sf; k++) {
+    for(size_t k = 0; k < sf; k++) {
       face.emplace_back(CGAL::SM_Vertex_index(intface(k)));
     }
     face_descriptor fd = mesh.add_face(face);

@@ -25,7 +25,7 @@
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' off  <- system.file("extdata", "diplodocus.off", package="MeshUtils")
+#' off  <- system.file("extdata", "heart.ply", package="MeshUtils")
 #' vf   <- readMeshFile(off)
 #' mesh <- makeMesh(mesh=vf, normals=TRUE)
 #'

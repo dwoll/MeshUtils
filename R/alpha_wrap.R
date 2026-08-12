@@ -15,15 +15,16 @@
 #'   alpha wrapping.
 #'
 #' @param x Numeric matrix which stores the points, one point per row.
-#' @param alphaRel Relative alpha parameter; the actual alpha parameter (see
+#' @param alphaRel Relative alpha parameter. The actual alpha parameter (see
 #'   details) is defined as the length of the diagonal of the bounding box of
 #'   the point cloud divided by the relative alpha parameter.
-#' @param offsetRel Relative offset; the actual offset parameter (see details)
+#' @param offsetRel Relative offset. The actual offset parameter (see details)
 #'   is defined as the length of the diagonal of the bounding box of the
 #'   point cloud divided by the relative offset parameter.
 #' @param out Character to indicate output mesh format.
 #'
-#' @returns A \code{CGALmesh} object.
+#' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package
+#'   \strong{rgl}.
 #'
 #' @details See \href{https://doc.cgal.org/latest/Alpha_wrap_3/index.html}{3D Alpha Wrapping}
 #'   for details. The smallest alpha parameter, the smallest triangles in the
@@ -32,28 +33,24 @@
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
+#' @seealso \code{\link[MeshUtils]{reconstructAFS}},
+#'    \code{\link[MeshUtils]{reconstructSSS}},
+#'    \code{\link[MeshUtils]{reconstructPoisson()}}
+#'
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' # take the diplodocus mesh
-#' off  <- system.file("extdata", "diplodocus.off", package="MeshUtils")
-#' vf   <- readMeshFile(off)
-#' mesh <- makeMesh(mesh=vf, normals=TRUE)
+#' ## human heart from CT scan
+#' off <- system.file("extdata", "heart.ply", package="MeshUtils")
+#' vf  <- readMeshFile(off)
 #'
 #' # reconstruct the mesh from the points
-#' mesh_alwrap_rgl <- alphaWrap(mesh_raw[["vertices"]],
+#' mesh_alwrap_rgl <- alphaWrap(vf[["vertices"]],
 #'                              alphaRel =70,
 #'                              offsetRel=3000,
 #'                              out      ="rgl")
 #'
 #' # plot
-#' mesh_rgl <- toRGL(mesh)
-#' open3d(windowRect=50 + c(0, 0, 800, 400))
-#' mfrow3d(1, 2)
-#' view3d(20, 0, zoom=0.85)
-#' shade3d(mesh_rgl, color="forestgreen")
-#' next3d()
-#' view3d(20, 0, zoom=0.85)
 #' shade3d(mesh_alwrap_rgl, color="forestgreen")
 #'
 #' @export

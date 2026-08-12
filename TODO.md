@@ -1,5 +1,7 @@
 # TODO
 
+  * `removeSelfIntersections()` -> `fromCPP()` bug
+  * enhance `fromCPP()` to deal with faces list, then remove code from `makeMesh()`
   * drop `data.table` requirement -> replace `uniqueN()`
   * silent option to remove output during processing
   * only deal with triangle meshes -> simplify code that is more general

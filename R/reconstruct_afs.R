@@ -14,29 +14,31 @@
 #' @description Reconstruction of a surface from a cloud of 3D points.
 #'
 #' @param x Numeric matrix which stores the points, one point per row.
-#' @param jetSmoothing If not \code{NULL}, must be an integer higher than two.
+#' @param jetSmoothing If not \code{NULL}, must be an integer >= 2.
 #'   Then, the point cloud is smoothed before the reconstruction, using
 #'   this integer as the number of neighbors for the smoothing. Note that this
 #'   smoothing preprocessing relocates the points and then should not be used
 #'   if the points have been sampled without noise on the surface.
 #' @param out Character to indicate output mesh format.
 #'
-#' @returns A \code{CGALmesh} object or a \code{mesh3d} object from package \strong{rgl}.
+#' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
 #' @details See \href{https://doc.cgal.org/latest/Advancing_front_surface_reconstruction/index.html#Chapter_Advancing_Front_Surface_Reconstruction}{Advancing Front Surface Reconstruction}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
-#' @seealso [reconstructSSS()], [reconstructPoisson()], [alphaWrap()]
+#' @seealso \code{\link[MeshUtils]{reconstructSSS}},
+#'    \code{\link[MeshUtils]{reconstructPoisson}}, \code{\link[MeshUtils]{alphaWrap()}}
 #'
 #' @examples
 #' library(MeshUtils)
 #' # no smoothing
 #' mesh    <- makeMesh(mesh=HopfTorus)
-#' mesh_r1 <- reconstructAFS(mesh, out="rgl")
+#' mesh_r1 <- reconstructAFS(mesh["vertices"]], out="rgl")
 #'
 #' # jet smoothing
-#' mesh_r2 <- reconstructAFS(mesh, jetSmoothing=30, out="rgl")
+#' mesh_r2 <- reconstructAFS(mesh["vertices"]],
+#'                           jetSmoothing=30, out="rgl")
 #' # plot
 #' library(rgl)
 #' open3d(windowRect=50 + c(0, 0, 800, 400))

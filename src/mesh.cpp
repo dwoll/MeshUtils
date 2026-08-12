@@ -104,7 +104,7 @@ Rcpp::List orientToBoundVolume_cpp(const Rcpp::List rmesh) {
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh_in, const unsigned int method) {
-  EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(rmesh, false, false);
+  EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(rmesh_in, false, false);
   Rcpp::List rmesh_out;
 
   if(!CGAL::is_triangle_mesh(mesh)) {

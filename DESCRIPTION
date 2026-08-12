@@ -1,10 +1,10 @@
 Type: Package
 Package: MeshUtils
-Title: Utility Functions for Meshes Based on 'CGAL'
+Title: Utility Functions for 3D Meshes Based on 'CGAL'
 Version: 0.0.1
 Authors@R:
   c(person("Daniel", "Wollschlaeger", role=c("aut", "cre"), email="wollschlaeger@uni-mainz.de"),
-    person("Stéphane", "Laurent", role=c("aut")))
+    person("Stephane", "Laurent", role=c("aut")))
 Maintainer: Daniel Wollschlaeger <wollschlaeger@uni-mainz.de>
 Description: An adaptation of code from packages 'Boov', 'PolygonSoup',
     and 'cgalMeshes' developed by Stéphane Laurent.

@@ -10,8 +10,8 @@
 
 #' @title A mesh of a Hopf torus
 #'
-#' @description A list giving the vertices and faces of a mesh representing
+#' @description An object of class \code{mesh3d} from package \strong{rgl} representing
 #'     a Hopf torus.
 #'
-#' @format A list with components \code{vertices}, \code{faces}.
+#' @format A list with components \code{vb}, \code{it}, and \code{normals}.
 "HopfTorus"

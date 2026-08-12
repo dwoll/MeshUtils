@@ -23,7 +23,7 @@
 #'   unit normal for the point.
 #'
 #' @note The \code{getSomeNormals} function is intended to be used in the
-#'   \code{\link{reconstructPoisson}} function. If you want to use it for
+#'   \code{\link[MeshUtils]{reconstructPoisson}} function. If you want to use it for
 #'   another purpose, be careful because the function it returns does not
 #'   check the matrix it takes as argument.
 #'
@@ -32,10 +32,9 @@
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' fun  <- getSomeNormals(6)
-#' mesh <- makeMesh(HopfTorus$vertices,
-#'                  HopfTorus$faces)
-#' mesh_rgl <- reconstructPoisson(mesh, fun, out="rgl")
+#' fun      <- getSomeNormals(6)
+#' mesh     <- makeMesh(mesh=HopfTorus)
+#' mesh_rgl <- reconstructPoisson(mesh[["vertices"]], fun, out="rgl")
 #' open3d()
 #' wire3d(mesh_rgl)
 #'

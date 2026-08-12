@@ -22,19 +22,20 @@
 #' @param borderAngle Bound on the angle in degrees used to detect border edges.
 #' @param out Character to indicate output mesh format.
 #'
-#' @returns A \code{CGALmesh} object or a \code{mesh3d} object from package \strong{rgl}.
+#' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
 #' @details See \href{https://doc.cgal.org/latest/Scale_space_reconstruction_3/index.html}{Scale-space Surface Reconstruction}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
-#' @seealso [reconstructAFS()], [reconstructPoisson()], [alphaWrap()]
+#' @seealso \code{\link[MeshUtils]{reconstructAFS}},
+#'    \code{\link[MeshUtils]{reconstructPoisson}}, \code{\link[MeshUtils]{alphaWrap()}}
 #'
 #' @examples
 #' library(MeshUtils)
 #' mesh   <- makeMesh(mesh=HopfTorus)
 #' mesh_r <- reconstructSSS(
-#'   mesh,
+#'   mesh[["vertices"]],
 #'   scaleIterations=4,
 #'   forceManifold  =TRUE,
 #'   neighbors      =30,

@@ -35,95 +35,6 @@ print.CGALmesh <- function(x, ...) {
 	invisible(NULL)
 }
 
-#' @importFrom data.table uniqueN
-#' @noRd
-checkMesh <- function(vertices, faces, aslist) {
-  if(!is.matrix(vertices) || (ncol(vertices) != 3L)) {
-	  stop("The `vertices` argument must be a matrix with three columns.")
-  }
-
-  stopifnot(is.numeric(vertices))
-  storage.mode(vertices) <- "double"
-
-	if(anyNA(vertices)) {
-		stop("Found missing values in `vertices`.")
-	}
-
-	homogeneousFaces <- FALSE
-	isTriangle       <- FALSE
-	toRGL            <- FALSE
-	if(is.matrix(faces)) {
-		if(ncol(faces) < 3L) {
-			stop("Faces must be given by at least three indices.")
-		}
-		storage.mode(faces) <- "integer"
-		if(anyNA(faces)) {
-			stop("Found missing values in `faces`.")
-		}
-		if(any(faces < 1L)) {
-			stop("Faces cannot contain indices lower than 1.")
-		}
-		if(any(faces > nrow(vertices))) {
-			stop("Faces cannot contain indices higher than the number of vertices.")
-		}
-
-		homogeneousFaces <- ncol(faces)
-		if(homogeneousFaces %in% c(3L, 4L)) {
-			isTriangle <- homogeneousFaces == 3L
-			toRGL <- homogeneousFaces
-		}
-
-		if(aslist) {
-			faces <- lapply(seq_len(nrow(faces)), function(i) faces[i, ] - 1L)
-		} else {
-			faces <- t(faces - 1L)
-		}
-	} else if(is.list(faces)) {
-		check <- all(vapply(faces, isAtomicVector, logical(1L)))
-		if(!check) {
-			stop("The `faces` argument must be a list of integer vectors.")
-		}
-
-		check <- any(vapply(faces, anyNA, logical(1L)))
-		if(check) {
-			stop("Found missing values in `faces`.")
-		}
-
-		faces <- lapply(faces, function(x) as.integer(x) - 1L)
-		sizes <- lengths(faces)
-		if(any(sizes < 3L)) {
-			stop("Faces must be given by at least three indices.")
-		}
-
-		check <- any(vapply(faces, function(f) {
-							any(f < 0L) || any(f >= nrow(vertices))
-						}, logical(1L)))
-		if(check) {
-			stop(
-					"Faces cannot contain indices lower than 1 or higher than the ",
-					"number of vertices."
-			)
-		}
-		usizes <- uniqueN(sizes)
-		if(usizes == 1L) {
-			homogeneousFaces <- sizes[1L]
-			isTriangle <- homogeneousFaces == 3L
-			if(homogeneousFaces %in% c(3L, 4L)) {
-				toRGL <- homogeneousFaces
-			}
-		} else if((usizes == 2L) && all(sizes %in% c(3L, 4L))) {
-			toRGL <- 34L
-		}
-	} else {
-		stop("The `faces` argument must be a list or a matrix.")
-	}
-	list("vertices"        =t(vertices),
-			 "faces"           =faces,
-			 "homogeneousFaces"=homogeneousFaces,
-			 "isTriangle"      =isTriangle,
-			 "toRGL"           =toRGL)
-}
-
 #' @title Make a 3D mesh
 #' @description Make a 3D mesh from given vertices and faces; the returned
 #'   faces are coherently oriented, normals are computed if desired, and
@@ -137,7 +48,7 @@ checkMesh <- function(vertices, faces, aslist) {
 #' @param mesh If not \code{NULL}, this argument takes precedence over \code{vertices}
 #'   and \code{faces}, and must be either a list containing the components \code{vertices}
 #'   and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
-#'   (i.e. a \code{mesh3d} object).
+#'   (i.e. a \code{\link[rgl]{mesh3d}} object).
 #' @param triangulate Boolean, whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
 #' @param normals Boolean, whether to compute the normals.
@@ -145,9 +56,9 @@ checkMesh <- function(vertices, faces, aslist) {
 #' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 #'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.
 #'
-#' @seealso See \code{\link{plotEdges}} for more details about the edges
-#'   returned by this function. See \code{\link{toRGL}} for conversion to class
-#'   \code{mesh3d} from package \strong{rgl}.
+#' @seealso See \code{\link[MeshUtils]{plotEdges}} for more details about the edges
+#'   returned by this function. See \code{\link[MeshUtils]{toRGL}} for conversion to class
+#'   \code{\link[rgl]{mesh3d}} from package \strong{rgl}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -226,28 +137,9 @@ makeMesh <- function(vertices,
 		triangulate <- FALSE
 	}
 
-	rmesh <- list("vertices"=vertices, "faces"=faces)
-	mesh  <- SurfEMesh_cpp(rmesh, isTriangle, triangulate, clean, normals)
-
-	vertices                   <- t(mesh[["vertices"]])
-	mesh[["vertices"]]         <- vertices
-	edgesDF                    <- mesh[["edges"]]
-	mesh[["edgesDF"]]          <- edgesDF
-	mesh[["edges"]]            <- as.matrix(edgesDF[, c("i1", "i2")])
-	exteriorEdges              <- as.matrix(subset(edgesDF, exterior)[, c("i1", "i2")])
-	mesh[["exteriorEdges"]]    <- exteriorEdges
-	mesh[["exteriorVertices"]] <- which(table(exteriorEdges) != 2L)
-	if(normals) {
-		mesh[["normals"]] <- t(mesh[["normals"]])
-	}
-
-	if(triangulate || homogeneousFaces) {
-		mesh[["faces"]] <- do.call(rbind, mesh[["faces"]])
-	}
-
-	attr(mesh, "toRGL") <- ifelse(triangulate, 3L, checkedMesh[["toRGL"]])
-	class(mesh) <- "CGALmesh"
-	mesh
+	mesh_r   <- list("vertices"=vertices, "faces"=faces)
+	mesh_cpp <- SurfEMesh_cpp(mesh_r, isTriangle, triangulate, clean, normals)
+	fromCPP(mesh_cpp)
 }
 
 #' @title Conversion to 'rgl' mesh
@@ -257,9 +149,9 @@ makeMesh <- function(vertices,
 #' @param mesh A \code{CGALmesh} object, i.e., a specific list as produced
 #'   by the \code{\link{makeMesh}} function). In order to be
 #'   convertible to a \strong{rgl} mesh, its faces must have at most four sides
-#' @param ... arguments passed to \code{\link[rgl]{mesh3d}}
+#' @param ... Arguments passed to \code{\link[rgl]{mesh3d}}
 #'
-#' @returns A \strong{rgl} mesh object, i.e., a list of class \code{"mesh3d"}.
+#' @returns A \strong{rgl} mesh object, i.e., a list of class \code{\link[rgl]{mesh3d}}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -360,8 +252,7 @@ toRGL <- function(mesh, ...) {
 #'   mesh2[["exteriorEdges"]],
 #'   color        ="gold",
 #'   tubesRadius  =0.02,
-#'   spheresRadius=0.02
-#' )
+#'   spheresRadius=0.02)
 #'
 #' @export
 #' @importFrom rgl cylinder3d shade3d lines3d spheres3d
@@ -408,7 +299,8 @@ plotEdges <- function(
 #'
 #' @examples
 #' library(MeshUtils)
-#' doesBoundVolume(PentagrammicPrism)
+#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' doesBoundVolume(mesh)
 #'
 #' @export
 doesBoundVolume <- function(x) {
@@ -425,7 +317,8 @@ doesBoundVolume <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' doesSelfIntersect(PentagrammicPrism)
+#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' doesSelfIntersect(mesh)
 #'
 #' @export
 doesSelfIntersect <- function(x) {
@@ -443,7 +336,8 @@ doesSelfIntersect <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' isClosed(PentagrammicPrism)
+#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' isClosed(mesh)
 #'
 #' @export
 isClosed <- function(x) {
@@ -461,7 +355,8 @@ isClosed <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh_o <- orientToBoundVolume(PentagrammicPrism)
+#' mesh   <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh_o <- orientToBoundVolume(mesh)
 #' getVolume(mesh_o)
 #'
 #' @export
@@ -481,7 +376,8 @@ orientToBoundVolume <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh_nsi <- removeSelfIntersections(PentagrammicPrism)
+#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh_nsi <- removeSelfIntersections(mesh)
 #' getVolume(mesh_nsi)
 #'
 #' @export
@@ -495,14 +391,15 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
 }
 
 #' @title Get mesh volume
-#' @description Get mesh volume
+#' @description Get the volume of a 3D mesh.
 #'
 #' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
 #'     object.
-#' @returns numeric Mesh volume - if mesh bounds a volume.
+#' @returns \code{numeric}: The mesh volume - if mesh bounds a volume.
 #' @examples
 #' library(MeshUtils)
-#' getVolume(PentagrammicPrism)
+#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' getVolume(mesh)
 #'
 #' @export
 getVolume <- function(x) {
@@ -521,7 +418,8 @@ getVolume <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' getCentroid(PentagrammicPrism)
+#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' getCentroid(mesh)
 #'
 #' @export
 getCentroid <- function(x) {
@@ -538,10 +436,12 @@ getCentroid <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' obb     <- getOptimalBoundingBox(PentagrammicPrism)
-#' obb_rgl <- toRGL(obb)
+#' mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh_rgl <- toRGL(mesh)
+#' obb      <- getOptimalBoundingBox(mesh)
+#' obb_rgl  <- toRGL(obb[["mesh"]])
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
-#' wire3d(PentagrammicPrism)
+#' wire3d(mesh_rgl)
 #' wire3d(obb_rgl)
 #'
 #' @export
@@ -559,15 +459,17 @@ getOptimalBoundingBox <- function(x) {
 #'     object.
 #' @param out Character to indicate output mesh format.
 #'
-#' @returns A \code{CGALmesh} object or a \code{mesh3d} object from package \strong{rgl}.
+#' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
 #' library(MeshUtils)
-#' bb_rgl <- getBoundingBox(PentagrammicPrism, out="rgl")
+#' mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh_rgl <- toRGL(mesh)
+#' bb_rgl   <- getBoundingBox(mesh, out="rgl")
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
-#' wire3d(PentagrammicPrism)
+#' wire3d(mesh_rgl)
 #' wire3d(bb_rgl)
 #'
 #' @export

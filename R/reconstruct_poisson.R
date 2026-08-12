@@ -14,28 +14,30 @@
 #' @description Poisson reconstruction of a surface, from a cloud of 3D points.
 #'
 #' @param x Numeric matrix which stores the points, one point per row.
-#' @param normals numeric matrix which stores the normals, one normal per row
-#'   (it must have the same size as the \code{points} matrix); if you don't
-#'   have normals, set \code{normals=NULL} (the default) and some normals will
+#' @param normals Numeric matrix which stores the normals, one normal per row
+#'   (it must have the same size as the \code{x} matrix). If you do not
+#'   have normals, set \code{normals=NULL} (the default), and some normals will
 #'   be computed with the help of \code{\link[Rvcg]{vcgUpdateNormals}}, or
-#'   use the \code{\link{getSomeNormals}} function.
-#' @param Spacing size parameter; smaller values increase the precision of the
-#'   output mesh at the cost of higher computation time; set to \code{NULL}
+#'   use the \code{\link[MeshUtils]{getSomeNormals}} function.
+#' @param Spacing Size parameter. Smaller values increase the precision of the
+#'   output mesh at the cost of higher computation time. Set to \code{NULL}
 #'   (the default) for a reasonable automatic value: an average spacing whose
 #'   value will be displayed in a message and that you can also get in the
-#'   \code{"spacing"} attribute of the output
-#' @param smAngle Bound for the minimum facet angle in degrees
-#' @param smRadius Relative bound for the radius of the surface Delaunay balls
-#' @param smDistance Relative bound for the center-center distances
+#'   \code{"spacing"} attribute of the output.
+#' @param smAngle Bound for the minimum facet angle in degrees.
+#' @param smRadius Relative bound for the radius of the surface Delaunay balls.
+#' @param smDistance Relative bound for the center-center distances.
 #' @param out Character to indicate output mesh format.
 #'
-#' @returns A \code{CGALmesh} object or a \code{mesh3d} object from package \strong{rgl}.
+#' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
 #' @details See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/index.html}{Poisson Surface Reconstruction}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
-#' #' @seealso [reconstructAFS()], [reconstructSSS()], [alphaWrap()]
+#' @seealso \code{\link[MeshUtils]{reconstructAFS}},
+#'    \code{\link[MeshUtils]{reconstructSSS}},
+#'    \code{\link[MeshUtils]{alphaWrap()}}
 
 #' @examples
 #' library(MeshUtils)
