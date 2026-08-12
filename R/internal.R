@@ -114,13 +114,16 @@ fromR <- function(x) {
 #' @importFrom utils hasName
 #' @noRd
 fromCPP <- function(x) {
-  x[["vertices"]]         <- t(x[["vertices"]])
-  edgesDF                 <- x[["edges"]]
-  x[["edgesDF"]]          <- edgesDF
-  x[["edges"]]            <- as.matrix(edgesDF[, c("i1", "i2")])
-  exteriorEdges           <- as.matrix(subset(edgesDF, exterior)[, c("i1", "i2")])
-  x[["exteriorEdges"]]    <- exteriorEdges
-  x[["exteriorVertices"]] <- which(table(exteriorEdges) != 2L)
+  x[["vertices"]] <- t(x[["vertices"]])
+  if(hasName(x, "edges")) {
+    edgesDF                 <- x[["edges"]]
+    x[["edgesDF"]]          <- edgesDF
+    x[["edges"]]            <- as.matrix(edgesDF[, c("i1", "i2")])
+    exteriorEdges           <- as.matrix(subset(edgesDF, exterior)[, c("i1", "i2")])
+    x[["exteriorEdges"]]    <- exteriorEdges
+    x[["exteriorVertices"]] <- which(table(exteriorEdges) != 2L)
+  }
+
   if(hasName(x, "normals")) {
     x[["normals"]] <- t(x[["normals"]])
   }

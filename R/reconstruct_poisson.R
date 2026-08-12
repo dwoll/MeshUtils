@@ -45,7 +45,7 @@
 #'
 #' # Hopf torus
 #' mesh   <- makeMesh(mesh=HopfTorus)
-#' mesh_r <- reconstructPoisson(mesh, spacing=0.2, out="rgl")
+#' mesh_r <- reconstructPoisson(mesh[["vertices"]], spacing=0.2, out="rgl")
 #' shade3d(mesh_r, color="darkorange")
 #' wire3d(mesh_r,  color="black")
 #'
