@@ -25,8 +25,8 @@ orientToBoundVolume_cpp <- function(rmesh) {
     .Call(`_MeshUtils_orientToBoundVolume_cpp`, rmesh)
 }
 
-removeSelfIntersections_cpp <- function(rmesh, method) {
-    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmesh, method)
+removeSelfIntersections_cpp <- function(rmesh_in, method) {
+    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmesh_in, method)
 }
 
 getVolume_cpp <- function(rmesh) {
@@ -84,3 +84,4 @@ reconstructPoisson_cpp <- function(pts, normals, spacing, sm_angle, sm_radius, s
 reconstructSSS_cpp <- function(pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle) {
     .Call(`_MeshUtils_reconstructSSS_cpp`, pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle)
 }
+

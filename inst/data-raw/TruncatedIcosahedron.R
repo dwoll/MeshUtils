@@ -74,8 +74,7 @@ vertices <- rbind(
   V56 = c( -C1,   C2,  0.5),
   V57 = c( -C1,   C2, -0.5),
   V58 = c( -C1,  -C2,  0.5),
-  V59 = c( -C1,  -C2, -0.5)
-)
+  V59 = c( -C1,  -C2, -0.5))
 
 faces <- list(
   1L + c(  0L,  2L, 18L, 42L, 38L, 14L ),
@@ -109,7 +108,6 @@ faces <- list(
   1L + c(  8L, 32L, 40L, 36L, 28L ),
   1L + c(  9L, 29L, 37L, 41L, 33L ),
   1L + c( 10L, 30L, 38L, 42L, 34L ),
-  1L + c( 11L, 35L, 43L, 39L, 31L )
-)
+  1L + c( 11L, 35L, 43L, 39L, 31L ))
 
-truncatedIcosahedron <- list("vertices" = vertices, "faces" = faces)
+TruncatedIcosahedron <- list("vertices" = vertices, "faces" = faces)

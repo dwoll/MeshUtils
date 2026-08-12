@@ -5,6 +5,8 @@
 // https://github.com/stla/cgalMeshes/
 // developed and copyright by
 // Stéphane Laurent <laurent_step@outlook.fr>
+// adapted by
+// Daniel Wollschlaeger
 // License: GPL-3
 // ----------------------------------------------------------------------- //
 
@@ -101,10 +103,13 @@ Rcpp::List orientToBoundVolume_cpp(const Rcpp::List rmesh) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh, const unsigned int method) {
+Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh_in, const unsigned int method) {
   EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(rmesh, false, false);
+  Rcpp::List rmesh_out;
+
   if(!CGAL::is_triangle_mesh(mesh)) {
-    Rcpp::stop("The mesh is not triangle.");
+    Message("The mesh is not triangle. Nothing done.\n");
+    rmesh_out = rmesh_in;
   }
   if(PMP::does_self_intersect(mesh)) {
       CGAL::Conforming_constrained_Delaunay_triangulation_3<EK> ccdt;
@@ -130,7 +135,8 @@ Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh, const unsigned in
           } else {
             Message("Self intersections removed.\n");
           }
-          return getRmesh(meshrsi);
+
+          rmesh_out = getRmesh(meshrsi);
       } else if(method == 2) {
           // use a polygon soup as container as the output will most likely be non-manifold
           std::vector<EPoint3> points;
@@ -153,12 +159,15 @@ Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh, const unsigned in
           } else {
             Message("Self intersections removed (with iterative snap).\n");
           }
-          return getRmesh(meshrsi);
+
+          rmesh_out = getRmesh(meshrsi);
       }
   } else {
-    Message("Mesh does not self-intersect\n");
-    return rmesh;
+    Message("Mesh does not self-intersect. Nothing done.\n");
+    rmesh_out = rmesh_in;
   }
+
+  return rmesh_out;
 }
 
 // ----------------------------------------------------------------------- //

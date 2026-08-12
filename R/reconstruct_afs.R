@@ -5,78 +5,81 @@
 ## https://github.com/stla/cgalMeshes/
 ## developed and copyright by
 ## Stéphane Laurent <laurent_step@outlook.fr>
+## adapted by
+## Daniel Wollschlaeger
 ## License: GPL-3
 ## ----------------------------------------------------------------------- //
 
 #' @title Advancing front surface reconstruction
 #' @description Reconstruction of a surface from a cloud of 3D points.
 #'
-#' @param points numeric matrix which stores the points, one point per row
-#' @param jetSmoothing if not \code{NULL}, must be an integer higher than two,
-#'   and then the points cloud is smoothed before the reconstruction, using
-#'   this integer as the number of neighbors for the smoothing; note that this
+#' @param x Numeric matrix which stores the points, one point per row.
+#' @param jetSmoothing If not \code{NULL}, must be an integer higher than two.
+#'   Then, the point cloud is smoothed before the reconstruction, using
+#'   this integer as the number of neighbors for the smoothing. Note that this
 #'   smoothing preprocessing relocates the points and then should not be used
-#'   if the points have been sampled without noise on the surface
+#'   if the points have been sampled without noise on the surface.
+#' @param out Character to indicate output mesh format.
 #'
-#' @return A \code{cgalMesh} object.
+#' @returns A \code{CGALmesh} object or a \code{mesh3d} object from package \strong{rgl}.
 #'
 #' @details See \href{https://doc.cgal.org/latest/Advancing_front_surface_reconstruction/index.html#Chapter_Advancing_Front_Surface_Reconstruction}{Advancing Front Surface Reconstruction}.
 #'
-#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @seealso [reconstructSSS()], [reconstructPoisson()], [alphaWrap()]
 #'
 #' @examples
-#' library(cgalMeshes)
-#' data(bunny, package = "onion")
-#' mesh <- AFSreconstruction(bunny)
-#' rglMesh <- mesh$getMesh()
-#' \donttest{library(rgl)
-#' open3d(windowRect = 50 + c(0, 0, 512, 512))
-#' shade3d(rglMesh, color = "firebrick")}
-#'
-#' # jet smoothing example ####
-#' library(cgalMeshes)
+#' library(MeshUtils)
 #' # no smoothing
-#' mesh1 <- AFSreconstruction(SolidMobiusStrip)
-#' mesh1$computeNormals()
-#' rglMesh1 <- mesh1$getMesh()
+#' mesh    <- makeMesh(mesh=HopfTorus)
+#' mesh_r1 <- reconstructAFS(mesh, out="rgl")
+#'
 #' # jet smoothing
-#' mesh2 <- AFSreconstruction(SolidMobiusStrip, jetSmoothing = 30)
-#' mesh2$computeNormals()
-#' rglMesh2 <- mesh2$getMesh()
+#' mesh_r2 <- reconstructAFS(mesh, jetSmoothing=30, out="rgl")
 #' # plot
-#' \donttest{library(rgl)
-#' open3d(windowRect = 50 + c(0, 0, 800, 400))
+#' library(rgl)
+#' open3d(windowRect=50 + c(0, 0, 800, 400))
 #' mfrow3d(1, 2)
-#' view3d(20, -40, zoom = 0.85)
-#' shade3d(rglMesh1, color = "gold")
+#' view3d(20, -40, zoom=0.85)
+#' shade3d(mesh_r1, color="gold")
 #' next3d()
-#' view3d(20, -40, zoom = 0.85)
-#' shade3d(rglMesh2, color = "gold")}
-reconstructAFS <- function(points, jetSmoothing = NULL) {
-  if(!is.matrix(points) || !is.numeric(points)){
-    stop("The `points` argument must be a numeric matrix.", call. = TRUE)
+#' view3d(20, -40, zoom=0.85)
+#' shade3d(mesh_r2, color="gold")
+#'
+#' @export
+#' @importFrom Rvcg vcgUpdateNormals
+#' @importFrom rgl tmesh3d
+reconstructAFS <- function(x, jetSmoothing=NULL, out=c("CGALmesh", "rgl")) {
+  out <- match.arg(out)
+  if(!is.matrix(x) || !is.numeric(x)){
+    stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
-  if(ncol(points) != 3L) {
-    stop("The `points` matrix must have three columns.", call. = TRUE)
+  if(ncol(x) != 3L) {
+    stop("The `x` matrix must have three columns.", call. = TRUE)
   }
-  if(nrow(points) <= 3L) {
-    stop("Insufficient number of points.", call. = TRUE)
+  if(nrow(x) <= 3L) {
+    stop("Insufficient number of x.", call. = TRUE)
   }
-  if(anyNA(points)){
+  if(anyNA(x)){
     stop("Points with missing values are not allowed.", call. = TRUE)
   }
-  storage.mode(points) <- "double"
+  storage.mode(x) <- "double"
   if(!is.null(jetSmoothing)) {
     stopifnot(isPositiveInteger(jetSmoothing), jetSmoothing >= 2L)
   } else {
     jetSmoothing <- 0L
   }
-  afsr <- reconstructAFS_cpp(t(points), as.integer(jetSmoothing))
-  out  <- vcgUpdateNormals(
-    tmesh3d(afsr[["vertices"]],
-            afsr[["faces"]],
-            normals = NULL,
-            homogeneous = FALSE)
-  )
-  out
+  mesh_r   <- reconstructAFS_cpp(t(x), as.integer(jetSmoothing))
+  mesh_rwn <- vcgUpdateNormals(
+    tmesh3d(mesh_r[["vertices"]],
+            mesh_r[["faces"]],
+            normals    =NULL,
+            homogeneous=FALSE))
+  mesh_out <- if(out == "rgl") {
+    mesh_rwn
+  } else {
+    makeMesh(mesh=mesh_rwn)
+  }
+  mesh_out
 }

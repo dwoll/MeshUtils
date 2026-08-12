@@ -5,6 +5,8 @@
 // https://github.com/stla/cgalMeshes/
 // developed and copyright by
 // Stéphane Laurent <laurent_step@outlook.fr>
+// adapted by
+// Daniel Wollschlaeger
 // License: GPL-3
 // ----------------------------------------------------------------------- //
 
@@ -60,7 +62,7 @@ std::vector<std::vector<size_t>> matrix_to_Tfaces(
   faces.reserve(nfaces);
   for(size_t i = 0; i < nfaces; i++) {
     const Rcpp::IntegerVector face_rcpp = Faces(Rcpp::_, i);
-    std::vector<size_t> face = {face_rcpp(0), face_rcpp(1), face_rcpp(2)};
+    std::vector<size_t> face = { face_rcpp(0), face_rcpp(1), face_rcpp(2) };
     faces.emplace_back(face);
   }
   return faces;
@@ -89,7 +91,6 @@ MeshT soup_to_mesh(std::vector<PointT> points,
   bool success = PMP::orient_polygon_soup(points, faces);
   if(success) {
     Message("Successful polygon orientation.");
-
   } else {
     Message("Polygon orientation failed.");
     // check if polygons from the polygon soup are all triangles
@@ -404,6 +405,7 @@ EMesh3 fillBoundaryHoles(EMesh3 mesh, bool fairhole, double max_hole_diam, int m
 
 // ----------------------------------------------------------------------- //
 EMesh3 removeSelfIntersections(const EMesh3 mesh, const unsigned int method) {
+    EMesh3 mesh_out;
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
@@ -432,7 +434,7 @@ EMesh3 removeSelfIntersections(const EMesh3 mesh, const unsigned int method) {
             } else {
               Message("Self intersections removed.\n");
             }
-            return meshrsi;
+            mesh_out = meshrsi;
         } else if(method == 2) {
             CGAL::Conforming_constrained_Delaunay_triangulation_3<EK> ccdt;
 
@@ -457,10 +459,12 @@ EMesh3 removeSelfIntersections(const EMesh3 mesh, const unsigned int method) {
             } else {
               Message("Self intersections removed (with iterative snap).\n");
             }
-            return meshrsi;
+            mesh_out = meshrsi;
         }
     } else {
       Message("Mesh does not self-intersect\n");
-      return mesh;
+      mesh_out = mesh;
     }
+
+    return mesh_out;
 }

@@ -5,6 +5,8 @@
 ## https://github.com/stla/cgalMeshes/
 ## developed and copyright by
 ## Stéphane Laurent <laurent_step@outlook.fr>
+## adapted by
+## Daniel Wollschlaeger
 ## License: GPL-3
 ## ----------------------------------------------------------------------- //
 
@@ -36,7 +38,7 @@ print.CGALmesh <- function(x, ...) {
 #' @importFrom data.table uniqueN
 #' @noRd
 checkMesh <- function(vertices, faces, aslist) {
-  if(!is.matrix(vertices) || ncol(vertices) != 3L) {
+  if(!is.matrix(vertices) || (ncol(vertices) != 3L)) {
 	  stop("The `vertices` argument must be a matrix with three columns.")
   }
 
@@ -115,13 +117,11 @@ checkMesh <- function(vertices, faces, aslist) {
 	} else {
 		stop("The `faces` argument must be a list or a matrix.")
 	}
-	list(
-			"vertices"         = t(vertices),
-			"faces"            = faces,
-			"homogeneousFaces" = homogeneousFaces,
-			"isTriangle"       = isTriangle,
-			"toRGL"            = toRGL
-	)
+	list("vertices"        =t(vertices),
+			 "faces"           =faces,
+			 "homogeneousFaces"=homogeneousFaces,
+			 "isTriangle"      =isTriangle,
+			 "toRGL"           =toRGL)
 }
 
 #' @title Make a 3D mesh
@@ -130,100 +130,77 @@ checkMesh <- function(vertices, faces, aslist) {
 #'   triangulation is performed if desired. The mesh is also cleaned:
 #'   duplicated vertices or faces are merged, and isolated vertices are removed.
 #'
-#' @param vertices a numeric matrix with three columns, or a \code{bigq}
-#'   matrix with three columns
-#' @param faces either an integer matrix (each row provides the vertex indices
+#' @param vertices A numeric matrix with three columns.
+#' @param faces Either an integer matrix (each row provides the vertex indices
 #'   of the corresponding face) or a list of integer vectors, each one
-#'   providing the vertex indices of the corresponding face
-#' @param mesh if not \code{NULL}, this argument takes precedence over \code{vertices}
-#'   and \code{faces}, and must be either a list containing the fields \code{vertices}
+#'   providing the vertex indices of the corresponding face.
+#' @param mesh If not \code{NULL}, this argument takes precedence over \code{vertices}
+#'   and \code{faces}, and must be either a list containing the components \code{vertices}
 #'   and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
-#'   (i.e. a \code{mesh3d} object)
-#' @param triangulate Boolean, whether to triangulate the faces
-#' @param normals Boolean, whether to compute the normals
+#'   (i.e. a \code{mesh3d} object).
+#' @param triangulate Boolean, whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
+#' @param normals Boolean, whether to compute the normals.
 #'
-#' @return A list giving the vertices, the edges, the faces of the mesh, the
-#'   exterior edges, the exterior vertices and optionally the normals.
-#'   If \code{triangulate=TRUE}, this list has two additional components
-#'   \code{edges0} and \code{normals0} giving the edges and the normals
-#'   before the triangulation, unless the mesh is already triangulated,
-#'   in which case the \code{triangulate} option is ignored.
-#'
-#' @export
+#' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
+#'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.
 #'
 #' @seealso See \code{\link{plotEdges}} for more details about the edges
-#'   returned by this function.
+#'   returned by this function. See \code{\link{toRGL}} for conversion to class
+#'   \code{mesh3d} from package \strong{rgl}.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
-#' library(PolygonSoup)
+#' library(MeshUtils)
 #' library(rgl)
 #'
-#' # a tetrahedron with ill-oriented faces ####
+#' ## a tetrahedron with ill-oriented faces
 #' vertices <- rbind(
 #'   c(-1, -1, -1),
 #'   c(1, 1, -1),
 #'   c(1, -1, 1),
-#'   c(-1, 1, 1)
-#' )
+#'   c(-1, 1, 1))
+#'
 #' faces <- rbind(
 #'   c(1, 2, 3),
 #'   c(3, 4, 2),
 #'   c(4, 2, 1),
-#'   c(4, 3, 1)
-#' )
+#'   c(4, 3, 1))
 #'
-#' # plot the tetrahedron, hiding the back of the faces
-#' # then some faces do not appear, as their orientation is not correct
-#' tmesh1 <- tmesh3d(
-#'   vertices = t(vertices),
-#'   indices = t(faces),
-#'   homogeneous = FALSE
-#' )
-#' open3d(windowRect = c(50, 50, 562, 562))
-#' shade3d(tmesh1, color = "green", back = "cull")
+#' ## plot the tetrahedron, hiding the back of the faces
+#' ## then some faces do not appear, as their orientation is not correct
+#' mesh1_rgl_a <- tmesh3d(
+#'   vertices   =t(vertices),
+#'   indices    =t(faces),
+#'   homogeneous=FALSE)
 #'
-#' # now run the `makeMesh` function
-#' mesh2 <- makeMesh(vertices, faces, normals = FALSE)
-#' # plot the tetrahedron, hiding the back of the faces
-#' # then all faces appear now
-#' tmesh2 <- toRGL(mesh2)
-#' open3d(windowRect = c(50, 50, 562, 562))
-#' shade3d(tmesh2, color = "blue", back = "cull")
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' shade3d(mesh1_rgl_a, color="green", back = "cull")
 #'
-#' # illustration of the cleaning feature ####
-#' # we construct a mesh with a lot of duplicated vertices
-#' library(misc3d) # to compute a mesh of an isosurface
-#' a <- 0.94; mu <- 0.56; c <- 0.34 # cyclide parameters
-#' f <- function(x, y, z, a, c, mu){ # implicit equation of the cyclide
-#'   b <- sqrt(a^2 - c^2)
-#'   (x^2 + y^2 + z^2 - mu^2 + b^2)^2 - 4*(a*x - c*mu)^2 - 4*b^2*y^2
-#' }
-#' x <- seq(-c - mu - a, abs(mu - c) + a, length.out = 45)
-#' y <- seq(-mu - a, mu + a, length.out = 45)
-#' z <- seq(-mu - c, mu + c, length.out = 30)
-#' g <- expand.grid(x = x, y = y, z = z)
-#' voxel <- array(with(g, f(x, y, z, a, c, mu)), c(45, 45, 30))
-#' cont <- computeContour3d(voxel, level = 0, x = x, y = y, z = z)
-#' ids <- matrix(1:nrow(cont), ncol = 3, byrow = TRUE)
-#' # run the `makeMesh` function
-#' mesh <- makeMesh(cont, ids, normals = TRUE)
-#' # plot the cyclide
-#' tmesh <- toRGL(mesh)
-#' open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
-#' shade3d(tmesh, color = "green")
+#' ## now run the `makeMesh` function
+#' mesh1 <- makeMesh(vertices, faces, normals=FALSE)
+#' ## plot the tetrahedron, hiding the back of the faces
+#' ## then all faces appear now
+#' mesh1_rgl_b <- toRGL(mesh1)
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' shade3d(mesh1_rgl_b, color="blue", back="cull")
 #'
-#' # illustration of the `triangulate` option ####
-#' # the faces of the truncated icosahedron are hexagonal or pentagonal:
-#' truncatedIcosahedron[["faces"]]
+#' ## illustration of the `triangulate` option
+#' ## the faces of the truncated icosahedron are hexagonal or pentagonal:
+#' TruncatedIcosahedron[["faces"]]
 #' # so we triangulate them:
-#' mesh <- makeMesh(
-#'   mesh = truncatedIcosahedron,
-#'   triangulate = TRUE, normals = FALSE
-#' )
-#' # now we can plot the truncated icosahedron
-#' tmesh <- toRGL(mesh)
-#' open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
-#' shade3d(tmesh, color = "orange")
+#' mesh2 <- makeMesh(
+#'   mesh       =TruncatedIcosahedron,
+#'   triangulate=TRUE,
+#'   normals    =FALSE)
+#'
+#' ## now we can plot the truncated icosahedron
+#' mesh2_rgl <- toRGL(mesh2)
+#' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
+#' shade3d(mesh2_rgl, color="orange")
+#'
+#' @export
 makeMesh <- function(vertices,
                      faces,
                      mesh       =NULL,
@@ -245,8 +222,7 @@ makeMesh <- function(vertices,
 	isTriangle       <- checkedMesh[["isTriangle"]]
 	if(triangulate && isTriangle) {
 		message(
-				"Ignored option `triangulate`, since the mesh is already triangulated."
-		)
+				"Ignored option `triangulate`, since the mesh is already triangulated.")
 		triangulate <- FALSE
 	}
 
@@ -264,46 +240,43 @@ makeMesh <- function(vertices,
 	if(normals) {
 		mesh[["normals"]] <- t(mesh[["normals"]])
 	}
-	if(triangulate) {
-	  edges0DF           <- mesh[["edges0"]]
-	  mesh[["edges0DF"]] <- edges0DF
-	  mesh[["edges0"]]   <- as.matrix(edges0DF[, c("i1", "i2")])
-	  if(normals) {
-			mesh[["normals0"]] <- t(mesh[["normals0"]])
-		}
-	}
+
 	if(triangulate || homogeneousFaces) {
 		mesh[["faces"]] <- do.call(rbind, mesh[["faces"]])
 	}
+
 	attr(mesh, "toRGL") <- ifelse(triangulate, 3L, checkedMesh[["toRGL"]])
 	class(mesh) <- "CGALmesh"
 	mesh
 }
 
 #' @title Conversion to 'rgl' mesh
-#' @description Converts a CGAL mesh (e.g. an output of the \code{\link{Mesh}}
-#'   function) to a \strong{rgl} mesh.
+#' @description Converts a \code{CGALmesh} object (the output of the \code{\link{makeMesh}}
+#'   function) to a \strong{rgl} mesh object.
 #'
-#' @param mesh a CGAL mesh, that is to say a list of class \code{"CGALmesh"}
-#'   (e.g. an output of the \code{\link{Mesh}} function); in order to be
+#' @param mesh A \code{CGALmesh} object, i.e., a specific list as produced
+#'   by the \code{\link{makeMesh}} function). In order to be
 #'   convertible to a \strong{rgl} mesh, its faces must have at most four sides
 #' @param ... arguments passed to \code{\link[rgl]{mesh3d}}
 #'
-#' @return A \strong{rgl} mesh, that is to say a list of class \code{"mesh3d"}.
-#' @export
+#' @returns A \strong{rgl} mesh object, i.e., a list of class \code{"mesh3d"}.
 #'
-#' @importFrom rgl mesh3d
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
-#' library(PolygonSoup)
+#' library(MeshUtils)
 #' library(rgl)
 #' mesh <- makeMesh(
-#'   truncatedIcosahedron[["vertices"]], truncatedIcosahedron[["faces"]],
-#'   triangulate = TRUE
-#' )
-#' rglmesh <- toRGL(mesh, segments = t(mesh[["edges"]]))
-#' open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
-#' shade3d(rglmesh, color = "darkred")
+#'   TruncatedIcosahedron[["vertices"]],
+#'   TruncatedIcosahedron[["faces"]],
+#'   triangulate=TRUE)
+#'
+#' mesh_rgl <- toRGL(mesh, segments=t(mesh[["edges"]]))
+#' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
+#' shade3d(mesh_rgl, color="darkred")
+#'
+#' @export
+#' @importFrom rgl mesh3d
 toRGL <- function(mesh, ...) {
 	if(!inherits(mesh, "CGALmesh")) {
 		stop("The `mesh` argument must be of class 'CGALmesh'",
@@ -315,95 +288,83 @@ toRGL <- function(mesh, ...) {
 				 "(the faces must have at most four sides).")
 	}
 	if(rgl == 3L) {
-		mesh3d(
-				x         = mesh[["vertices"]],
-				normals   = mesh[["normals"]],
-				triangles = t(mesh[["faces"]]),
-				...
-		)
+		mesh3d(x        =mesh[["vertices"]],
+				   normals  =mesh[["normals"]],
+				   triangles=t(mesh[["faces"]]),
+				   ...)
 	} else if(rgl == 4L) {
-		mesh3d(
-				x       = mesh[["vertices"]],
-				normals = mesh[["normals"]],
-				quads   = t(mesh[["faces"]]),
-				...
-		)
+		mesh3d(x      =mesh[["vertices"]],
+				   normals=mesh[["normals"]],
+				   quads  =t(mesh[["faces"]]),
+				   ...)
 	} else {
 		faces <- split(mesh[["faces"]], lengths(mesh[["faces"]]))
-		mesh3d(
-				x         = mesh[["vertices"]],
-				normals   = mesh[["normals"]],
-				triangles = do.call(cbind, faces[["3"]]),
-				quads     = do.call(cbind, faces[["4"]]),
-				...
-		)
+		mesh3d(x        =mesh[["vertices"]],
+				   normals  =mesh[["normals"]],
+				   triangles=do.call(cbind, faces[["3"]]),
+				   quads    =do.call(cbind, faces[["4"]]),
+				   ...)
 	}
 }
 
 #' @title Plot some edges
 #' @description Plot the given edges with \strong{rgl}.
 #'
-#' @param vertices a three-columns matrix giving the coordinates of the vertices
-#' @param edges a two-columns integer matrix giving the edges by pairs of
-#'   vertex indices
-#' @param color a color for the edges
-#' @param lwd line width, a positive number, ignored if \code{edgesAsTubes=TRUE}
-#' @param edgesAsTubes Boolean, whether to draw the edges as tubes
-#' @param tubesRadius the radius of the tubes when \code{edgesAsTubes=TRUE}
-#' @param verticesAsSpheres Boolean, whether to draw the vertices as spheres
-#' @param only integer vector made of the indices of the vertices you want
-#'   to plot (as spheres), or \code{NULL} to plot all vertices
-#' @param spheresRadius the radius of the spheres when
-#'   \code{verticesAsSpheres=TRUE}
-#' @param spheresColor the color of the spheres when
-#'   \code{verticesAsSpheres=TRUE}
+#' @param vertices A three-columns matrix giving the coordinates of the vertices.
+#' @param edges A two-columns integer matrix giving the edges by pairs of
+#'   vertex indices.
+#' @param color A color for the edges.
+#' @param lwd Line width, a positive number, ignored if \code{edgesAsTubes=TRUE}.
+#' @param edgesAsTubes Boolean, whether to draw the edges as tubes.
+#' @param tubesRadius The radius of the tubes when \code{edgesAsTubes=TRUE}.
+#' @param verticesAsSpheres Boolean, whether to draw the vertices as spheres.
+#' @param only Integer vector made of the indices of the vertices you want
+#'   to plot (as spheres), or \code{NULL} to plot all vertices.
+#' @param spheresRadius The radius of the spheres when
+#'   \code{verticesAsSpheres=TRUE}.
+#' @param spheresColor The color of the spheres when
+#'   \code{verticesAsSpheres=TRUE}.
 #'
-#' @return No value.
+#' @returns No value.
 #'
-#' @importFrom rgl cylinder3d shade3d lines3d spheres3d
-#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' \donttest{# we triangulate the truncated icosahedron mesh
-#' mesh <- makeMesh(
-#'   mesh = truncatedIcosahedron,
-#'   triangulate = TRUE, normals = FALSE
-#' )
+#' # we triangulate the truncated icosahedron mesh
+#' mesh1 <- makeMesh(
+#'   mesh       =TruncatedIcosahedron,
+#'   triangulate=TRUE,
+#'   normals    =FALSE)
+#'
 #' # now we can plot the truncated icosahedron
-#' tmesh <- toRGL(mesh)
-#' open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
-#' shade3d(tmesh, color = "gold")
-#' # we plot the edges given in `mesh[["edges0"]]`; these are the
-#' # edges of the mesh before the triangulation
-#' plotEdges(mesh[["vertices"]], mesh[["edges0"]], color = "navy")}
+#' mesh1_rgl <- toRGL(mesh1)
+#' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
+#' shade3d(mesh1_rgl, color="gold")
 #'
 #' # we triangulate the pentagrammic prism mesh
-#' mesh <- makeMesh(
-#'   mesh = pentagrammicPrism,
-#'   triangulate = TRUE, normals = FALSE
-#' )
-#' # now we can plot the pentagrammic prism
-#' tmesh <- toRGL(mesh)
-#' \donttest{open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
-#' shade3d(tmesh, color = "navy")
-#' # we plot the exterior edges only, given in `mesh[["exteriorEdges"]]`
-#' plotEdges(
-#'   mesh[["vertices"]], mesh[["exteriorEdges"]], color = "gold",
-#'   tubesRadius = 0.02, spheresRadius = 0.02
-#' )}
+#' mesh2 <- makeMesh(
+#'   mesh       =PentagrammicPrism,
+#'   triangulate=TRUE,
+#'    normals   = FALSE)
 #'
-#' # or only plot the edges whose corresponding dihedral angle is acute:
-#' allEdges <- mesh[["edgesDF"]]
-#' edges <- as.matrix(subset(allEdges, angle <= 91, select = c("i1", "i2")))
-# open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
-# shade3d(tmesh, color = "maroon")
-# plotEdges(
-#   mesh[["vertices"]], edges, color = "darkred",
-#   tubesRadius = 0.02, spheresRadius = 0.02
-# )
+#' # now we can plot the pentagrammic prism
+#' mesh2_rgl <- toRGL(mesh2)
+#' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
+#' shade3d(mesh2_rgl, color="navy")
+#' # we plot the exterior edges only, given in `mesh2[["exteriorEdges"]]`
+#' plotEdges(
+#'   mesh2[["vertices"]],
+#'   mesh2[["exteriorEdges"]],
+#'   color        ="gold",
+#'   tubesRadius  =0.02,
+#'   spheresRadius=0.02
+#' )
+#'
+#' @export
+#' @importFrom rgl cylinder3d shade3d lines3d spheres3d
 plotEdges <- function(
 		vertices,
 		edges,
@@ -429,9 +390,9 @@ plotEdges <- function(
 	}
 	if(verticesAsSpheres) {
 		if(!is.null(only)) {
-			vertices <- vertices[only, ]
+			vertices <- vertices[only, , drop=FALSE]
 		}
-		spheres3d(vertices, radius = spheresRadius, color = spheresColor)
+		spheres3d(vertices, radius=spheresRadius, color=spheresColor)
 	}
 	invisible(NULL)
 }
@@ -439,52 +400,73 @@ plotEdges <- function(
 #' @title Does mesh bound a volume?
 #' @description Does mesh bound a volume?
 #'
-#' @param rmesh
-#' @return TRUE / FALSE
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object.
+#' @returns TRUE or FALSE.
 #' @export
-#' @examples
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
-doesBoundVolume <- function(rmesh) {
-    cppMesh <- fromR(rmesh)
+#' @examples
+#' library(MeshUtils)
+#' doesBoundVolume(PentagrammicPrism)
+#'
+#' @export
+doesBoundVolume <- function(x) {
+    cppMesh <- fromR(x)
     doesBoundVolume_cpp(cppMesh)
 }
 
 #' @title Does mesh self intersect?
 #' @description Does mesh self intersect?
 #'
-#' @param rmesh
-#' @return TRUE / FALSE
-#' @export
-#' @examples
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object.
+#' @returns TRUE or FALSE.
 #'
-doesSelfIntersect <- function(rmesh) {
-  cppMesh <- fromR(rmesh)
+#' @examples
+#' library(MeshUtils)
+#' doesSelfIntersect(PentagrammicPrism)
+#'
+#' @export
+doesSelfIntersect <- function(x) {
+  cppMesh <- fromR(x)
   doesSelfIntersect_cpp(cppMesh)
 }
 
 #' @title Is mesh closed?
 #' @description Is mesh closed?
 #'
-#' @param rmesh
-#' @return TRUE / FALSE
-#' @export
-#' @examples
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object.
+#' @returns TRUE or FALSE.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
-isClosed <- function(rmesh) {
-  cppMesh <- fromR(rmesh)
+#' @examples
+#' library(MeshUtils)
+#' isClosed(PentagrammicPrism)
+#'
+#' @export
+isClosed <- function(x) {
+  cppMesh <- fromR(x)
   isClosed_cpp(cppMesh)
 }
 
 #' @title Orient mesh to bound a volume
 #' @description Orient mesh to bound a volume
 #'
-#' @param rmesh
-#' @return CGALmesh
-#' @export
-#' @examples
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object.
+#' @returns \code{CGALmesh} object.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
-orientToBoundVolume <- function(rmesh) {
-  cppMesh <- fromR(rmesh)
+#' @examples
+#' library(MeshUtils)
+#' mesh_o <- orientToBoundVolume(PentagrammicPrism)
+#' getVolume(mesh_o)
+#'
+#' @export
+orientToBoundVolume <- function(x) {
+  cppMesh <- fromR(x)
   mesh    <- orientToBoundVolume_cpp(cppMesh)
   fromCPP(mesh)
 }
@@ -492,16 +474,22 @@ orientToBoundVolume <- function(rmesh) {
 #' @title Remove self intersections
 #' @description Remove self intersections
 #'
-#' @param rmesh
-#' @return CGALmesh
-#' @export
-#' @examples
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object.
+#' @returns \code{CGALmesh} object.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
-removeSelfIntersections <- function(rmesh, method=c("auto", "auto_snap")) {
+#' @examples
+#' library(MeshUtils)
+#' mesh_nsi <- removeSelfIntersections(PentagrammicPrism)
+#' getVolume(mesh_nsi)
+#'
+#' @export
+removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
   method_choices <- c("auto", "auto_snap")
   method     <- match.arg(method, choices=method_choices)
   method_int <- match(method, method_choices)
-  cppMesh    <- fromR(rmesh)
+  cppMesh    <- fromR(x)
   mesh       <- removeSelfIntersections_cpp(cppMesh, method_int)
   fromCPP(mesh)
 }
@@ -509,55 +497,84 @@ removeSelfIntersections <- function(rmesh, method=c("auto", "auto_snap")) {
 #' @title Get mesh volume
 #' @description Get mesh volume
 #'
-#' @param rmesh
-#' @return numeric
-#' @export
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object.
+#' @returns numeric Mesh volume - if mesh bounds a volume.
 #' @examples
+#' library(MeshUtils)
+#' getVolume(PentagrammicPrism)
 #'
-getVolume <- function(rmesh) {
-  cppMesh <- fromR(rmesh)
+#' @export
+getVolume <- function(x) {
+  cppMesh <- fromR(x)
   getVolume_cpp(cppMesh)
 }
 
 #' @title Get mesh centroid
 #' @description Get mesh centroid
 #'
-#' @param rmesh
-#' @return numeric vector
-#' @export
-#' @examples
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object.
+#' @returns numeric 3-vector with mesh centroid.
 #'
-getCentroid <- function(rmesh) {
-  cppMesh <- fromR(rmesh)
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' getCentroid(PentagrammicPrism)
+#'
+#' @export
+getCentroid <- function(x) {
+  cppMesh <- fromR(x)
   getCentroid_cpp(cppMesh)
 }
 
 #' @title Get optimal bounding box
 #' @description Get oriented bounding box
 #'
-#' @param rmesh
-#' @return numeric vector
-#' @export
-#' @examples
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object.
+#' @returns A \code{CGALmesh} object.
 #'
-getOptimalBoundingBox <- function(rmesh) {
-  cppMesh <- fromR(rmesh)
+#' @examples
+#' library(MeshUtils)
+#' obb     <- getOptimalBoundingBox(PentagrammicPrism)
+#' obb_rgl <- toRGL(obb)
+#' open3d(windowRect=50 + c(0, 0, 800, 400))
+#' wire3d(PentagrammicPrism)
+#' wire3d(obb_rgl)
+#'
+#' @export
+getOptimalBoundingBox <- function(x) {
+  cppMesh <- fromR(x)
   outL    <- optimalBoundingBox_cpp(cppMesh)
   outL[["mesh"]] <- fromCPP(outL[["mesh"]])
   outL
 }
 
-#' @title Get optimal bounding box
+#' @title Get axis-parallel bounding box
 #' @description Get axis-parallel bounding box
 #'
-#' @param rmesh
-#' @return numeric vector
-#' @export
-#' @examples
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object.
+#' @param out Character to indicate output mesh format.
 #'
-getBoundingBox <- function(rmesh, out=c("CGALmesh", "rgl")) {
+#' @returns A \code{CGALmesh} object or a \code{mesh3d} object from package \strong{rgl}.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' bb_rgl <- getBoundingBox(PentagrammicPrism, out="rgl")
+#' open3d(windowRect=50 + c(0, 0, 800, 400))
+#' wire3d(PentagrammicPrism)
+#' wire3d(bb_rgl)
+#'
+#' @export
+#' @importFrom rgl translate3d scale3d cube3d
+getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
   out     <- match.arg(out)
-  cppMesh <- fromR(rmesh)
+  cppMesh <- fromR(x)
   outL    <- boundingBox_cpp(cppMesh)
   lcorner <- outL[["lcorner"]]
   ucorner <- outL[["ucorner"]]

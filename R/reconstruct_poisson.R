@@ -5,80 +5,83 @@
 ## https://github.com/stla/cgalMeshes/
 ## developed and copyright by
 ## Stéphane Laurent <laurent_step@outlook.fr>
+## adapted by
+## Daniel Wollschlaeger
 ## License: GPL-3
 ## ----------------------------------------------------------------------- //
 
 #' @title Poisson surface reconstruction
 #' @description Poisson reconstruction of a surface, from a cloud of 3D points.
 #'
-#' @param points numeric matrix which stores the points, one point per row
+#' @param x Numeric matrix which stores the points, one point per row.
 #' @param normals numeric matrix which stores the normals, one normal per row
 #'   (it must have the same size as the \code{points} matrix); if you don't
 #'   have normals, set \code{normals=NULL} (the default) and some normals will
 #'   be computed with the help of \code{\link[Rvcg]{vcgUpdateNormals}}, or
-#'   use the \code{\link{getSomeNormals}} function
-#' @param spacing size parameter; smaller values increase the precision of the
+#'   use the \code{\link{getSomeNormals}} function.
+#' @param Spacing size parameter; smaller values increase the precision of the
 #'   output mesh at the cost of higher computation time; set to \code{NULL}
 #'   (the default) for a reasonable automatic value: an average spacing whose
 #'   value will be displayed in a message and that you can also get in the
 #'   \code{"spacing"} attribute of the output
-#' @param sm_angle bound for the minimum facet angle in degrees
-#' @param sm_radius relative bound for the radius of the surface Delaunay balls
-#' @param sm_distance relative bound for the center-center distances
+#' @param smAngle Bound for the minimum facet angle in degrees
+#' @param smRadius Relative bound for the radius of the surface Delaunay balls
+#' @param smDistance Relative bound for the center-center distances
+#' @param out Character to indicate output mesh format.
 #'
-#' @return A triangle mesh, of class \code{mesh3d} (ready for plotting
-#'   with \strong{rgl}).
+#' @returns A \code{CGALmesh} object or a \code{mesh3d} object from package \strong{rgl}.
 #'
 #' @details See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/index.html}{Poisson Surface Reconstruction}.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' #' @seealso [reconstructAFS()], [reconstructSSS()], [alphaWrap()]
+
+#' @examples
+#' library(MeshUtils)
+#' library(rgl)
+#'
+#' # Hopf torus
+#' mesh   <- makeMesh(mesh=HopfTorus)
+#' mesh_r <- reconstructPoisson(mesh, spacing=0.2, out="rgl")
+#' shade3d(mesh_r, color="darkorange")
+#' wire3d(mesh_r,  color="black")
 #'
 #' @export
 #' @importFrom rgl tmesh3d
 #' @importFrom Rvcg vcgUpdateNormals
-#'
-#'
-#' @examples
-#' library(SurfaceReconstruction)
-#' library(rgl)
-#'
-#' # Solid Möbius strip
-#' Psr_mesh <- PoissonReconstruction(SolidMobiusStrip)
-#' shade3d(Psr_mesh, color= "yellow")
-#' wire3d(Psr_mesh, color = "black")
-#'
-#' # Hopf torus
-#' Psr_mesh <- PoissonReconstruction(HopfTorus, spacing = 0.2)
-#' shade3d(Psr_mesh, color= "darkorange")
-#' wire3d(Psr_mesh, color = "black")
 reconstructPoisson <- function(
-  points,
-  normals = NULL,
-  spacing = NULL,
-  smAngle = 20,
-  smRadius = 30,
-  smDistance = 0.375
+  x,
+  normals   = NULL,
+  spacing   = NULL,
+  smAngle   = 20,
+  smRadius  = 30,
+  smDistance= 0.375,
+  out       =c("CGALmesh", "rgl")
 ) {
-  if(!is.matrix(points) || !is.numeric(points)) {
-    stop("The `points` argument must be a numeric matrix.", call. = TRUE)
+  out <- match.arg(out)
+  if(!is.matrix(x) || !is.numeric(x)) {
+    stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
-  if(anyNA(points)) {
-    stop("Missing values in the `points` matrix are not allowed.", call. = TRUE)
+  if(anyNA(x)) {
+    stop("Missing values in the `x` matrix are not allowed.", call. = TRUE)
   }
-  dimension <- ncol(points)
+  dimension <- ncol(x)
   if(dimension != 3L) {
-    stop("The `points` matrix must have three columns.", call. = TRUE)
+    stop("The `x` matrix must have three columns.", call. = TRUE)
   }
-  storage.mode(points) <- "double"
+  storage.mode(x) <- "double"
   if(is.null(normals)) {
-    normals <- vcgUpdateNormals(points, silent = TRUE)[["normals"]][-4L, ]
+    normals <- vcgUpdateNormals(x, silent = TRUE)[["normals"]][-4L, ]
   } else if(is.function(normals) && inherits(normals, "CGALnormalsFunc")) {
-    normals <- normals(points)
+    normals <- normals(x)
   } else {
     stop(
       "Invalid argument `normals`: it must be `NULL` or a function returned ",
       "by the `getSomeNormals` function."
     )
   }
-  if(nrow(points) <= dimension) {
+  if(nrow(x) <= dimension) {
     stop("Insufficient number of points.", call. = TRUE)
   }
   # if(any(is.na(points)) || (!is.null(normals) && any(is.na(normals)))) {
@@ -92,21 +95,23 @@ reconstructPoisson <- function(
   stopifnot(isPositiveNumber(smAngle))
   stopifnot(isPositiveNumber(smRadius))
   stopifnot(isPositiveNumber(smDistance))
-  psr <- reconstructPoisson_cpp(
-    t(points), normals, spacing, smAngle, smRadius, smDistance
-  )
-  out <- vcgUpdateNormals(
-    tmesh3d(psr[["vertices"]],
-            psr[["faces"]],
-            normals = NULL,
-            homogeneous = FALSE)
-  )
+  mesh_r <- reconstructPoisson_cpp(
+    t(x), normals, spacing, smAngle, smRadius, smDistance)
+  mesh_rwn <- vcgUpdateNormals(
+    tmesh3d(mesh_r[["vertices"]],
+            mesh_r[["faces"]],
+            normals    =NULL,
+            homogeneous=FALSE))
   if(spacing == -1) {
     message(sprintf(
       "Poisson reconstruction using average spacing: %s.",
-      formatC(psr[["spacing"]])
-    ))
-    attr(out, "spacing") <- psr[["spacing"]]
+      formatC(mesh_r[["spacing"]])))
+    attr(mesh_rwn, "spacing") <- mesh_r[["spacing"]]
   }
-  out
+  mesh_out <- if(out == "rgl") {
+    mesh_rwn
+  } else {
+    makeMesh(mesh=mesh_rwn)
+  }
+  mesh_out
 }

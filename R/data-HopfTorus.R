@@ -8,11 +8,10 @@
 ## License: GPL-3
 ## ----------------------------------------------------------------------- //
 
-#' @title A mesh of a pentagrammic prism
+#' @title A mesh of a Hopf torus
 #'
-#' @description A list representing a pentagrammic prism, giving the vertices
-#'   and the faces; it has 20 vertices, 10 triangular faces, 10 rectangular
-#'   faces and two pentagonal faces.
+#' @description A list giving the vertices and faces of a mesh representing
+#'     a Hopf torus.
 #'
 #' @format A list with components \code{vertices}, \code{faces}.
-"PentagrammicPrism"
+"HopfTorus"

@@ -5,103 +5,64 @@
 ## https://github.com/stla/cgalMeshes/
 ## developed and copyright by
 ## Stéphane Laurent <laurent_step@outlook.fr>
+## adapted by
+## Daniel Wollschlaeger
 ## License: GPL-3
 ## ----------------------------------------------------------------------- //
 
 #' @title Meshes intersection
 #' @description Computes the intersection of the given meshes.
 #'
-#' @param meshes a list of meshes, each being either a
-#'   \strong{rgl} mesh, or as a list with (at least) two fields:
-#'   \code{vertices} and \code{faces}; the \code{vertices} matrix can
-#'   be a numeric matrix or a matrix of \code{bigq} rational numbers
-#'   (from the \strong{gmp} package)
+#' @param x A list of meshes, each being either a \code{mesh3d} object
+#'   from package \strong{rgl}, or as a list with (at least) two fields:
+#'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
 #' @param clean Boolean, whether to clean the meshes (merging
-#'   duplicated vertices, duplicated faces, removing isolated vertices);
-#'   set to \code{FALSE} if you are sure your meshes are clean, to
-#'   gain some speed
+#'   duplicated vertices, duplicated faces, removing isolated vertices).
+#'   Set to \code{FALSE} if you are sure your meshes are clean, to
+#'   gain some speed.
 #' @param normals Boolean, whether to return the per-vertex normals of the
-#'   output mesh
+#'   output mesh.
 #'
-#' @return A triangle mesh given as a list with fields \code{vertices},
-#'   \code{faces}, \code{edges}, \code{exteriorEdges}, \code{gmpvertices}
-#'   if using \strong{gmp} meshes, and \code{normals} if \code{normals=TRUE}.
+#' @returns A \code{CGALmesh} object.
 #'
-#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
-#' library(Boov)
+#' library(MeshUtils)
 #' library(rgl)
 #'
 #' # mesh one: truncated icosahedron; we triangulate it for plotting
-#' library(PolygonSoup)
-#' mesh1 <- makeMesh(
-#'   mesh = truncatedIcosahedron,
-#'   triangulate = TRUE, normals = FALSE
-#' )
+#' mesh1 <- makeMesh(mesh       =TruncatedIcosahedron,
+#'                   triangulate=TRUE,
+#'                   normals = FALSE)
 #'
 #' # mesh two: a cube
-#' mesh2 <- translate3d( # (from the rgl package)
-#'   cube3d(), 2, 0, 0
-#' )
+#' mesh2_rgl <- translate3d(cube3d(), 2, 0, 0)
+#' mesh2     <- makeMesh(mesh       =mesh2_rgl,
+#'                       triangulate=TRUE,
+#'                       normals    =FALSE)
 #'
 #' # compute the intersection
-#' inter <- MeshesIntersection(list(mesh1, mesh2))
+#' mesh_i <- meshIntersection(list(mesh1, mesh2))
 #'
 #' # plot
-#' rglmesh1 <- toRGL(mesh1)
-#' rglinter <- toRGL(inter)
-#' open3d(windowRect = c(50, 50, 562, 562))
-#' shade3d(rglmesh1, color = "yellow", alpha = 0.2)
-#' shade3d(mesh2, color = "cyan", alpha = 0.2)
-#' shade3d(rglinter, color = "red")
-#' plotEdges(
-#'   vertices = inter[["vertices"]], edges = inter[["exteriorEdges"]],
-#'   edgesAsTubes = FALSE, lwd = 3, verticesAsSpheres = FALSE
-#' )
+#' mesh1_rgl  <- toRGL(mesh1)
+#' mesh_i_rgl <- toRGL(mesh_i)
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' shade3d(mesh1_rgl,  color="yellow", alpha=0.2)
+#' shade3d(mesh2_rgl,  color="cyan",   alpha=0.2)
+#' shade3d(mesh_i_rgl, color="red")
+#' plotEdges(vertices         =mesh_i[["vertices"]],
+#'           edges            =mesh_i[["exteriorEdges"]],
+#'           edgesAsTubes     =FALSE,
+#'           lwd              =3,
+#'           verticesAsSpheres=FALSE)
 #'
-#' # other example, with 'gmp' rational numbers ####
-#' library(Boov)
-#' library(gmp)
-#' library(rgl)
-#'
-#' cube <- cube3d()
-#'
-#' rglmesh1 <- cube
-#' mesh1 <-
-#'   list(vertices = t(cube[["vb"]][-4L, ]), faces = t(cube[["ib"]]))
-#' mesh1[["vertices"]] <- as.bigq(mesh1[["vertices"]])
-#'
-#' rotMatrix <- t(cbind( # pi/3 around a great diagonal
-#'   as.bigq(c(2, -1, 2), c(3, 3, 3)),
-#'   as.bigq(c(2, 2, -1), c(3, 3, 3)),
-#'   as.bigq(c(-1, 2, 2), c(3, 3, 3))
-#' ))
-#' mesh2 <-
-#'   list(vertices = t(cube[["vb"]][-4L, ]), faces = t(cube[["ib"]]))
-#' mesh2[["vertices"]] <- as.bigq(mesh2[["vertices"]]) %*% rotMatrix
-#' rglmesh2 <- rotate3d(cube, pi/3, 1, 1, 1)
-#'
-#' inter <- MeshesIntersection(list(mesh1, mesh2))
-#' # perfect vertices:
-#' inter[["gmpVertices"]]
-#' rglinter <- toRGL(inter)
-#'
-#' open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
-#' bg3d("#363940")
-#' shade3d(rglmesh1, color = "yellow", alpha = 0.2)
-#' shade3d(rglmesh2, color = "orange", alpha = 0.2)
-#' shade3d(rglinter, color = "hotpink")
-#' plotEdges(
-#'   inter[["vertices"]], inter[["exteriorEdges"]],
-#'   only = inter[["exteriorVertices"]],
-#'   color = "firebrick",
-#'   tubesRadius = 0.05, spheresRadius = 0.07
-#' )
-meshIntersection <- function(meshes, clean=TRUE, normals=FALSE) {
-  stopifnot(is.list(meshes))
-  stopifnot(length(meshes) >= 2L)
-  checkMeshes <- lapply(meshes, function(mesh) {
+#' @export
+meshIntersection <- function(x, clean=TRUE, normals=FALSE) {
+  stopifnot(is.list(x))
+  stopifnot(length(x) >= 2L)
+  checkMeshes <- lapply(x, function(mesh) {
     if(inherits(mesh, "mesh3d")) {
       vft  <- getVFT(mesh, beforeCheck = TRUE)
       mesh <- vft[["rmesh"]]
@@ -115,51 +76,50 @@ meshIntersection <- function(meshes, clean=TRUE, normals=FALSE) {
   fromCPP(inter)
 }
 
-#' @title Meshes difference
+#' @title Mesh difference
 #' @description Computes the difference between two meshes.
 #'
-#' @param mesh1,mesh2 two meshes, each being given as either a
-#'   \strong{rgl} mesh, or a list with (at least) two fields:
-#'   \code{vertices} and \code{faces}; the \code{vertices} matrix can be
-#'   a numeric matrix or a matrix of \code{bigq} rational numbers (from the
-#'   \strong{gmp} package)
+#' @param mesh1 A mesh, either being given a \code{mesh3d} object
+#'   from package \strong{rgl}, or by a list with (at least) two fields:
+#'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
+#' @param mesh2 A mesh, either being given a \code{mesh3d} object
+#'   from package \strong{rgl}, or by a list with (at least) two fields:
+#'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
 #' @param clean Boolean, whether to clean the meshes (merging duplicated
-#'   vertices, duplicated faces, removing isolated vertices); set to
-#'   \code{FALSE} if you know your meshes are clean
+#'   vertices, duplicated faces, removing isolated vertices). Set to
+#'   \code{FALSE} if you know your meshes are clean.
 #' @param normals Boolean, whether to return the per-vertex normals of the
-#'   output mesh
+#'   output mesh.
 #'
-#' @return A triangle mesh given as a list with fields \code{vertices},
-#'   \code{faces}, \code{edges}, \code{exteriorEdges}, \code{gmpvertices}
-#'   if using \strong{gmp} meshes, and \code{normals} if \code{normals=TRUE}.
+#' @returns A \code{CGALmesh} object.
 #'
-#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
-#' library(Boov)
+#' library(MeshUtils)
 #' library(rgl)
 #'
 #' # mesh one: a cube
-#' mesh1 <- cube3d() # (from the rgl package)
+#' mesh1_rgl <- cube3d() # (from the rgl package)
 #'
 #' # mesh two: another cube
-#' mesh2 <- translate3d( # (from the rgl package)
-#'   cube3d(), 1, 1, 0
-#' )
+#' mesh2_rgl <- translate3d(cube3d(), 1, 1, 0)
 #'
 #' # compute the difference
-#' differ <- MeshesDifference(mesh1, mesh2)
+#' mesh_d <- meshDifference(mesh1_rgl, mesh2_rgl)
 #'
 #' # plot
-#' rgldiffer <- toRGL(differ)
-#' open3d(windowRect = c(50, 50, 562, 562))
-#' shade3d(mesh1, color = "yellow", alpha = 0.2)
-#' shade3d(mesh2, color = "cyan", alpha = 0.2)
-#' shade3d(rgldiffer, color = "red")
-#' plotEdges(
-#'   vertices = differ[["vertices"]], edges = differ[["exteriorEdges"]],
-#'   edgesAsTubes = TRUE, verticesAsSpheres = TRUE
-#' )
+#' mesh_d_rgl <- toRGL(mesh_d)
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' shade3d(mesh1_rgl,  color="yellow", alpha=0.2)
+#' shade3d(mesh2_rgl,  color="cyan",   alpha=0.2)
+#' shade3d(mesh_d_rgl, color="red")
+#' plotEdges(vertices         =mesh_d[["vertices"]],
+#'           edges            =mesh_d[["exteriorEdges"]],
+#'           edgesAsTubes     =TRUE,
+#'           verticesAsSpheres=TRUE)
+#'
+#' @export
 meshDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
   stopifnot(is.list(mesh1), is.list(mesh2))
 
@@ -186,52 +146,48 @@ meshDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
 #' @title Meshes union
 #' @description Computes the union of the given meshes.
 #'
-#' @param meshes a list of meshes, each being either a
-#'   \strong{rgl} mesh, or as a list with (at least) two fields:
-#'   \code{vertices} and \code{faces}; the \code{vertices} matrix can
-#'   be a numeric matrix or a matrix of \code{bigq} rational numbers
-#'   (from the \strong{gmp} package)
+#' @param x A list of meshes, each being either a \code{mesh3d} object
+#'   from package \strong{rgl}, or as a list with (at least) two fields:
+#'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
 #' @param clean Boolean, whether to clean the meshes (merging
-#'   duplicated vertices, duplicated faces, removing isolated vertices);
-#'   set to \code{FALSE} if you are sure your meshes are clean, to
-#'   gain some speed
+#'   duplicated vertices, duplicated faces, removing isolated vertices).
+#'   Set to \code{FALSE} if you are sure your meshes are clean, to
+#'   gain some speed.
 #' @param normals Boolean, whether to return the per-vertex normals of the
-#'   output mesh
+#'   output mesh.
 #'
-#' @return A triangle mesh given as a list with fields \code{vertices},
-#'   \code{faces}, \code{edges}, \code{exteriorEdges}, \code{gmpvertices}
-#'   if using \strong{gmp} meshes, and \code{normals} if \code{normals=TRUE}.
+#' @returns A \code{CGALmesh} object.
 #'
-#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
-#' library(Boov)
+#' library(MeshUtils)
 #' library(rgl)
 #'
 #' # mesh one: a cube
-#' mesh1 <- cube3d() # (from the rgl package)
+#' mesh1_rgl <- cube3d() # (from the rgl package)
 #'
 #' # mesh two: another cube
-#' mesh2 <- translate3d( # (from the rgl package)
-#'   cube3d(), 1, 1, 1
-#' )
+#' mesh2_rgl <- translate3d(cube3d(), 1, 1, 1)
 #'
 #' # compute the union
-#' umesh <- MeshesUnion(list(mesh1, mesh2))
+#' mesh_u <- meshUnion(list(mesh1_rgl, mesh2_rgl))
 #'
 #' # plot
-#' rglumesh <- toRGL(umesh)
-#' open3d(windowRect = c(50, 50, 562, 562))
-#' shade3d(rglumesh, color = "red")
-#' plotEdges(
-#'   vertices = umesh[["vertices"]], edges = umesh[["exteriorEdges"]],
-#'   edgesAsTubes = TRUE, verticesAsSpheres = TRUE
-#' )
-meshUnion <- function(meshes, clean = TRUE, normals = FALSE) {
-  stopifnot(is.list(meshes))
-  stopifnot(length(meshes) >= 2L)
+#' mesh_u_rgl <- toRGL(mesh_u)
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' shade3d(mesh_u_rgl, color="red")
+#' plotEdges(vertices         =mesh_u[["vertices"]],
+#'           edges            =mesh_u[["exteriorEdges"]],
+#'           edgesAsTubes     =TRUE,
+#'           verticesAsSpheres=TRUE)
+#'
+#' @export
+meshUnion <- function(x, clean = TRUE, normals = FALSE) {
+  stopifnot(is.list(x))
+  stopifnot(length(x) >= 2L)
 
-  checkMeshes <- lapply(meshes, function(mesh) {
+  checkMeshes <- lapply(x, function(mesh) {
     if(inherits(mesh, "mesh3d")) {
       vft  <- getVFT(mesh, beforeCheck = TRUE)
       mesh <- vft[["rmesh"]]

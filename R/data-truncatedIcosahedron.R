@@ -13,5 +13,5 @@
 #' @description A list giving the vertices and the faces of a truncated
 #'   icosahedron. There are some hexagonal faces and some pentagonal faces.
 #'
-#' @format A list with two fields: \code{vertices} and \code{faces}.
-"truncatedIcosahedron"
+#' @format A list with two components: \code{vertices} and \code{faces}.
+"TruncatedIcosahedron"

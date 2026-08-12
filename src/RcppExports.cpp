@@ -85,14 +85,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // removeSelfIntersections_cpp
-Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh, const unsigned int method);
-RcppExport SEXP _MeshUtils_removeSelfIntersections_cpp(SEXP rmeshSEXP, SEXP methodSEXP) {
+Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh_in, const unsigned int method);
+RcppExport SEXP _MeshUtils_removeSelfIntersections_cpp(SEXP rmesh_inSEXP, SEXP methodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh_in(rmesh_inSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type method(methodSEXP);
-    rcpp_result_gen = Rcpp::wrap(removeSelfIntersections_cpp(rmesh, method));
+    rcpp_result_gen = Rcpp::wrap(removeSelfIntersections_cpp(rmesh_in, method));
     return rcpp_result_gen;
 END_RCPP
 }

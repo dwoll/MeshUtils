@@ -5,6 +5,8 @@
 // https://github.com/stla/cgalMeshes/
 // developed and copyright by
 // Stéphane Laurent <laurent_step@outlook.fr>
+// adapted by
+// Daniel Wollschlaeger
 // License: GPL-3
 // ----------------------------------------------------------------------- //
 
