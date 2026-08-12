@@ -18,6 +18,7 @@ Get oriented bounding box
 }
 \examples{
 library(MeshUtils)
+library(rgl)
 mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
 mesh_rgl <- toRGL(mesh)
 obb      <- getOptimalBoundingBox(mesh)

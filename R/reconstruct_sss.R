@@ -29,7 +29,7 @@
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @seealso \code{\link[MeshUtils]{reconstructAFS}},
-#'    \code{\link[MeshUtils]{reconstructPoisson}}, \code{\link[MeshUtils]{alphaWrap()}}
+#'    \code{\link[MeshUtils]{reconstructPoisson}}, \code{\link[MeshUtils]{alphaWrap}}
 #'
 #' @examples
 #' library(MeshUtils)

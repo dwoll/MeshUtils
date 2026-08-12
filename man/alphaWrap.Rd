@@ -53,7 +53,7 @@ shade3d(mesh_alwrap_rgl, color="forestgreen")
 \seealso{
 \code{\link[MeshUtils]{reconstructAFS}},
 \code{\link[MeshUtils]{reconstructSSS}},
-\code{\link[MeshUtils]{reconstructPoisson()}}
+\code{\link[MeshUtils]{reconstructPoisson}}
 }
 \author{
 Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

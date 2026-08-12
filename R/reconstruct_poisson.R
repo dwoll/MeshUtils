@@ -19,7 +19,7 @@
 #'   have normals, set \code{normals=NULL} (the default), and some normals will
 #'   be computed with the help of \code{\link[Rvcg]{vcgUpdateNormals}}, or
 #'   use the \code{\link[MeshUtils]{getSomeNormals}} function.
-#' @param Spacing Size parameter. Smaller values increase the precision of the
+#' @param spacing Size parameter. Smaller values increase the precision of the
 #'   output mesh at the cost of higher computation time. Set to \code{NULL}
 #'   (the default) for a reasonable automatic value: an average spacing whose
 #'   value will be displayed in a message and that you can also get in the
@@ -37,7 +37,7 @@
 #'
 #' @seealso \code{\link[MeshUtils]{reconstructAFS}},
 #'    \code{\link[MeshUtils]{reconstructSSS}},
-#'    \code{\link[MeshUtils]{alphaWrap()}}
+#'    \code{\link[MeshUtils]{alphaWrap}}
 
 #' @examples
 #' library(MeshUtils)

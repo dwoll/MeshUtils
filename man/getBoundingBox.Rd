@@ -20,6 +20,7 @@ Get axis-parallel bounding box
 }
 \examples{
 library(MeshUtils)
+library(rgl)
 mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
 mesh_rgl <- toRGL(mesh)
 bb_rgl   <- getBoundingBox(mesh, out="rgl")

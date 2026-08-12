@@ -30,10 +30,10 @@ See \href{https://doc.cgal.org/latest/Advancing_front_surface_reconstruction/ind
 library(MeshUtils)
 # no smoothing
 mesh    <- makeMesh(mesh=HopfTorus)
-mesh_r1 <- reconstructAFS(mesh["vertices"]], out="rgl")
+mesh_r1 <- reconstructAFS(mesh[["vertices"]], out="rgl")
 
 # jet smoothing
-mesh_r2 <- reconstructAFS(mesh["vertices"]],
+mesh_r2 <- reconstructAFS(mesh[["vertices"]],
                           jetSmoothing=30, out="rgl")
 # plot
 library(rgl)
@@ -48,7 +48,7 @@ shade3d(mesh_r2, color="gold")
 }
 \seealso{
 \code{\link[MeshUtils]{reconstructSSS}},
-\code{\link[MeshUtils]{reconstructPoisson}}, \code{\link[MeshUtils]{alphaWrap()}}
+\code{\link[MeshUtils]{reconstructPoisson}}, \code{\link[MeshUtils]{alphaWrap}}
 }
 \author{
 Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

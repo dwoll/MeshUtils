@@ -60,7 +60,7 @@ wire3d(mesh_r,  color="black")
 \seealso{
 \code{\link[MeshUtils]{reconstructAFS}},
 \code{\link[MeshUtils]{reconstructSSS}},
-\code{\link[MeshUtils]{alphaWrap()}}
+\code{\link[MeshUtils]{alphaWrap}}
 }
 \author{
 Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

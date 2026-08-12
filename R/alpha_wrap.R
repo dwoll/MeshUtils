@@ -35,7 +35,7 @@
 #'
 #' @seealso \code{\link[MeshUtils]{reconstructAFS}},
 #'    \code{\link[MeshUtils]{reconstructSSS}},
-#'    \code{\link[MeshUtils]{reconstructPoisson()}}
+#'    \code{\link[MeshUtils]{reconstructPoisson}}
 #'
 #' @examples
 #' library(MeshUtils)

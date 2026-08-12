@@ -371,8 +371,10 @@ orientToBoundVolume <- function(x) {
 #'
 #' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
 #'     object.
+#' @param method One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).
 #' @returns \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#' @details See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.
 #'
 #' @examples
 #' library(MeshUtils)
@@ -436,6 +438,7 @@ getCentroid <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
+#' library(rgl)
 #' mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #' obb      <- getOptimalBoundingBox(mesh)
@@ -465,6 +468,7 @@ getOptimalBoundingBox <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
+#' library(rgl)
 #' mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #' bb_rgl   <- getBoundingBox(mesh, out="rgl")

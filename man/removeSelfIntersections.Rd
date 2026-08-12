@@ -7,8 +7,8 @@
 removeSelfIntersections(x, method = c("auto", "auto_snap"))
 }
 \arguments{
-\item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-object.}
+\item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh} object.}
+\item{method}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
 }
 \value{
 \code{CGALmesh} object.
