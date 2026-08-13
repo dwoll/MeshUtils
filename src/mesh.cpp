@@ -175,13 +175,16 @@ Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh_in, const unsigned
 double getVolume_cpp(const Rcpp::List rmesh) {
   EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(rmesh, false, false);
   if(!CGAL::is_closed(mesh)) {
-    Rcpp::stop("The mesh is not closed.");
+    Message("The mesh is not closed.");
+    Rcpp::NumericVector::get_na();
   }
   if(!CGAL::is_triangle_mesh(mesh)) {
-    Rcpp::stop("The mesh is not triangle.");
+    Message("The mesh is not triangle.");
+    Rcpp::NumericVector::get_na();
   }
   if(PMP::does_self_intersect(mesh)) {
-    Rcpp::stop("The mesh self-intersects.");
+    Message("The mesh self-intersects.");
+    Rcpp::NumericVector::get_na();
   }
   const EK::FT vol = PMP::volume(mesh);
   return CGAL::to_double<EK::FT>(vol);
@@ -191,20 +194,24 @@ double getVolume_cpp(const Rcpp::List rmesh) {
 // [[Rcpp::export]]
 Rcpp::NumericVector getCentroid_cpp(const Rcpp::List rmesh) {
   EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(rmesh, false, false);
-  if(!CGAL::is_triangle_mesh(mesh)) {
-    Rcpp::stop("The mesh is not triangle.");
-  }
-  Mesh3 epickCopy;
-  CGAL::copy_face_graph(mesh, epickCopy);
-  const Point3 centroid = PMP::centroid(epickCopy);
-  // const EPoint3 centroid = PMP::centroid(mesh);
   Rcpp::NumericVector out(3);
-  out(0) = centroid.x();
-  out(1) = centroid.y();
-  out(2) = centroid.z();
-  // out(0) = CGAL::to_double<EK::FT>(centroid.x());
-  // out(1) = CGAL::to_double<EK::FT>(centroid.y());
-  // out(2) = CGAL::to_double<EK::FT>(centroid.z());
+  if(!CGAL::is_triangle_mesh(mesh)) {
+      Message("The mesh is not triangle.");
+      out(0) = Rcpp::NumericVector::get_na();
+      out(1) = Rcpp::NumericVector::get_na();
+      out(2) = Rcpp::NumericVector::get_na();
+  } else {
+      Mesh3 epickCopy;
+      CGAL::copy_face_graph(mesh, epickCopy);
+      const Point3 centroid = PMP::centroid(epickCopy);
+      out(0) = centroid.x();
+      out(1) = centroid.y();
+      out(2) = centroid.z();
+      // const EPoint3 centroid = PMP::centroid(mesh);
+      // out(0) = CGAL::to_double<EK::FT>(centroid.x());
+      // out(1) = CGAL::to_double<EK::FT>(centroid.y());
+      // out(2) = CGAL::to_double<EK::FT>(centroid.z());
+  }
   return out;
 }
 
@@ -221,7 +228,8 @@ Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmesh) {
   Mesh3 obbMesh;
   CGAL::make_hexahedron(
     obb_points[0], obb_points[1], obb_points[2], obb_points[3],
-    obb_points[4], obb_points[5], obb_points[6], obb_points[7], obbMesh
+    obb_points[4], obb_points[5], obb_points[6], obb_points[7],
+    obbMesh
   );
   EMesh3 obbEMesh;
   CGAL::copy_face_graph(obbMesh, obbEMesh);
