@@ -529,7 +529,7 @@ getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound) {
   cppMesh2 <- fromR(mesh2)
   if(!missing(errorBound)) {
     stopifnot(isPositiveNumber(errorBound))
-    getHausdorffEst_cpp(cppMesh1, cppMmesh2, symmetric, errorBound)
+    getHausdorffEst_cpp(cppMesh1, cppMesh2, symmetric, errorBound)
   } else {
     getHausdorffApprox_cpp(cppMesh1, cppMesh2, symmetric)
   }
