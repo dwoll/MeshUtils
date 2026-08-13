@@ -105,8 +105,16 @@ getVFT <- function(x, beforeCheck = FALSE) {
 #' @noRd
 fromR <- function(x) {
   vertices <- t(x[["vertices"]])
-  faces    <- lapply(seq_len(nrow(x[["faces"]])),
-                     function(i) { x[["faces"]][i, ] - 1L })
+  stopifnot(is.numeric(vertices))
+  storage.mode(vertices) <- "double"
+
+  faces <- if(is.matrix(x[["faces"]])) {
+    n_faces <- nrow(x[["faces"]])
+    lapply(seq_len(n_faces), function(i) { x[["faces"]][i, ] - 1L })
+  } else {
+    lapply(x[["faces"]], function(face) { face - 1L })
+  }
+
   list("vertices"=vertices, "faces"=faces)
 }
 
@@ -138,8 +146,10 @@ fromCPP <- function(x) {
     n_verts   <- lengths(x[["faces"]])
     n_verts_u <- unique(n_verts)
     if(length(n_verts_u) == 1L) {
-      x[["faces"]]     <- do.call(rbind, x[["faces"]])
-      attr(x, "toRGL") <- n_verts_u
+      x[["faces"]] <- do.call(rbind, x[["faces"]])
+      if(n_verts_u %in% c(3L, 4L)) {
+        attr(x, "toRGL") <- n_verts_u
+      }
     } else {
       if(all(n_verts_u %in% c(3L, 4L))) {
         attr(x, "toRGL") <- 34L
@@ -185,11 +195,11 @@ checkMesh <- function(vertices, faces, aslist) {
     homogeneousFaces <- ncol(faces)
     if(homogeneousFaces %in% c(3L, 4L)) {
       isTriangle <- homogeneousFaces == 3L
-      toRGL <- homogeneousFaces
+      toRGL      <- homogeneousFaces
     }
 
     if(aslist) {
-      faces <- lapply(seq_len(nrow(faces)), function(i) faces[i, ] - 1L)
+      faces <- lapply(seq_len(nrow(faces)), function(i) { faces[i, ] - 1L })
     } else {
       faces <- t(faces - 1L)
     }
@@ -204,7 +214,7 @@ checkMesh <- function(vertices, faces, aslist) {
       stop("Found missing values in `faces`.")
     }
 
-    faces <- lapply(faces, function(x) as.integer(x) - 1L)
+    faces <- lapply(faces, function(x) { as.integer(x) - 1L })
     sizes <- lengths(faces)
     if(any(sizes < 3L)) {
       stop("Faces must be given by at least three indices.")
@@ -214,10 +224,8 @@ checkMesh <- function(vertices, faces, aslist) {
               any(f < 0L) || any(f >= nrow(vertices))
             }, logical(1L)))
     if(check) {
-      stop(
-          "Faces cannot contain indices lower than 1 or higher than the ",
-          "number of vertices."
-      )
+      stop("Faces cannot contain indices lower than 1 or higher ",
+          "than the number of vertices.")
     }
     usizes <- length(unique(sizes))
     if(usizes == 1L) {

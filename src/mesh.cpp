@@ -176,15 +176,15 @@ double getVolume_cpp(const Rcpp::List rmesh) {
   EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(rmesh, false, false);
   if(!CGAL::is_closed(mesh)) {
     Message("The mesh is not closed.");
-    Rcpp::NumericVector::get_na();
+    return Rcpp::NumericVector::get_na();
   }
   if(!CGAL::is_triangle_mesh(mesh)) {
     Message("The mesh is not triangle.");
-    Rcpp::NumericVector::get_na();
+    return Rcpp::NumericVector::get_na();
   }
   if(PMP::does_self_intersect(mesh)) {
     Message("The mesh self-intersects.");
-    Rcpp::NumericVector::get_na();
+    return Rcpp::NumericVector::get_na();
   }
   const EK::FT vol = PMP::volume(mesh);
   return CGAL::to_double<EK::FT>(vol);

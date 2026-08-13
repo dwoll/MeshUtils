@@ -62,7 +62,10 @@ std::vector<std::vector<size_t>> matrix_to_Tfaces(
   faces.reserve(nfaces);
   for(size_t i = 0; i < nfaces; i++) {
     const Rcpp::IntegerVector face_rcpp = Faces(Rcpp::_, i);
-    std::vector<size_t> face = { face_rcpp(0), face_rcpp(1), face_rcpp(2) };
+    // need static cast here because initializing with {} instead of ()
+    std::vector<size_t> face = { static_cast<size_t>(face_rcpp(0)),
+                                 static_cast<size_t>(face_rcpp(1)),
+                                 static_cast<size_t>(face_rcpp(2)) };
     faces.emplace_back(face);
   }
   return faces;
