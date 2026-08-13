@@ -109,7 +109,7 @@ Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh_in, const unsigned
 
   if(!CGAL::is_triangle_mesh(mesh)) {
     Message("The mesh is not triangle. Nothing done.\n");
-    rmesh_out = rmesh_in;
+    rmesh_out = getRmesh(mesh);
   }
   if(PMP::does_self_intersect(mesh)) {
       CGAL::Conforming_constrained_Delaunay_triangulation_3<EK> ccdt;
@@ -164,7 +164,7 @@ Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh_in, const unsigned
       }
   } else {
     Message("Mesh does not self-intersect. Nothing done.\n");
-    rmesh_out = rmesh_in;
+    rmesh_out = getRmesh(mesh);
   }
 
   return rmesh_out;

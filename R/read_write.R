@@ -35,7 +35,6 @@
 #' shade3d(mesh_rgl, color="palevioletred")
 #'
 #' @export
-#' @importFrom data.table uniqueN
 readMeshFile <- function(x) {
   stopifnot(isString(x))
   if(!file.exists(x)){
@@ -43,7 +42,7 @@ readMeshFile <- function(x) {
   }
   mesh   <- readFile_cpp(x)
   faces  <- mesh[["faces"]]
-  usizes <- uniqueN(lengths(faces))
+  usizes <- length(unique(lengths(faces)))
   if(usizes == 1L) {
     mesh[["faces"]] <- do.call(rbind, faces)
   }

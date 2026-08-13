@@ -379,7 +379,7 @@ orientToBoundVolume <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
 #' mesh_nsi <- removeSelfIntersections(mesh)
 #' getVolume(mesh_nsi)
 #'
