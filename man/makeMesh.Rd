@@ -79,10 +79,10 @@ shade3d(mesh1_rgl_b, color="blue", back="cull")
 
 ## illustration of the `triangulate` option
 ## the faces of the truncated icosahedron are hexagonal or pentagonal:
-TruncatedIcosahedron[["faces"]]
+dataTruncIcosahedron[["faces"]]
 # so we triangulate them:
 mesh2 <- makeMesh(
-  mesh       =TruncatedIcosahedron,
+  mesh       =dataTruncIcosahedron,
   triangulate=TRUE,
   normals    =FALSE)
 

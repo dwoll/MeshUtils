@@ -259,3 +259,69 @@ Rcpp::List boundingBox_cpp(const Rcpp::List rmesh) {
     Rcpp::Named("ucorner") = ucorner
   );
 }
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
+double getHausdorffApprox_cpp(
+    const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric
+) {
+  EMesh3 mesh1 = makeSurfMesh<EMesh3, EPoint3>(rmesh1, false, false);
+  EMesh3 mesh2 = makeSurfMesh<EMesh3, EPoint3>(rmesh2, false, false);
+  if(CGAL::is_empty(mesh1)) {
+    Message("Mesh 1 is empty.");
+    return Rcpp::NumericVector::get_na();
+  }
+  if(CGAL::is_empty(mesh2)) {
+    Message("Mesh 2 is empty.");
+    return Rcpp::NumericVector::get_na();
+  }
+  if(!CGAL::is_triangle_mesh(mesh1)) {
+    Message("Mesh 1 is not triangle.");
+    return Rcpp::NumericVector::get_na();
+  }
+  if(!CGAL::is_triangle_mesh(mesh2)) {
+    Message("Mesh 2 is not triangle.");
+    return Rcpp::NumericVector::get_na();
+  }
+  double d;
+  if(symmetric) {
+    d = PMP::approximate_symmetric_Hausdorff_distance<PIA_TAG>(mesh1, mesh2);
+  } else {
+    d = PMP::approximate_Hausdorff_distance<PIA_TAG>(mesh1, mesh2);
+  }
+  return d;
+}
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
+double getHausdorffEst_cpp(
+    const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric, double errorBound
+) {
+    EMesh3 mesh1 = makeSurfMesh<EMesh3, EPoint3>(rmesh1, false, false);
+    EMesh3 mesh2 = makeSurfMesh<EMesh3, EPoint3>(rmesh2, false, false);
+    if(CGAL::is_empty(mesh1)) {
+      Message("Mesh 1 is empty.");
+      return Rcpp::NumericVector::get_na();
+    }
+    if(CGAL::is_empty(mesh2)) {
+      Message("Mesh 2 is empty.");
+      return Rcpp::NumericVector::get_na();
+    }
+    if(!CGAL::is_triangle_mesh(mesh1)) {
+      Message("Mesh 1 is not triangle.");
+      return Rcpp::NumericVector::get_na();
+    }
+    if(!CGAL::is_triangle_mesh(mesh2)) {
+      Message("Mesh 2 is not triangle.");
+      return Rcpp::NumericVector::get_na();
+    }
+    double d;
+    if(symmetric) {
+        d = PMP::bounded_error_symmetric_Hausdorff_distance<PIA_TAG>(
+            mesh1, mesh2, errorBound);
+  } else {
+        d = PMP::bounded_error_Hausdorff_distance<PIA_TAG>(
+            mesh1, mesh2, errorBound);
+  }
+  return d;
+}

@@ -45,6 +45,14 @@ boundingBox_cpp <- function(rmesh) {
     .Call(`_MeshUtils_boundingBox_cpp`, rmesh)
 }
 
+getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric) {
+    .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric)
+}
+
+getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, errorBound) {
+    .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, errorBound)
+}
+
 jet_normals_cpp <- function(pts, nb_neighbors) {
     .Call(`_MeshUtils_jet_normals_cpp`, pts, nb_neighbors)
 }
@@ -53,16 +61,16 @@ pca_normals_cpp <- function(pts, nb_neighbors) {
     .Call(`_MeshUtils_pca_normals_cpp`, pts, nb_neighbors)
 }
 
-Intersection_EK <- function(rmeshes, clean, normals, triangulate) {
-    .Call(`_MeshUtils_Intersection_EK`, rmeshes, clean, normals, triangulate)
+intersectionEK_cpp <- function(rmeshes, clean, normals, triangulate) {
+    .Call(`_MeshUtils_intersectionEK_cpp`, rmeshes, clean, normals, triangulate)
 }
 
-Difference_EK <- function(rmesh1, rmesh2, clean, normals, triangulate1, triangulate2) {
-    .Call(`_MeshUtils_Difference_EK`, rmesh1, rmesh2, clean, normals, triangulate1, triangulate2)
+differenceEK_cpp <- function(rmesh1, rmesh2, clean, normals, triangulate1, triangulate2) {
+    .Call(`_MeshUtils_differenceEK_cpp`, rmesh1, rmesh2, clean, normals, triangulate1, triangulate2)
 }
 
-Union_EK <- function(rmeshes, clean, normals, triangulate) {
-    .Call(`_MeshUtils_Union_EK`, rmeshes, clean, normals, triangulate)
+unionEK_cpp <- function(rmeshes, clean, normals, triangulate) {
+    .Call(`_MeshUtils_unionEK_cpp`, rmeshes, clean, normals, triangulate)
 }
 
 readFile_cpp <- function(filename) {

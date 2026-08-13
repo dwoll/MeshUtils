@@ -100,10 +100,10 @@ print.CGALmesh <- function(x, ...) {
 #'
 #' ## illustration of the `triangulate` option
 #' ## the faces of the truncated icosahedron are hexagonal or pentagonal:
-#' TruncatedIcosahedron[["faces"]]
+#' dataTruncIcosahedron[["faces"]]
 #' # so we triangulate them:
 #' mesh2 <- makeMesh(
-#'   mesh       =TruncatedIcosahedron,
+#'   mesh       =dataTruncIcosahedron,
 #'   triangulate=TRUE,
 #'   normals    =FALSE)
 #'
@@ -160,9 +160,9 @@ makeMesh <- function(vertices,
 #' library(MeshUtils)
 #' library(rgl)
 #' mesh <- makeMesh(
-#'   TruncatedIcosahedron[["vertices"]],
-#'   TruncatedIcosahedron[["faces"]],
-#'   triangulate=TRUE)
+#'   mesh       =dataTruncIcosahedron,
+#'   triangulate=TRUE,
+#'   normals    =FALSE)
 #'
 #' mesh_rgl <- toRGL(mesh, segments=t(mesh[["edges"]]))
 #' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
@@ -228,7 +228,7 @@ toRGL <- function(mesh, ...) {
 #'
 #' # we triangulate the truncated icosahedron mesh
 #' mesh1 <- makeMesh(
-#'   mesh       =TruncatedIcosahedron,
+#'   mesh       =dataTruncIcosahedron,
 #'   triangulate=TRUE,
 #'   normals    =FALSE)
 #'
@@ -239,7 +239,7 @@ toRGL <- function(mesh, ...) {
 #'
 #' # we triangulate the pentagrammic prism mesh
 #' mesh2 <- makeMesh(
-#'   mesh       =PentagrammicPrism,
+#'   mesh       =dataPentaPrism,
 #'   triangulate=TRUE,
 #'    normals   = FALSE)
 #'
@@ -273,10 +273,9 @@ plotEdges <- function(
 		edge <- edges[i, ]
 		if(edgesAsTubes) {
 			tube <- cylinder3d(
-					vertices[edge, ], radius = tubesRadius, sides = 90
-			)
+					vertices[edge, ], radius = tubesRadius, sides = 90)
 			shade3d(tube, color = color)
-		}else{
+		} else {
 			lines3d(vertices[edge, ], color = color, lwd = lwd)
 		}
 	}
@@ -300,7 +299,7 @@ plotEdges <- function(
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' doesBoundVolume(mesh)
 #'
 #' @export
@@ -318,7 +317,7 @@ doesBoundVolume <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' doesSelfIntersect(mesh)
 #'
 #' @export
@@ -337,7 +336,7 @@ doesSelfIntersect <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' isClosed(mesh)
 #'
 #' @export
@@ -356,7 +355,7 @@ isClosed <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh   <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_o <- orientToBoundVolume(mesh)
 #' getVolume(mesh_o)
 #'
@@ -379,7 +378,7 @@ orientToBoundVolume <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_nsi <- removeSelfIntersections(mesh)
 #' getVolume(mesh_nsi)
 #'
@@ -401,7 +400,7 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
 #' @returns \code{numeric}: The mesh volume - if mesh bounds a volume.
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' getVolume(mesh)
 #'
 #' @export
@@ -421,7 +420,7 @@ getVolume <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' getCentroid(mesh)
 #'
 #' @export
@@ -440,7 +439,7 @@ getCentroid <- function(x) {
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #' obb      <- getOptimalBoundingBox(mesh)
 #' obb_rgl  <- toRGL(obb[["mesh"]])
@@ -470,7 +469,7 @@ getOptimalBoundingBox <- function(x) {
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+#' mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #' bb_rgl   <- getBoundingBox(mesh, out="rgl")
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
@@ -496,5 +495,42 @@ getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
     m_rgl
   } else {
     makeMesh(mesh=m_rgl)
+  }
+}
+
+#' @title Hausdorff distance between two meshes
+#' @description Hausdorff distance between two meshes. Either
+#'   approximate distance, or distance estimate with a given error bound.
+#' @param mesh1 A \code{CGALmesh} object.
+#' @param mesh2 A \code{CGALmesh} object.
+#' @param symmetric Boolean, whether to consider the symmetric Hausdorff
+#'   distance.
+#' @param errorBound A positive number, a bound on the error of the
+#'   estimate. If missing, the approximate distance is returned.
+#' @returns A number. For the apprixmate distance, the algorithm uses
+#'   some simulations and thus the result can vary.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#' @examples
+#' library(MeshUtils)
+#' ## approximate symmetric Hausdorff distance
+#' getHausdorffDistance(dataHeart1, dataHeart2, symmetric=TRUE)
+#'
+#' ## estimate with error bound
+#' getHausdorffDistance(dataHeart1, dataHeart2, symmetric=TRUE,
+#'                      errorBound=0.001)
+#'
+#' @export
+getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound) {
+  stopifnot(inherits(mesh1, "CGALmesh"))
+  stopifnot(inherits(mesh2, "CGALmesh"))
+  stopifnot(isBoolean(symmetric))
+  cppMesh1 <- fromR(mesh1)
+  cppMesh2 <- fromR(mesh2)
+  if(!missing(errorBound)) {
+    stopifnot(isPositiveNumber(errorBound))
+    getHausdorffEst_cpp(cppMesh1, cppMmesh2, symmetric, errorBound)
+  } else {
+    getHausdorffApprox_cpp(cppMesh1, cppMesh2, symmetric)
   }
 }

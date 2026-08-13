@@ -54,7 +54,7 @@ library(rgl)
 
 # we triangulate the truncated icosahedron mesh
 mesh1 <- makeMesh(
-  mesh       =TruncatedIcosahedron,
+  mesh       =dataTruncIcosahedron,
   triangulate=TRUE,
   normals    =FALSE)
 
@@ -65,7 +65,7 @@ shade3d(mesh1_rgl, color="gold")
 
 # we triangulate the pentagrammic prism mesh
 mesh2 <- makeMesh(
-  mesh       =PentagrammicPrism,
+  mesh       =dataPentaPrism,
   triangulate=TRUE,
    normals   = FALSE)
 

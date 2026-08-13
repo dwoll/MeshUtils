@@ -24,8 +24,8 @@ function) to a \strong{rgl} mesh object.
 library(MeshUtils)
 library(rgl)
 mesh <- makeMesh(
-  TruncatedIcosahedron[["vertices"]],
-  TruncatedIcosahedron[["faces"]],
+  dataTruncIcosahedron[["vertices"]],
+  dataTruncIcosahedron[["faces"]],
   triangulate=TRUE)
 
 mesh_rgl <- toRGL(mesh, segments=t(mesh[["edges"]]))

@@ -33,7 +33,7 @@
 #' library(MeshUtils)
 #' library(rgl)
 #' fun      <- getSomeNormals(6)
-#' mesh     <- makeMesh(mesh=HopfTorus)
+#' mesh     <- makeMesh(mesh=dataHopfTorus)
 #' mesh_rgl <- reconstructPoisson(mesh[["vertices"]], fun, out="rgl")
 #' open3d()
 #' wire3d(mesh_rgl)

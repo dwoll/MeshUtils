@@ -43,7 +43,7 @@ See \href{https://doc.cgal.org/latest/Scale_space_reconstruction_3/index.html}{S
 }
 \examples{
 library(MeshUtils)
-mesh   <- makeMesh(mesh=HopfTorus)
+mesh   <- makeMesh(mesh=dataHopfTorus)
 mesh_r <- reconstructSSS(
   mesh[["vertices"]],
   scaleIterations=4,

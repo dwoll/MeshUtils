@@ -18,7 +18,7 @@ Get the volume of a 3D mesh.
 }
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 getVolume(mesh)
 
 }

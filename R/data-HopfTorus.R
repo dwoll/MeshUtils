@@ -14,4 +14,5 @@
 #'     a Hopf torus.
 #'
 #' @format A list with components \code{vb}, \code{it}, and \code{normals}.
-"HopfTorus"
+#' @author Originally developed by Stephane Laurent.
+"dataHopfTorus"

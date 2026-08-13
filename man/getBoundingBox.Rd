@@ -21,7 +21,7 @@ Get axis-parallel bounding box
 \examples{
 library(MeshUtils)
 library(rgl)
-mesh     <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 mesh_rgl <- toRGL(mesh)
 bb_rgl   <- getBoundingBox(mesh, out="rgl")
 open3d(windowRect=50 + c(0, 0, 800, 400))

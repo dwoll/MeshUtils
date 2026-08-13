@@ -40,12 +40,8 @@
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' ## human heart from CT scan
-#' off <- system.file("extdata", "heart.ply", package="MeshUtils")
-#' vf  <- readMeshFile(off)
-#'
 #' # reconstruct the mesh from the points
-#' mesh_alwrap_rgl <- alphaWrap(vf[["vertices"]],
+#' mesh_alwrap_rgl <- alphaWrap(dataHeart1[["vertices"]],
 #'                              alphaRel =70,
 #'                              offsetRel=3000,
 #'                              out      ="rgl")

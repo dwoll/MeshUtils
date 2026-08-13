@@ -140,6 +140,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getHausdorffApprox_cpp
+double getHausdorffApprox_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric);
+RcppExport SEXP _MeshUtils_getHausdorffApprox_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh1(rmesh1SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
+    Rcpp::traits::input_parameter< bool >::type symmetric(symmetricSEXP);
+    rcpp_result_gen = Rcpp::wrap(getHausdorffApprox_cpp(rmesh1, rmesh2, symmetric));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getHausdorffEst_cpp
+double getHausdorffEst_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric, double errorBound);
+RcppExport SEXP _MeshUtils_getHausdorffEst_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP errorBoundSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh1(rmesh1SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
+    Rcpp::traits::input_parameter< bool >::type symmetric(symmetricSEXP);
+    Rcpp::traits::input_parameter< double >::type errorBound(errorBoundSEXP);
+    rcpp_result_gen = Rcpp::wrap(getHausdorffEst_cpp(rmesh1, rmesh2, symmetric, errorBound));
+    return rcpp_result_gen;
+END_RCPP
+}
 // jet_normals_cpp
 Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts, const unsigned nb_neighbors);
 RcppExport SEXP _MeshUtils_jet_normals_cpp(SEXP ptsSEXP, SEXP nb_neighborsSEXP) {
@@ -164,9 +191,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Intersection_EK
-Rcpp::List Intersection_EK(const Rcpp::List rmeshes, const bool clean, const bool normals, const Rcpp::LogicalVector triangulate);
-RcppExport SEXP _MeshUtils_Intersection_EK(SEXP rmeshesSEXP, SEXP cleanSEXP, SEXP normalsSEXP, SEXP triangulateSEXP) {
+// intersectionEK_cpp
+Rcpp::List intersectionEK_cpp(const Rcpp::List rmeshes, const bool clean, const bool normals, const Rcpp::LogicalVector triangulate);
+RcppExport SEXP _MeshUtils_intersectionEK_cpp(SEXP rmeshesSEXP, SEXP cleanSEXP, SEXP normalsSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -174,13 +201,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type clean(cleanSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::LogicalVector >::type triangulate(triangulateSEXP);
-    rcpp_result_gen = Rcpp::wrap(Intersection_EK(rmeshes, clean, normals, triangulate));
+    rcpp_result_gen = Rcpp::wrap(intersectionEK_cpp(rmeshes, clean, normals, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
-// Difference_EK
-Rcpp::List Difference_EK(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool clean, const bool normals, const bool triangulate1, const bool triangulate2);
-RcppExport SEXP _MeshUtils_Difference_EK(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP cleanSEXP, SEXP normalsSEXP, SEXP triangulate1SEXP, SEXP triangulate2SEXP) {
+// differenceEK_cpp
+Rcpp::List differenceEK_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool clean, const bool normals, const bool triangulate1, const bool triangulate2);
+RcppExport SEXP _MeshUtils_differenceEK_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP cleanSEXP, SEXP normalsSEXP, SEXP triangulate1SEXP, SEXP triangulate2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -190,13 +217,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
     Rcpp::traits::input_parameter< const bool >::type triangulate1(triangulate1SEXP);
     Rcpp::traits::input_parameter< const bool >::type triangulate2(triangulate2SEXP);
-    rcpp_result_gen = Rcpp::wrap(Difference_EK(rmesh1, rmesh2, clean, normals, triangulate1, triangulate2));
+    rcpp_result_gen = Rcpp::wrap(differenceEK_cpp(rmesh1, rmesh2, clean, normals, triangulate1, triangulate2));
     return rcpp_result_gen;
 END_RCPP
 }
-// Union_EK
-Rcpp::List Union_EK(const Rcpp::List rmeshes, const bool clean, const bool normals, const Rcpp::LogicalVector triangulate);
-RcppExport SEXP _MeshUtils_Union_EK(SEXP rmeshesSEXP, SEXP cleanSEXP, SEXP normalsSEXP, SEXP triangulateSEXP) {
+// unionEK_cpp
+Rcpp::List unionEK_cpp(const Rcpp::List rmeshes, const bool clean, const bool normals, const Rcpp::LogicalVector triangulate);
+RcppExport SEXP _MeshUtils_unionEK_cpp(SEXP rmeshesSEXP, SEXP cleanSEXP, SEXP normalsSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -204,7 +231,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type clean(cleanSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::LogicalVector >::type triangulate(triangulateSEXP);
-    rcpp_result_gen = Rcpp::wrap(Union_EK(rmeshes, clean, normals, triangulate));
+    rcpp_result_gen = Rcpp::wrap(unionEK_cpp(rmeshes, clean, normals, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -291,11 +318,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_getCentroid_cpp", (DL_FUNC) &_MeshUtils_getCentroid_cpp, 1},
     {"_MeshUtils_optimalBoundingBox_cpp", (DL_FUNC) &_MeshUtils_optimalBoundingBox_cpp, 1},
     {"_MeshUtils_boundingBox_cpp", (DL_FUNC) &_MeshUtils_boundingBox_cpp, 1},
+    {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 3},
+    {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 4},
     {"_MeshUtils_jet_normals_cpp", (DL_FUNC) &_MeshUtils_jet_normals_cpp, 2},
     {"_MeshUtils_pca_normals_cpp", (DL_FUNC) &_MeshUtils_pca_normals_cpp, 2},
-    {"_MeshUtils_Intersection_EK", (DL_FUNC) &_MeshUtils_Intersection_EK, 4},
-    {"_MeshUtils_Difference_EK", (DL_FUNC) &_MeshUtils_Difference_EK, 6},
-    {"_MeshUtils_Union_EK", (DL_FUNC) &_MeshUtils_Union_EK, 4},
+    {"_MeshUtils_intersectionEK_cpp", (DL_FUNC) &_MeshUtils_intersectionEK_cpp, 4},
+    {"_MeshUtils_differenceEK_cpp", (DL_FUNC) &_MeshUtils_differenceEK_cpp, 6},
+    {"_MeshUtils_unionEK_cpp", (DL_FUNC) &_MeshUtils_unionEK_cpp, 4},
     {"_MeshUtils_readFile_cpp", (DL_FUNC) &_MeshUtils_readFile_cpp, 1},
     {"_MeshUtils_writeFile_cpp", (DL_FUNC) &_MeshUtils_writeFile_cpp, 5},
     {"_MeshUtils_reconstructAFS_cpp", (DL_FUNC) &_MeshUtils_reconstructAFS_cpp, 2},

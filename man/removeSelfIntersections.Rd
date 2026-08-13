@@ -18,7 +18,7 @@ Remove self intersections
 }
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 mesh_nsi <- removeSelfIntersections(mesh)
 getVolume(mesh_nsi)
 

@@ -33,7 +33,7 @@
 #' @examples
 #' library(MeshUtils)
 #' # no smoothing
-#' mesh    <- makeMesh(mesh=HopfTorus)
+#' mesh    <- makeMesh(mesh=dataHopfTorus)
 #' mesh_r1 <- reconstructAFS(mesh[["vertices"]], out="rgl")
 #'
 #' # jet smoothing

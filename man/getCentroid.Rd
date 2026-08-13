@@ -18,7 +18,7 @@ Get mesh centroid
 }
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=PentagrammicPrism, triangulate=TRUE)
+mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 getCentroid(mesh)
 
 }

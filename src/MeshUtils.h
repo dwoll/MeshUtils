@@ -16,6 +16,7 @@
 #include <Rcpp.h>
 
 #define CGAL_EIGEN3_ENABLED 1
+#define PIA_TAG CGAL::Parallel_if_available_tag
 
 // ----------------------------------------------------------------------- //
 #include "MeshUtils_types.h"
@@ -36,7 +37,6 @@
 #include <CGAL/alpha_wrap_3.h>
 #include <CGAL/optimal_bounding_box.h>
 #include <CGAL/make_conforming_constrained_Delaunay_triangulation_3.h>
-// #include <CGAL/squared_distance_2.h>
 
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
 #include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
@@ -47,6 +47,7 @@
 #include <CGAL/Polygon_mesh_processing/polygon_soup_self_intersections.h>
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
+#include <CGAL/Polygon_mesh_processing/distance.h>
 #include <CGAL/Polygon_mesh_processing/autorefinement.h>
 #include <CGAL/Polygon_mesh_processing/corefinement.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>

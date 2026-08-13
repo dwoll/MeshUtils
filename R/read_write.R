@@ -25,8 +25,8 @@
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' off  <- system.file("extdata", "heart.ply", package="MeshUtils")
-#' vf   <- readMeshFile(off)
+#' ply  <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
+#' vf   <- readMeshFile(ply)
 #' mesh <- makeMesh(mesh=vf, normals=TRUE)
 #'
 #' mesh_rgl <- toRGL(mesh)

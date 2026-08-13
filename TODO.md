@@ -1,18 +1,12 @@
 # TODO
 
-  * `removeSelfIntersections()` -> `fromCPP()` bug
-  * enhance `fromCPP()` to deal with faces list, then remove code from `makeMesh()`
-  * drop `data.table` requirement -> replace `uniqueN()`
+  * `mesh.collect_garbage();` in more places
   * silent option to remove output during processing
   * only deal with triangle meshes -> simplify code that is more general
-  * `approximate_Hausdorff_distance()` from CGAL?
-      * `cgalMeshes::HausdorffApproximate()`
   * `readFile_cpp()` STL filename instead of infile?
-  * write documentation (roxygen)
   * `reconstructPoisson_cpp()` could make neighbors for spacing a parameter, currently fixed at 6
-      * `reconstructPoisson()` does not work as expected
   * ckecks in `SurfEMesh_cpp` (via `makeMesh()`) and `soup_to_mesh()` via (`makeSurfMesh()`): redundant
-      * use `vf_to_mesh()`?
+      * use `vf_to_emesh()`?
       * conversion from `mesh3d`
   * `cgalMeshes`: `isotropicRemeshing()`, `Sqrt3Subdivision()`, `CatmullClark()`, `DooSabin_subdivision()`
   * `storageMode("double")` required in more places?

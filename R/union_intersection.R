@@ -32,9 +32,9 @@
 #' library(rgl)
 #'
 #' # mesh one: truncated icosahedron; we triangulate it for plotting
-#' mesh1 <- makeMesh(mesh       =TruncatedIcosahedron,
+#' mesh1 <- makeMesh(mesh       =dataTruncIcosahedron,
 #'                   triangulate=TRUE,
-#'                   normals = FALSE)
+#'                   normals    = FALSE)
 #'
 #' # mesh two: a cube
 #' mesh2_rgl <- translate3d(cube3d(), 2, 0, 0)
@@ -43,7 +43,7 @@
 #'                       normals    =FALSE)
 #'
 #' # compute the intersection
-#' mesh_i <- meshIntersection(list(mesh1, mesh2))
+#' mesh_i <- boolIntersection(list(mesh1, mesh2))
 #'
 #' # plot
 #' mesh1_rgl  <- toRGL(mesh1)
@@ -59,7 +59,7 @@
 #'           verticesAsSpheres=FALSE)
 #'
 #' @export
-meshIntersection <- function(x, clean=TRUE, normals=FALSE) {
+boolIntersection <- function(x, clean=TRUE, normals=FALSE) {
   stopifnot(is.list(x))
   stopifnot(length(x) >= 2L)
   checkMeshes <- lapply(x, function(mesh) {
@@ -72,7 +72,7 @@ meshIntersection <- function(x, clean=TRUE, normals=FALSE) {
   areTriangle <- vapply(checkMeshes, `[[`, logical(1L), "isTriangle")
   triangulate <- !areTriangle
   meshes      <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  inter       <- Intersection_EK(meshes, clean, normals, triangulate)
+  inter       <- intersectionEK_cpp(meshes, clean, normals, triangulate)
   fromCPP(inter)
 }
 
@@ -106,7 +106,7 @@ meshIntersection <- function(x, clean=TRUE, normals=FALSE) {
 #' mesh2_rgl <- translate3d(cube3d(), 1, 1, 0)
 #'
 #' # compute the difference
-#' mesh_d <- meshDifference(mesh1_rgl, mesh2_rgl)
+#' mesh_d <- boolDifference(mesh1_rgl, mesh2_rgl)
 #'
 #' # plot
 #' mesh_d_rgl <- toRGL(mesh_d)
@@ -120,7 +120,7 @@ meshIntersection <- function(x, clean=TRUE, normals=FALSE) {
 #'           verticesAsSpheres=TRUE)
 #'
 #' @export
-meshDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
+boolDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
   stopifnot(is.list(mesh1), is.list(mesh2))
 
   if(inherits(mesh1, "mesh3d")) {
@@ -139,7 +139,7 @@ meshDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
 
   mesh1  <- checkMesh1[c("vertices", "faces")]
   mesh2  <- checkMesh2[c("vertices", "faces")]
-  differ <- Difference_EK(mesh1, mesh2, clean, normals, triangulate1, triangulate2)
+  differ <- differenceEK_cpp(mesh1, mesh2, clean, normals, triangulate1, triangulate2)
   fromCPP(differ)
 }
 
@@ -171,7 +171,7 @@ meshDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
 #' mesh2_rgl <- translate3d(cube3d(), 1, 1, 1)
 #'
 #' # compute the union
-#' mesh_u <- meshUnion(list(mesh1_rgl, mesh2_rgl))
+#' mesh_u <- boolUnion(list(mesh1_rgl, mesh2_rgl))
 #'
 #' # plot
 #' mesh_u_rgl <- toRGL(mesh_u)
@@ -183,7 +183,7 @@ meshDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
 #'           verticesAsSpheres=TRUE)
 #'
 #' @export
-meshUnion <- function(x, clean = TRUE, normals = FALSE) {
+boolUnion <- function(x, clean = TRUE, normals = FALSE) {
   stopifnot(is.list(x))
   stopifnot(length(x) >= 2L)
 
@@ -198,6 +198,6 @@ meshUnion <- function(x, clean = TRUE, normals = FALSE) {
   areTriangle <- vapply(checkMeshes, `[[`, logical(1L), "isTriangle")
   triangulate <- !areTriangle
   meshes      <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  umesh       <- Union_EK(meshes, clean, normals, triangulate)
+  umesh       <- unionEK_cpp(meshes, clean, normals, triangulate)
   fromCPP(umesh)
 }

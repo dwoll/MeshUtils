@@ -33,7 +33,7 @@
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh   <- makeMesh(mesh=HopfTorus)
+#' mesh   <- makeMesh(mesh=dataHopfTorus)
 #' mesh_r <- reconstructSSS(
 #'   mesh[["vertices"]],
 #'   scaleIterations=4,

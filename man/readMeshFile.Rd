@@ -21,7 +21,7 @@ Read mesh vertices and faces from a file.
 \examples{
 library(MeshUtils)
 library(rgl)
-off  <- system.file("extdata", "heart.ply", package="MeshUtils")
+off  <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
 vf   <- readMeshFile(off)
 mesh <- makeMesh(mesh=vf, normals=TRUE)
 
