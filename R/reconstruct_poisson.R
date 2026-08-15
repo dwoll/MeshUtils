@@ -27,9 +27,9 @@
 #' @param smAngle Bound for the minimum facet angle in degrees.
 #' @param smRadius Relative bound for the radius of the surface Delaunay balls.
 #' @param smDistance Relative bound for the center-center distances.
-#' @param out Character to indicate output mesh format.
+#' @param clean Boolean. Attempt to fix polygon soup?
 #'
-#' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+#' @returns A \code{CGALmesh} object.
 #'
 #' @details See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/index.html}{Poisson Surface Reconstruction}.
 #'
@@ -43,14 +43,20 @@
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' # Hopf torus
-#' mesh   <- makeMesh(mesh=dataHopfTorus)
-#' mesh_r <- reconstructPoisson(mesh[["vertices"]], spacing=0.2, out="rgl")
-#' shade3d(mesh_r, color="darkorange")
-#' wire3d(mesh_r,  color="black")
+#' mesh     <- makeMesh(mesh=dataHopfTorus)
+#' mesh_rgl <- toRGL(mesh_psr)
+#' mesh_psr <- reconstructPoisson(mesh[["vertices"]],
+#'                                smAngle=10,
+#'                                smRadius=3,
+#'                                smDistance=0.3)
+#'
+#' open3d(windowRect=50 + c(0, 0, 800, 400))
+#' mfrow3d(1, 2)
+#' wire3d(mesh_rgl)
+#' next3d()
+#' wire3d(mesh_psr_rgl)
 #'
 #' @export
-#' @importFrom rgl tmesh3d
 #' @importFrom Rvcg vcgUpdateNormals
 reconstructPoisson <- function(
   x,
@@ -59,9 +65,7 @@ reconstructPoisson <- function(
   smAngle   = 20,
   smRadius  = 30,
   smDistance= 0.375,
-  out       =c("CGALmesh", "rgl")
-) {
-  out <- match.arg(out)
+  clean     =TRUE) {
   if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -78,10 +82,8 @@ reconstructPoisson <- function(
   } else if(is.function(normals) && inherits(normals, "CGALnormalsFunc")) {
     normals <- normals(x)
   } else {
-    stop(
-      "Invalid argument `normals`: it must be `NULL` or a function returned ",
-      "by the `getSomeNormals` function."
-    )
+    stop("Invalid argument `normals`: it must be `NULL` or a function ",
+         "returned by the `getSomeNormals` function.")
   }
   if(nrow(x) <= dimension) {
     stop("Insufficient number of points.", call. = TRUE)
@@ -97,23 +99,7 @@ reconstructPoisson <- function(
   stopifnot(isPositiveNumber(smAngle))
   stopifnot(isPositiveNumber(smRadius))
   stopifnot(isPositiveNumber(smDistance))
-  mesh_r <- reconstructPoisson_cpp(
-    t(x), normals, spacing, smAngle, smRadius, smDistance)
-  mesh_rwn <- vcgUpdateNormals(
-    tmesh3d(mesh_r[["vertices"]],
-            mesh_r[["faces"]],
-            normals    =NULL,
-            homogeneous=FALSE))
-  if(spacing == -1) {
-    message(sprintf(
-      "Poisson reconstruction using average spacing: %s.",
-      formatC(mesh_r[["spacing"]])))
-    attr(mesh_rwn, "spacing") <- mesh_r[["spacing"]]
-  }
-  mesh_out <- if(out == "rgl") {
-    mesh_rwn
-  } else {
-    makeMesh(mesh=mesh_rwn)
-  }
-  mesh_out
+  mesh_cpp <- reconstructPoisson_cpp(
+    t(x), normals, spacing, smAngle, smRadius, smDistance, clean)
+  fromCPP(mesh_cpp)
 }

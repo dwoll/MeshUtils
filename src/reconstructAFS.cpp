@@ -15,28 +15,23 @@
 #endif
 
 // [[Rcpp::export]]
-Rcpp::List reconstructAFS_cpp( // Rcpp::XPtr<EMesh3>
-  const Rcpp::NumericMatrix pts, const unsigned nneighs
-) {
-
+Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
+                              const unsigned nNeighs,
+                              const bool clean) {
   std::vector<Point3> points = matrix_to_points3<Point3>(pts);
-
-  if(nneighs >= 2) {
-    CGAL::jet_smooth_point_set<CGAL::Sequential_tag>(points, nneighs);
+  if(nNeighs >= 2) {
+    CGAL::jet_smooth_point_set<CGAL::Sequential_tag>(points, nNeighs);
   }
 
   AFS_triangulation3 dt(points.begin(), points.end());
   AFS_reconstruction reconstruction(dt);
   reconstruction.run();
   const AFS_Tds2& tds = reconstruction.triangulation_data_structure_2();
-
-  std::vector<EPoint3> vertices;
+  std::vector<Point3> vertices;
   vertices.reserve(pts.ncol());
   size_t counter = 0;
-  for(
-    AFS_Tds2::Face_iterator fit = tds.faces_begin();
-    fit != tds.faces_end();++fit
-  ) {
+  for(AFS_Tds2::Face_iterator fit = tds.faces_begin();
+      fit != tds.faces_end(); ++fit) {
     if(reconstruction.has_on_surface(fit)) {
       counter++;
       AFS_triangulation3::Facet f = fit->facet();
@@ -49,10 +44,10 @@ Rcpp::List reconstructAFS_cpp( // Rcpp::XPtr<EMesh3>
           j++;
         }
       }
-      for(size_t k = 0; k < 3; k++) {
+      for(int k = 0; k < 3; k++) {
         const Point3 p = vs[k];
-        const EPoint3 v = EPoint3(p.x(), p.y(), p.z());
-        vertices.push_back(v);
+        // const EPoint3 v = EPoint3(p.x(), p.y(), p.z());
+        vertices.push_back(p);
       }
     }
   }
@@ -64,8 +59,8 @@ Rcpp::List reconstructAFS_cpp( // Rcpp::XPtr<EMesh3>
     triangles.emplace_back(triangle);
   }
 
-  size_t x = PMP::merge_duplicate_points_in_polygon_soup(vertices, triangles);
-  EMesh3 mesh = csoup_to_mesh<EMesh3, EPoint3>(vertices, triangles, false);
-  Rcpp::List out = getRmesh(mesh);
-  return out;
+  PMP::merge_duplicate_points_in_polygon_soup(vertices, triangles);
+  Mesh3 mesh = soup_to_mesh<Mesh3, Point3>(vertices, triangles, clean, false);
+  Rcpp::List rmeshOut = getRmesh(mesh);
+  return rmeshOut;
 }

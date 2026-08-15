@@ -37,13 +37,17 @@ mesh.
 library(MeshUtils)
 library(rgl)
 # reconstruct the mesh from the points
+mesh_rgl        <- toRGL(dataHeart1)
 mesh_alwrap_rgl <- alphaWrap(dataHeart1[["vertices"]],
-                             alphaRel =70,
-                             offsetRel=3000,
+                             alphaRel =5,
+                             offsetRel=300,
                              out      ="rgl")
 
-# plot
-shade3d(mesh_alwrap_rgl, color="forestgreen")
+open3d(windowRect=50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+wire3d(mesh_rgl)
+next3d()
+wire3d(mesh_alwrap_rgl)
 
 }
 \seealso{

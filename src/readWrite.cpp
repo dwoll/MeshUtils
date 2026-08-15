@@ -17,6 +17,8 @@
 #include <CGAL/IO/io.h>
 #include <locale>  // tolower
 
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
 std::string toLower(std::string s) {
   for(char& c : s) {
     c = std::tolower(c);
@@ -24,6 +26,8 @@ std::string toLower(std::string s) {
   return s;
 }
 
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
 std::pair<std::vector<std::vector<int>>, bool> list_to_faces2(
     const Rcpp::List L) {
   const size_t nfaces = L.size();
@@ -43,6 +47,7 @@ std::pair<std::vector<std::vector<int>>, bool> list_to_faces2(
   return std::make_pair(faces, triangle);
 }
 
+// ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List readFile_cpp(const std::string filename) {
   const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
@@ -78,17 +83,17 @@ Rcpp::List readFile_cpp(const std::string filename) {
   infile.close();
   Rcpp::List out;
   if(ok) {
-    const size_t npoints = points.size();
-    Rcpp::NumericMatrix Vertices(3, npoints);
-    for(size_t i = 0; i < npoints; i++) {
+    const size_t nPts = points.size();
+    Rcpp::NumericMatrix Vertices(3, nPts);
+    for(size_t i = 0; i < nPts; i++) {
       const Point3 point_i = points[i];
       Rcpp::NumericVector col_i =
           Rcpp::NumericVector::create(point_i.x(), point_i.y(), point_i.z());
       Vertices(Rcpp::_, i) = col_i;
     }
-    const size_t nfaces = faces.size();
-    Rcpp::List Faces(nfaces);
-    for(size_t i = 0; i < nfaces; i++) {
+    const size_t nFaces = faces.size();
+    Rcpp::List Faces(nFaces);
+    for(size_t i = 0; i < nFaces; i++) {
       const std::vector<int> face_i = faces[i];
       Rcpp::IntegerVector col_i(face_i.begin(), face_i.end());
       Faces(i) = col_i + 1;
@@ -101,6 +106,7 @@ Rcpp::List readFile_cpp(const std::string filename) {
   return out;
 }
 
+// ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 void writeFile_cpp(const std::string filename,
                    const bool binary,

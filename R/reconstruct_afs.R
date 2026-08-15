@@ -19,9 +19,9 @@
 #'   this integer as the number of neighbors for the smoothing. Note that this
 #'   smoothing preprocessing relocates the points and then should not be used
 #'   if the points have been sampled without noise on the surface.
-#' @param out Character to indicate output mesh format.
+#' @param clean Boolean. Attempt to fix polygon soup?
 #'
-#' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+#' @returns A \code{CGALmesh} object.
 #'
 #' @details See \href{https://doc.cgal.org/latest/Advancing_front_surface_reconstruction/index.html#Chapter_Advancing_Front_Surface_Reconstruction}{Advancing Front Surface Reconstruction}.
 #'
@@ -32,28 +32,27 @@
 #'
 #' @examples
 #' library(MeshUtils)
+#' library(rgl)
+#'
 #' # no smoothing
-#' mesh    <- makeMesh(mesh=dataHopfTorus)
-#' mesh_r1 <- reconstructAFS(mesh[["vertices"]], out="rgl")
+#' mesh          <- makeMesh(mesh=dataHopfTorus)
+#' mesh_afs1     <- reconstructAFS(mesh[["vertices"]])
+#' mesh_afs1_rgl <- toRGL(mesh_afs1)
 #'
 #' # jet smoothing
-#' mesh_r2 <- reconstructAFS(mesh[["vertices"]],
-#'                           jetSmoothing=30, out="rgl")
-#' # plot
-#' library(rgl)
+#' mesh_afs2     <- reconstructAFS(mesh[["vertices"]],
+#'                                 jetSmoothing=30)
+#' mesh_afs2_rgl <- toRGL(mesh_afs2)
+#'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
 #' mfrow3d(1, 2)
 #' view3d(20, -40, zoom=0.85)
-#' shade3d(mesh_r1, color="gold")
+#' shade3d(mesh_afs1_rgl, color="gold")
 #' next3d()
-#' view3d(20, -40, zoom=0.85)
-#' shade3d(mesh_r2, color="gold")
+#' shade3d(mesh_afs2_rgl, color="gold")
 #'
 #' @export
-#' @importFrom Rvcg vcgUpdateNormals
-#' @importFrom rgl tmesh3d
-reconstructAFS <- function(x, jetSmoothing=NULL, out=c("CGALmesh", "rgl")) {
-  out <- match.arg(out)
+reconstructAFS <- function(x, jetSmoothing=NULL, clean=TRUE) {
   if(!is.matrix(x) || !is.numeric(x)){
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -72,16 +71,6 @@ reconstructAFS <- function(x, jetSmoothing=NULL, out=c("CGALmesh", "rgl")) {
   } else {
     jetSmoothing <- 0L
   }
-  mesh_r   <- reconstructAFS_cpp(t(x), as.integer(jetSmoothing))
-  mesh_rwn <- vcgUpdateNormals(
-    tmesh3d(mesh_r[["vertices"]],
-            mesh_r[["faces"]],
-            normals    =NULL,
-            homogeneous=FALSE))
-  mesh_out <- if(out == "rgl") {
-    mesh_rwn
-  } else {
-    makeMesh(mesh=mesh_rwn)
-  }
-  mesh_out
+  mesh_cpp <- reconstructAFS_cpp(t(x), as.integer(jetSmoothing), clean)
+  fromCPP(mesh_cpp)
 }

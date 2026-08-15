@@ -38,6 +38,7 @@
 #include <CGAL/optimal_bounding_box.h>
 #include <CGAL/make_conforming_constrained_Delaunay_triangulation_3.h>
 
+#include <CGAL/Polygon_mesh_processing/remesh.h>
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
 #include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
 #include <CGAL/Polygon_mesh_processing/orientation.h>
@@ -51,6 +52,9 @@
 #include <CGAL/Polygon_mesh_processing/autorefinement.h>
 #include <CGAL/Polygon_mesh_processing/corefinement.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
+
+// TODO CatmullClark, DooSabin, Sqrt3 subdivision
+// #include <CGAL/Subdivision_method_3/subdivision_methods_3.h>
 
 // -------------------------------------------------------------------------- //
 typedef CGAL::Advancing_front_surface_reconstruction<>     AFS_reconstruction;
@@ -67,14 +71,21 @@ typedef CGAL::Scale_space_reconstruction_3::Alpha_shape_mesher<K>    SSS_mesher;
 typedef SSS_reconstruction::Facet_const_iterator                     SSS_facet_iterator;
 typedef SSS_reconstruction::Point_const_iterator                     SSS_point_iterator;
 
-typedef std::pair<Point3, Vector3> P3wn;
+// Point3 with normal vector
+typedef std::pair<Point3, Vector3>                          P3wn;
 typedef boost::graph_traits<Mesh3>::vertex_descriptor       vxdescr;
-typedef boost::graph_traits<EMesh3>::vertex_descriptor      vertex_descriptor;
 typedef boost::graph_traits<Mesh3>::face_descriptor         fdescr;
+typedef boost::graph_traits<Mesh3>::edge_descriptor         edgdescr;
+typedef boost::graph_traits<Mesh3>::halfedge_descriptor     hedgdescr;
+typedef Mesh3::Property_map<vxdescr, Rcpp::NumericVector>   nrmlsmap;
+
+// EPoint3 with normal vector
+typedef std::pair<EPoint3, EVector3>                        EP3wn;
+typedef boost::graph_traits<EMesh3>::vertex_descriptor      vertex_descriptor;
 typedef boost::graph_traits<EMesh3>::face_descriptor        face_descriptor;
+typedef boost::graph_traits<EMesh3>::edge_descriptor        edge_descriptor;
 typedef boost::graph_traits<EMesh3>::halfedge_descriptor    halfedge_descriptor;
-typedef EMesh3::Property_map<vxdescr, Rcpp::NumericVector>  Normals_map;
-typedef EMesh3::Property_map<face_descriptor, std::size_t>  Face_index_map;
+typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector> normals_map;
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;
@@ -86,8 +97,6 @@ MeshT soup_to_mesh(std::vector<PointT>, std::vector<std::vector<size_t>>, const 
 template <typename MeshT, typename PointT>
 MeshT csoup_to_mesh(std::vector<PointT>, std::vector<std::vector<size_t>>, const bool);
 
-std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List);
-
 template <typename PointT>
 std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix);
 
@@ -98,22 +107,34 @@ template <typename MeshT, typename PointT>
 MeshT makeSurfMesh(const Rcpp::List, const bool, const bool);
 
 template <typename MeshT, typename PointT>
-MeshT  makeSurfTMesh(const Rcpp::List, const bool, const bool);
+MeshT makeSurfTMesh(const Rcpp::List, const bool, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT>
 Rcpp::DataFrame getEdges(MeshT);
 
-Rcpp::NumericMatrix getEKNormals(EMesh3);
+template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
+Rcpp::List RSurfMesh1(MeshT, const bool);
 
+template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
+Rcpp::List RSurfMesh2(MeshT, const bool, const int);
+
+template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
+Rcpp::List RSurfTMesh(MeshT, const bool);
+
+// -------------------------------------------------------------------------- //
+// TODO template
+Rcpp::List getRmesh(Mesh3);
 Rcpp::List getRmesh(EMesh3);
-Rcpp::List RSurfEKMesh(EMesh3, const bool);
-Rcpp::List RSurfEKMesh2(EMesh3, const bool, const int);
-Rcpp::List RSurfTEKMesh(EMesh3, const bool);
 
+Rcpp::NumericMatrix getNormals(Mesh3);
+Rcpp::NumericMatrix getNormals(EMesh3);
+
+// -------------------------------------------------------------------------- //
+// no template
 void Message(std::string);
-
-EMesh3 fillBoundaryHoles(EMesh3, bool, double, int);
-EMesh3 removeSelfIntersections(const EMesh3, const unsigned int);
+std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List);
+EMesh3 fillBoundaryHoles(EMesh3, bool, double, int);              // only EPEC kernel
+EMesh3 removeSelfIntersections(const EMesh3, const unsigned int); // only EPEC kernel
 
 // -------------------------------------------------------------------------- //
 #endif

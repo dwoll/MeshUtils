@@ -30,11 +30,22 @@ check the matrix it takes as argument.
 \examples{
 library(MeshUtils)
 library(rgl)
+mesh     <- dataHeart1
+mesh_rgl <- toRGL(mesh)
 fun      <- getSomeNormals(6)
-mesh     <- makeMesh(mesh=dataHopfTorus)
-mesh_rgl <- reconstructPoisson(mesh[["vertices"]], fun, out="rgl")
-open3d()
+mesh_psr <- reconstructPoisson(mesh[["vertices"]],
+                               normals=fun,
+                               smAngle=10,
+                               smRadius=3,
+                               smDistance=0.3)
+
+mesh_psr_rgl <- toRGL(mesh_psr)
+
+open3d(windowRect=50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
 wire3d(mesh_rgl)
+next3d()
+wire3d(mesh_psr_rgl)
 
 }
 \author{

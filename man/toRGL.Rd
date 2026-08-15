@@ -4,21 +4,22 @@
 \alias{toRGL}
 \title{Conversion to 'rgl' mesh}
 \usage{
-toRGL(mesh, ...)
+toRGL(x, ...)
 }
 \arguments{
-\item{mesh}{A \code{CGALmesh} object, i.e., a specific list as produced
+\item{x}{A \code{CGALmesh} object, i.e., a specific list as produced
 by the \code{\link{makeMesh}} function). In order to be
-convertible to a \strong{rgl} mesh, its faces must have at most four sides}
+convertible to a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
+its faces must have at most four sides.}
 
-\item{...}{Arguments passed to \code{\link[rgl]{mesh3d}}}
+\item{...}{Arguments passed to \code{\link[rgl]{mesh3d}}.}
 }
 \value{
 A \strong{rgl} mesh object, i.e., a list of class \code{\link[rgl]{mesh3d}}.
 }
 \description{
 Converts a \code{CGALmesh} object (the output of the \code{\link{makeMesh}}
-function) to a \strong{rgl} mesh object.
+function) to \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 }
 \examples{
 library(MeshUtils)

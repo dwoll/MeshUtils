@@ -11,7 +11,7 @@ reconstructPoisson(
   smAngle = 20,
   smRadius = 30,
   smDistance = 0.375,
-  out = c("CGALmesh", "rgl")
+  clean = TRUE
 )
 }
 \arguments{
@@ -29,16 +29,14 @@ use the \code{\link[MeshUtils]{getSomeNormals}} function.}
 
 \item{smDistance}{Relative bound for the center-center distances.}
 
-\item{out}{Character to indicate output mesh format.}
-
 \item{spacing}{Size parameter. Smaller values increase the precision of the
 output mesh at the cost of higher computation time. Set to \code{NULL}
 (the default) for a reasonable automatic value: an average spacing whose
-value will be displayed in a message and that you can also get in the
-\code{"spacing"} attribute of the output.}
+value will be displayed in a message.}
+\item{clean}{Boolean. Attempt to fix polygon soup?}
 }
 \value{
-A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+A \code{CGALmesh} object.
 }
 \description{
 Poisson reconstruction of a surface, from a cloud of 3D points.
@@ -50,11 +48,20 @@ See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/index.htm
 library(MeshUtils)
 library(rgl)
 
-# Hopf torus
-mesh   <- makeMesh(mesh=dataHopfTorus)
-mesh_r <- reconstructPoisson(mesh[["vertices"]], spacing=0.2, out="rgl")
-shade3d(mesh_r, color="darkorange")
-wire3d(mesh_r,  color="black")
+mesh     <- makeMesh(mesh=dataHopfTorus)
+mesh_rgl <- toRGL(mesh)
+mesh_psr <- reconstructPoisson(mesh[["vertices"]],
+                               smAngle=10,
+                               smRadius=3,
+                               smDistance=0.3)
+
+mesh_psr_rgl <- toRGL(mesh_psr)
+
+open3d(windowRect=50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+wire3d(mesh_rgl)
+next3d()
+wire3d(mesh_psr_rgl)
 
 }
 \seealso{

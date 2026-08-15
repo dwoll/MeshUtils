@@ -8,9 +8,9 @@ makeMesh(
   vertices,
   faces,
   mesh = NULL,
+  clean = TRUE,
   triangulate = FALSE,
-  normals = FALSE,
-  clean = TRUE
+  normals = FALSE
 )
 }
 \arguments{
@@ -24,13 +24,12 @@ providing the vertex indices of the corresponding face.}
 and \code{faces}, and must be either a list containing the components \code{vertices}
 and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
 (i.e. a \code{\link[rgl]{mesh3d}} object).}
+\item{clean}{Boolean, whether to do some mesh cleaning.}
 
 \item{triangulate}{Boolean, whether to triangulate the faces. Ignored if faces
 are already triangle.}
 
 \item{normals}{Boolean, whether to compute the normals.}
-
-\item{clean}{Boolean, whether to do some mesh cleaning.}
 }
 \value{
 A list of class \code{CGALmesh} giving the vertices, the edges, the faces

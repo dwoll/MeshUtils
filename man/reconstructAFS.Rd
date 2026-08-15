@@ -4,7 +4,7 @@
 \alias{reconstructAFS}
 \title{Advancing front surface reconstruction}
 \usage{
-reconstructAFS(x, jetSmoothing = NULL, out = c("CGALmesh", "rgl"))
+reconstructAFS(x, jetSmoothing = NULL, clean = TRUE)
 }
 \arguments{
 \item{x}{Numeric matrix which stores the points, one point per row.}
@@ -14,8 +14,7 @@ Then, the point cloud is smoothed before the reconstruction, using
 this integer as the number of neighbors for the smoothing. Note that this
 smoothing preprocessing relocates the points and then should not be used
 if the points have been sampled without noise on the surface.}
-
-\item{out}{Character to indicate output mesh format.}
+\item{clean}{Boolean. Attempt to fix polygon soup?}
 }
 \value{
 A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
@@ -28,22 +27,23 @@ See \href{https://doc.cgal.org/latest/Advancing_front_surface_reconstruction/ind
 }
 \examples{
 library(MeshUtils)
+library(rgl)
+
 # no smoothing
-mesh    <- makeMesh(mesh=dataHopfTorus)
-mesh_r1 <- reconstructAFS(mesh[["vertices"]], out="rgl")
+mesh      <- makeMesh(mesh=dataHopfTorus)
+mesh_afs1 <- reconstructAFS(mesh[["vertices"]])
+mesh_rgl1 <- toRGL(mesh_afs1)
 
 # jet smoothing
-mesh_r2 <- reconstructAFS(mesh[["vertices"]],
-                          jetSmoothing=30, out="rgl")
-# plot
-library(rgl)
+mesh_afs2 <- reconstructAFS(mesh[["vertices"]],
+                            jetSmoothing=30)
+mesh_rgl2 <- toRGL(mesh_afs2)
+
 open3d(windowRect=50 + c(0, 0, 800, 400))
 mfrow3d(1, 2)
-view3d(20, -40, zoom=0.85)
-shade3d(mesh_r1, color="gold")
+shade3d(mesh_rgl1, color="gold")
 next3d()
-view3d(20, -40, zoom=0.85)
-shade3d(mesh_r2, color="gold")
+shade3d(mesh_rgl2, color="gold")
 
 }
 \seealso{

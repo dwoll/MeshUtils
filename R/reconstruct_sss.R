@@ -20,7 +20,6 @@
 #' @param separateShells Boolean, whether to separate the shells.
 #' @param forceManifold Boolean, whether to force a manifold output mesh.
 #' @param borderAngle Bound on the angle in degrees used to detect border edges.
-#' @param out Character to indicate output mesh format.
 #'
 #' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
@@ -33,22 +32,24 @@
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh   <- makeMesh(mesh=dataHopfTorus)
-#' mesh_r <- reconstructSSS(
-#'   mesh[["vertices"]],
-#'   scaleIterations=4,
-#'   forceManifold  =TRUE,
-#'   neighbors      =30,
-#'   out            ="rgl")
-#'
 #' library(rgl)
-#' open3d(windowRect=50 + c(0, 0, 512, 512))
-#' view3d(20, -40, zoom=0.85)
-#' shade3d(mesh_r, color="tomato")
+#'
+#' mesh     <- makeMesh(mesh=dataHopfTorus)
+#' mesh_rgl <- toRGL(mesh)
+#' mesh_sss <- reconstructSSS(mesh[["vertices"]],
+#'                            scaleIterations=4,
+#'                            forceManifold  =TRUE,
+#'                            neighbors      =3)
+#'
+#' mesh_sss_rgl <- toRGL(mesh_sss)
+#'
+#' open3d(windowRect=50 + c(0, 0, 800, 400))
+#' mfrow3d(1, 2)
+#' wire3d(mesh_rgl)
+#' next3d()
+#' wire3d(mesh_sss_rgl)
 #'
 #' @export
-#' @importFrom Rvcg vcgUpdateNormals
-#' @importFrom rgl tmesh3d
 reconstructSSS <- function(
   x,
   scaleIterations=1,
@@ -56,10 +57,7 @@ reconstructSSS <- function(
   samples        =300,
   separateShells =FALSE,
   forceManifold  =TRUE,
-  borderAngle    =45,
-  out            =c("CGALmesh", "rgl")
-) {
-  out <- match.arg(out)
+  borderAngle    =45) {
   if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -78,7 +76,7 @@ reconstructSSS <- function(
   stopifnot(isBoolean(separateShells))
   stopifnot(isBoolean(forceManifold))
   stopifnot(isNonNegativeNumber(borderAngle))
-  mesh_r <- reconstructSSS_cpp(
+  mesh_cpp <- reconstructSSS_cpp(
     t(x),
     as.integer(scaleIterations),
     as.integer(neighbors),
@@ -86,15 +84,5 @@ reconstructSSS <- function(
     separateShells,
     forceManifold,
     as.double(borderAngle))
-  mesh_rwn <- vcgUpdateNormals(
-    tmesh3d(mesh_r[["vertices"]],
-            mesh_r[["faces"]],
-            normals    =NULL,
-            homogeneous=FALSE))
-  mesh_out <- if(out == "rgl") {
-    mesh_rwn
-  } else {
-    makeMesh(mesh=mesh_rwn)
-  }
-  mesh_out
+  fromCPP(mesh_cpp)
 }

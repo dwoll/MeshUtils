@@ -11,8 +11,7 @@ reconstructSSS(
   samples = 300,
   separateShells = FALSE,
   forceManifold = TRUE,
-  borderAngle = 45,
-  out = c("CGALmesh", "rgl")
+  borderAngle = 45)
 )
 }
 \arguments{
@@ -29,11 +28,9 @@ reconstructSSS(
 \item{forceManifold}{Boolean, whether to force a manifold output mesh.}
 
 \item{borderAngle}{Bound on the angle in degrees used to detect border edges.}
-
-\item{out}{Character to indicate output mesh format.}
 }
 \value{
-A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+A \code{CGALmesh} object.
 }
 \description{
 Reconstruction of a surface from a cloud of 3D points.
@@ -43,18 +40,22 @@ See \href{https://doc.cgal.org/latest/Scale_space_reconstruction_3/index.html}{S
 }
 \examples{
 library(MeshUtils)
-mesh   <- makeMesh(mesh=dataHopfTorus)
-mesh_r <- reconstructSSS(
-  mesh[["vertices"]],
-  scaleIterations=4,
-  forceManifold  =TRUE,
-  neighbors      =30,
-  out            ="rgl")
-
 library(rgl)
-open3d(windowRect=50 + c(0, 0, 512, 512))
-view3d(20, -40, zoom=0.85)
-shade3d(mesh_r, color="tomato")
+
+mesh     <- makeMesh(mesh=dataHopfTorus)
+mesh_rgl <- toRGL(mesh)
+mesh_sss <- reconstructSSS(mesh[["vertices"]],
+                           scaleIterations=4,
+                           forceManifold  =TRUE,
+                           neighbors      =3)
+
+mesh_sss_rgl <- toRGL(mesh_sss)
+
+open3d(windowRect=50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+wire3d(mesh_rgl)
+next3d()
+wire3d(mesh_sss_rgl)
 
 }
 \seealso{

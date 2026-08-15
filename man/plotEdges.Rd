@@ -52,34 +52,22 @@ Plot the given edges with \strong{rgl}.
 library(MeshUtils)
 library(rgl)
 
-# we triangulate the truncated icosahedron mesh
-mesh1 <- makeMesh(
-  mesh       =dataTruncIcosahedron,
+# we triangulate the pentagrammic prism mesh
+mesh <- makeMesh(
+  mesh       =dataPentaPrism,
   triangulate=TRUE,
   normals    =FALSE)
 
-# now we can plot the truncated icosahedron
-mesh1_rgl <- toRGL(mesh1)
-open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
-shade3d(mesh1_rgl, color="gold")
-
-# we triangulate the pentagrammic prism mesh
-mesh2 <- makeMesh(
-  mesh       =dataPentaPrism,
-  triangulate=TRUE,
-   normals   = FALSE)
-
 # now we can plot the pentagrammic prism
-mesh2_rgl <- toRGL(mesh2)
+mesh_rgl <- toRGL(mesh)
 open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
-shade3d(mesh2_rgl, color="navy")
-# we plot the exterior edges only, given in `mesh2[["exteriorEdges"]]`
-plotEdges(
-  mesh2[["vertices"]],
-  mesh2[["exteriorEdges"]],
-  color        ="gold",
-  tubesRadius  =0.02,
-  spheresRadius=0.02)
+shade3d(mesh_rgl, color="navy")
+# we plot the exterior edges only, given in `mesh[["exteriorEdges"]]`
+plotEdges(mesh[["vertices"]],
+          mesh[["exteriorEdges"]],
+          color        ="gold",
+          tubesRadius  =0.02,
+          spheresRadius=0.02)
 
 }
 \author{

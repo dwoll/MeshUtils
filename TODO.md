@@ -1,16 +1,18 @@
 # TODO
 
-  * `mesh.collect_garbage();` in more places
-  * silent option to remove output during processing
-  * only deal with triangle meshes -> simplify code that is more general
-  * `readFile_cpp()` STL filename instead of infile?
-  * `reconstructPoisson_cpp()` could make neighbors for spacing a parameter, currently fixed at 6
-  * ckecks in `SurfEMesh_cpp` (via `makeMesh()`) and `soup_to_mesh()` via (`makeSurfMesh()`): redundant
-      * use `vf_to_emesh()`?
-      * conversion from `mesh3d`
-  * `cgalMeshes`: `isotropicRemeshing()`, `Sqrt3Subdivision()`, `CatmullClark()`, `DooSabin_subdivision()`
+  * normals handling
+  * is it possible to make CGAL `Mesh_3` without polygon soup step?
+  * `remeshIsotropic()` does not work well -> because of `soup_to_mesh()`?
+  * `mesh.collect_garbage();` required in more places? (remeshing)
   * `storageMode("double")` required in more places?
+  * `readFile_cpp()` STL filename instead of infile?
+
+  # Wishlist
+  
+  * silent option to remove output during processing
+  * fewer checks than in `soup_to_mesh()` when not required (via `SurfMesh_cpp` -> `makeSurfMesh()`)
+      * use `vf_to_emesh()`, `csoup_to_mesh()`?
+      * conversion from `mesh3d`
+  * `Sqrt3Subdivision()`, `CatmullClark()`, `DooSabin_subdivision()`
   * C++: pass by reference where possible
   * configure script: gmp, mpfr necessary?
-  * `fillBoundaryHoles()` - template to make work for EPIC, EPEC
-  * either template more with respect to EPIC vs. EPEC construction kernels, or only use EPEC, or use EPIC except for union / intersection methods

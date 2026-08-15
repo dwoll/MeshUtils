@@ -32,7 +32,7 @@ library(rgl)
 # mesh one: truncated icosahedron; we triangulate it for plotting
 mesh1 <- makeMesh(mesh       =dataTruncIcosahedron,
                   triangulate=TRUE,
-                  normals = FALSE)
+                  normals    = FALSE)
 
 # mesh two: a cube
 mesh2_rgl <- translate3d(cube3d(), 2, 0, 0)
