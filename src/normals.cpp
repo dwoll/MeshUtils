@@ -17,7 +17,7 @@
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
-                                    const unsigned nb_neighbors) {
+                                    const unsigned nbNeighbors) {
   const size_t nPts = pts.ncol();
   std::vector<P3wn> points(nPts);
   for(size_t i = 0; i < nPts; i++) {
@@ -27,12 +27,12 @@ Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
   }
 
   CGAL::jet_estimate_normals<Concurrency_tag>(
-      points, nb_neighbors,
+      points, nbNeighbors,
       CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
           .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
 
   CGAL::mst_orient_normals(
-      points, nb_neighbors,
+      points, nbNeighbors,
       CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
           .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
 
@@ -52,7 +52,7 @@ Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::NumericMatrix pca_normals_cpp(Rcpp::NumericMatrix pts,
-                                    unsigned nb_neighbors) {
+                                    unsigned nbNeighbors) {
   const size_t nPts = pts.ncol();
   std::vector<P3wn> points(nPts);
   for(size_t i = 0; i < nPts; i++) {
@@ -62,12 +62,12 @@ Rcpp::NumericMatrix pca_normals_cpp(Rcpp::NumericMatrix pts,
   }
 
   CGAL::pca_estimate_normals<Concurrency_tag>(
-      points, nb_neighbors,
+      points, nbNeighbors,
       CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
           .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
 
   CGAL::mst_orient_normals(
-      points, nb_neighbors,
+      points, nbNeighbors,
       CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
           .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
 

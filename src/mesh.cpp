@@ -116,6 +116,22 @@ Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmeshIn, const unsigned 
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
+double getArea_cpp(const Rcpp::List rmesh) {
+  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(rmesh, false, false);
+  if(!CGAL::is_triangle_mesh(mesh)) {
+    Message("The mesh is not triangle.");
+    return Rcpp::NumericVector::get_na();
+  }
+  if(PMP::does_self_intersect(mesh)) {
+    Message("The mesh self-intersects.");
+    return Rcpp::NumericVector::get_na();
+  }
+  const K::FT a = PMP::area(mesh);
+  return CGAL::to_double<K::FT>(a);
+}
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
 double getVolume_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(rmesh, false, false);
   if(!CGAL::is_closed(mesh)) {
@@ -196,9 +212,30 @@ Rcpp::List boundingBox_cpp(const Rcpp::List rmesh) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
+Rcpp::NumericVector getDistance_cpp(
+    const Rcpp::List rmesh, const Rcpp::NumericMatrix points) {
+  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(rmesh, false, false);
+  const size_t nPts = points.ncol();
+  Rcpp::NumericVector distances(nPts);
+  if(!CGAL::is_triangle_mesh(mesh)) {
+    Message("The mesh is not triangle.");
+    for(size_t i = 0; i < nPts; i++){
+      distances(i) = Rcpp::NumericVector::get_na();
+    }
+  } else {
+      for(size_t i = 0; i < nPts; i++){
+        Rcpp::NumericVector point_i = points(Rcpp::_, i);
+        std::vector<Point3> pt = { Point3(point_i(0), point_i(1), point_i(2)) };
+        distances(i) = PMP::max_distance_to_triangle_mesh<CGAL::Sequential_tag>(pt, mesh);
+      }
+  }
+  return distances;
+}
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
 double getHausdorffApprox_cpp(
-    const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric
-) {
+    const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric) {
   Mesh3 mesh1 = makeSurfMesh<Mesh3, Point3>(rmesh1, false, false);
   Mesh3 mesh2 = makeSurfMesh<Mesh3, Point3>(rmesh2, false, false);
   if(CGAL::is_empty(mesh1)) {
@@ -229,8 +266,7 @@ double getHausdorffApprox_cpp(
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 double getHausdorffEst_cpp(
-    const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric, double errorBound
-) {
+    const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric, double errorBound) {
     Mesh3 mesh1 = makeSurfMesh<Mesh3, Point3>(rmesh1, false, false);
     Mesh3 mesh2 = makeSurfMesh<Mesh3, Point3>(rmesh2, false, false);
     if(CGAL::is_empty(mesh1)) {

@@ -29,7 +29,7 @@ std::string toLower(std::string s) {
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 std::pair<std::vector<std::vector<int>>, bool> list_to_faces2(
-    const Rcpp::List L) {
+    const Rcpp::List &L) {
   const size_t nfaces = L.size();
   std::vector<std::vector<int>> faces;
   faces.reserve(nfaces);
@@ -111,11 +111,11 @@ Rcpp::List readFile_cpp(const std::string filename) {
 void writeFile_cpp(const std::string filename,
                    const bool binary,
                    const int precision,
-                   const Rcpp::NumericMatrix Vertices,
-                   const Rcpp::List Faces) {
-  const std::vector<Point3> points = matrix_to_points3<Point3>(Vertices);
+                   const Rcpp::NumericMatrix vertices,
+                   const Rcpp::List faceList) {
+  const std::vector<Point3> points = matrix_to_points3<Point3>(vertices);
   const std::pair<std::vector<std::vector<int>>, bool> faces =
-      list_to_faces2(Faces);
+      list_to_faces2(faceList);
   const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
   bool ok = false;
   if(ext == "ply") {

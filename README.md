@@ -1,6 +1,24 @@
-# MeshUtils: Utility functions for meshes based on CGAL
+# MeshUtils: Utility functions for 3D meshes based on CGAL
 
-`MeshUtils` supports basic processing of 3D meshes as well as Boolean operations (union, difference and intersection) using as backend the 'C++' library [`CGAL`](https://www.cgal.org/) via R package [`RcppCGAL`](https://cran.r-project.org/package=RcppCGAL). Conversion to / from class `mesh3d` from package [`rgl`](https://cran.r-project.org/package=rgl) is possible.
+`MeshUtils` ís an R package that supports basic processing of 3D meshes using as backend the 'C++' library [`CGAL`](https://www.cgal.org/) via R package [`RcppCGAL`](https://cran.r-project.org/package=RcppCGAL). Features:
+
+  * Conversion to / from class `mesh3d` from package [`rgl`](https://cran.r-project.org/package=rgl)
+  * Mesh repair
+      * Filling holes
+      * Removing self intersections
+  * Boolean mesh operations: union, difference and intersection
+  * Isotropic remeshing
+  * Surface reconstruction
+      * AFS
+      * SSS
+      * Poisson
+      * Alpha wrapping
+  * Bounding box
+      * Axis-parallel bounding box
+      * Optimal (oriented) bounding box
+  * Hausdorff distance between two meshes
+  * Centroid
+  * Volume
 
 ## Development
 

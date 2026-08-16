@@ -53,7 +53,7 @@
 #'
 #' @export
 reconstructAFS <- function(x, jetSmoothing=NULL, clean=TRUE) {
-  if(!is.matrix(x) || !is.numeric(x)){
+  if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
   if(ncol(x) != 3L) {
@@ -62,7 +62,7 @@ reconstructAFS <- function(x, jetSmoothing=NULL, clean=TRUE) {
   if(nrow(x) <= 3L) {
     stop("Insufficient number of x.", call. = TRUE)
   }
-  if(anyNA(x)){
+  if(anyNA(x)) {
     stop("Points with missing values are not allowed.", call. = TRUE)
   }
   storage.mode(x) <- "double"

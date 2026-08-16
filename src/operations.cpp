@@ -16,17 +16,17 @@
 
 // ----------------------------------------------------------------------- //
 template <typename MeshT>
-void checkMesh1(MeshT mesh, size_t i) {
+void checkMesh1(const MeshT &mesh, size_t i) {
   const bool si = PMP::does_self_intersect(mesh);
   if(si) {
-    std::string msg = "Mesh n\u00b0" + std::to_string(i) + " self-intersects.";
+    std::string msg = "Mesh n" + std::to_string(i) + " self-intersects.";
     Rcpp::stop(msg);
   }
 }
 
 // ----------------------------------------------------------------------- //
 template <typename MeshT>
-void checkMesh2(MeshT mesh, const std::string& what) {
+void checkMesh2(const MeshT &mesh, const std::string& what) {
   const bool si = PMP::does_self_intersect(mesh);
   if(si) {
     std::string msg = "The " + what + " self-intersects.";
@@ -36,16 +36,16 @@ void checkMesh2(MeshT mesh, const std::string& what) {
 
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
-MeshT boolIntersect(const Rcpp::List rmeshes,
+MeshT boolIntersect(const Rcpp::List &rmeshes,
                     const bool clean,
                     const Rcpp::LogicalVector triangulate) {
-  const size_t nmeshes = rmeshes.size();
-  std::vector<MeshT> meshes(nmeshes);
+  const size_t nMeshes = rmeshes.size();
+  std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
   MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(rmesh, clean, triangulate[0]);
   meshes[0] = mesh_0;
-  for(size_t i = 1; i < nmeshes; i++) {
+  for(size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
       checkMesh1<MeshT>(meshes[0], 1);
     } else {
@@ -63,7 +63,7 @@ MeshT boolIntersect(const Rcpp::List rmeshes,
       Rcpp::stop("Intersection computation has failed.");
     }
   }
-  return meshes[nmeshes - 1];
+  return meshes[nMeshes - 1];
 }
 
 // [[Rcpp::export]]
@@ -77,8 +77,8 @@ Rcpp::List intersectionEK_cpp(const Rcpp::List rmeshes,
 
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
-MeshT boolDiff(const Rcpp::List rmesh1,
-               const Rcpp::List rmesh2,
+MeshT boolDiff(const Rcpp::List &rmesh1,
+               const Rcpp::List &rmesh2,
                const bool clean,
                const bool triangulate1,
                const bool triangulate2) {
@@ -88,12 +88,12 @@ MeshT boolDiff(const Rcpp::List rmesh1,
   Message("Processing mesh2");
   MeshT smesh2 = makeSurfMesh<MeshT, PointT>(rmesh2, clean, triangulate2);
   checkMesh1<MeshT>(smesh2, 2);
-  MeshT outmesh;
-  bool ok = PMP::corefine_and_compute_difference(smesh1, smesh2, outmesh);
+  MeshT meshOut;
+  bool ok = PMP::corefine_and_compute_difference(smesh1, smesh2, meshOut);
   if(!ok) {
     Rcpp::stop("Difference computation has failed.");
   }
-  return outmesh;
+  return meshOut;
 }
 
 // [[Rcpp::export]]
@@ -110,16 +110,16 @@ Rcpp::List differenceEK_cpp(const Rcpp::List rmesh1,
 
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
-MeshT boolUnion(const Rcpp::List rmeshes,
+MeshT boolUnion(const Rcpp::List &rmeshes,
                 const bool clean,
                 const Rcpp::LogicalVector triangulate) {
-  const size_t nmeshes = rmeshes.size();
-  std::vector<MeshT> meshes(nmeshes);
+  const size_t nMeshes = rmeshes.size();
+  std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
   MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(rmesh, clean, triangulate[0]);
   meshes[0] = mesh_0;
-  for(size_t i = 1; i < nmeshes; i++) {
+  for(size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
       checkMesh1<MeshT>(meshes[0], 1);
     } else {
@@ -136,7 +136,7 @@ MeshT boolUnion(const Rcpp::List rmeshes,
       Rcpp::stop("Union computation has failed.");
     }
   }
-  return meshes[nmeshes - 1];
+  return meshes[nMeshes - 1];
 }
 
 // [[Rcpp::export]]

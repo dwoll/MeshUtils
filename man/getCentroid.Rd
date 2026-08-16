@@ -8,13 +8,13 @@ getCentroid(x)
 }
 \arguments{
 \item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-object.}
+object. The mesh must be triangle.}
 }
 \value{
-numeric 3-vector with mesh centroid.
+\code{numeric} 3-vector with the cartesian coordinates of the mesh centroid.
 }
 \description{
-Get mesh centroid
+Get mesh centroid.
 }
 \examples{
 library(MeshUtils)

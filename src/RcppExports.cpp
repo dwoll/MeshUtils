@@ -95,6 +95,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getArea_cpp
+double getArea_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_getArea_cpp(SEXP rmeshSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    rcpp_result_gen = Rcpp::wrap(getArea_cpp(rmesh));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getVolume_cpp
 double getVolume_cpp(const Rcpp::List rmesh);
 RcppExport SEXP _MeshUtils_getVolume_cpp(SEXP rmeshSEXP) {
@@ -136,6 +147,18 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
     rcpp_result_gen = Rcpp::wrap(boundingBox_cpp(rmesh));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getDistance_cpp
+Rcpp::NumericVector getDistance_cpp(const Rcpp::List rmesh, const Rcpp::NumericMatrix points);
+RcppExport SEXP _MeshUtils_getDistance_cpp(SEXP rmeshSEXP, SEXP pointsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type points(pointsSEXP);
+    rcpp_result_gen = Rcpp::wrap(getDistance_cpp(rmesh, points));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -181,26 +204,26 @@ BEGIN_RCPP
 END_RCPP
 }
 // jet_normals_cpp
-Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts, const unsigned nb_neighbors);
-RcppExport SEXP _MeshUtils_jet_normals_cpp(SEXP ptsSEXP, SEXP nb_neighborsSEXP) {
+Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts, const unsigned nbNeighbors);
+RcppExport SEXP _MeshUtils_jet_normals_cpp(SEXP ptsSEXP, SEXP nbNeighborsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type pts(ptsSEXP);
-    Rcpp::traits::input_parameter< const unsigned >::type nb_neighbors(nb_neighborsSEXP);
-    rcpp_result_gen = Rcpp::wrap(jet_normals_cpp(pts, nb_neighbors));
+    Rcpp::traits::input_parameter< const unsigned >::type nbNeighbors(nbNeighborsSEXP);
+    rcpp_result_gen = Rcpp::wrap(jet_normals_cpp(pts, nbNeighbors));
     return rcpp_result_gen;
 END_RCPP
 }
 // pca_normals_cpp
-Rcpp::NumericMatrix pca_normals_cpp(Rcpp::NumericMatrix pts, unsigned nb_neighbors);
-RcppExport SEXP _MeshUtils_pca_normals_cpp(SEXP ptsSEXP, SEXP nb_neighborsSEXP) {
+Rcpp::NumericMatrix pca_normals_cpp(Rcpp::NumericMatrix pts, unsigned nbNeighbors);
+RcppExport SEXP _MeshUtils_pca_normals_cpp(SEXP ptsSEXP, SEXP nbNeighborsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type pts(ptsSEXP);
-    Rcpp::traits::input_parameter< unsigned >::type nb_neighbors(nb_neighborsSEXP);
-    rcpp_result_gen = Rcpp::wrap(pca_normals_cpp(pts, nb_neighbors));
+    Rcpp::traits::input_parameter< unsigned >::type nbNeighbors(nbNeighborsSEXP);
+    rcpp_result_gen = Rcpp::wrap(pca_normals_cpp(pts, nbNeighbors));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -260,16 +283,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // writeFile_cpp
-void writeFile_cpp(const std::string filename, const bool binary, const int precision, const Rcpp::NumericMatrix Vertices, const Rcpp::List Faces);
-RcppExport SEXP _MeshUtils_writeFile_cpp(SEXP filenameSEXP, SEXP binarySEXP, SEXP precisionSEXP, SEXP VerticesSEXP, SEXP FacesSEXP) {
+void writeFile_cpp(const std::string filename, const bool binary, const int precision, const Rcpp::NumericMatrix vertices, const Rcpp::List faceList);
+RcppExport SEXP _MeshUtils_writeFile_cpp(SEXP filenameSEXP, SEXP binarySEXP, SEXP precisionSEXP, SEXP verticesSEXP, SEXP faceListSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type filename(filenameSEXP);
     Rcpp::traits::input_parameter< const bool >::type binary(binarySEXP);
     Rcpp::traits::input_parameter< const int >::type precision(precisionSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type Vertices(VerticesSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List >::type Faces(FacesSEXP);
-    writeFile_cpp(filename, binary, precision, Vertices, Faces);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type vertices(verticesSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type faceList(faceListSEXP);
+    writeFile_cpp(filename, binary, precision, vertices, faceList);
     return R_NilValue;
 END_RCPP
 }
@@ -329,10 +352,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_isClosed_cpp", (DL_FUNC) &_MeshUtils_isClosed_cpp, 1},
     {"_MeshUtils_orientToBoundVolume_cpp", (DL_FUNC) &_MeshUtils_orientToBoundVolume_cpp, 1},
     {"_MeshUtils_removeSelfIntersections_cpp", (DL_FUNC) &_MeshUtils_removeSelfIntersections_cpp, 2},
+    {"_MeshUtils_getArea_cpp", (DL_FUNC) &_MeshUtils_getArea_cpp, 1},
     {"_MeshUtils_getVolume_cpp", (DL_FUNC) &_MeshUtils_getVolume_cpp, 1},
     {"_MeshUtils_getCentroid_cpp", (DL_FUNC) &_MeshUtils_getCentroid_cpp, 1},
     {"_MeshUtils_optimalBoundingBox_cpp", (DL_FUNC) &_MeshUtils_optimalBoundingBox_cpp, 1},
     {"_MeshUtils_boundingBox_cpp", (DL_FUNC) &_MeshUtils_boundingBox_cpp, 1},
+    {"_MeshUtils_getDistance_cpp", (DL_FUNC) &_MeshUtils_getDistance_cpp, 2},
     {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 3},
     {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 4},
     {"_MeshUtils_remeshIsotropic_cpp", (DL_FUNC) &_MeshUtils_remeshIsotropic_cpp, 4},

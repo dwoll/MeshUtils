@@ -98,33 +98,33 @@ template <typename MeshT, typename PointT>
 MeshT csoup_to_mesh(std::vector<PointT>, std::vector<std::vector<size_t>>, const bool);
 
 template <typename PointT>
-std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix);
+std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix&);
 
 template <typename PointT>
-Rcpp::NumericMatrix points3_to_matrix(std::vector<PointT>);
+Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT>&);
 
 template <typename MeshT, typename PointT>
-MeshT makeSurfMesh(const Rcpp::List, const bool, const bool);
+MeshT makeSurfMesh(const Rcpp::List&, const bool, const bool);
 
 template <typename MeshT, typename PointT>
-MeshT makeSurfTMesh(const Rcpp::List, const bool, const bool);
+MeshT makeSurfTMesh(const Rcpp::List&, const bool, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT>
-Rcpp::DataFrame getEdges(MeshT);
+Rcpp::DataFrame getEdges(const MeshT&);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfMesh1(MeshT, const bool);
+Rcpp::List RSurfMesh1(const MeshT&, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfMesh2(MeshT, const bool, const int);
+Rcpp::List RSurfMesh2(const MeshT&, const bool, const int);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfTMesh(MeshT, const bool);
+Rcpp::List RSurfTMesh(const MeshT&, const bool);
 
 // -------------------------------------------------------------------------- //
 // TODO template
-Rcpp::List getRmesh(Mesh3);
-Rcpp::List getRmesh(EMesh3);
+Rcpp::List getRmesh(const Mesh3&);
+Rcpp::List getRmesh(const EMesh3&);
 
 Rcpp::NumericMatrix getNormals(Mesh3);
 Rcpp::NumericMatrix getNormals(EMesh3);
@@ -132,9 +132,8 @@ Rcpp::NumericMatrix getNormals(EMesh3);
 // -------------------------------------------------------------------------- //
 // no template
 void Message(std::string);
-std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List);
+std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List&);
 EMesh3 fillBoundaryHoles(EMesh3, bool, double, int);              // only EPEC kernel
-EMesh3 removeSelfIntersections(const EMesh3, const unsigned int); // only EPEC kernel
 
 // -------------------------------------------------------------------------- //
 #endif

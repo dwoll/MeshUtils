@@ -24,7 +24,7 @@ void Message(std::string msg) {
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename PointT>
-std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix M) {
+std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix &M) {
   const size_t nPts = M.ncol();
   std::vector<PointT> points;
   points.reserve(nPts);
@@ -35,16 +35,16 @@ std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix M) {
   return points;
 }
 
-template std::vector<Point3>  matrix_to_points3<Point3>(const Rcpp::NumericMatrix);
-template std::vector<EPoint3> matrix_to_points3<EPoint3>(const Rcpp::NumericMatrix);
+template std::vector<Point3>  matrix_to_points3<Point3>(const Rcpp::NumericMatrix&);
+template std::vector<EPoint3> matrix_to_points3<EPoint3>(const Rcpp::NumericMatrix&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename PointT>
-Rcpp::NumericMatrix points3_to_matrix(std::vector<PointT> points) {
-  const size_t npoints = points.size();
-  Rcpp::NumericMatrix M(3, npoints);
-  for(size_t i = 0; i != npoints; i++) {
+Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT> &points) {
+  const size_t nPts = points.size();
+  Rcpp::NumericMatrix M(3, nPts);
+  for(size_t i = 0; i != nPts; i++) {
     Rcpp::NumericVector col_i(3);
     const PointT point = points[i];
     col_i(0) = CGAL::to_double(point.x());
@@ -55,18 +55,18 @@ Rcpp::NumericMatrix points3_to_matrix(std::vector<PointT> points) {
   return M;
 }
 
-template Rcpp::NumericMatrix points3_to_matrix<Point3>(std::vector<Point3>);
-template Rcpp::NumericMatrix points3_to_matrix<EPoint3>(std::vector<EPoint3>);
+template Rcpp::NumericMatrix points3_to_matrix<Point3>(const std::vector<Point3>&);
+template Rcpp::NumericMatrix points3_to_matrix<EPoint3>(const std::vector<EPoint3>&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 std::vector<std::vector<size_t>> matrix_to_Tfaces(
-  const Rcpp::IntegerMatrix Faces) {
-  const size_t nfaces = Faces.ncol();
+  const Rcpp::IntegerMatrix &faceMat) {
+  const size_t nFaces = faceMat.ncol();
   std::vector<std::vector<size_t>> faces;
-  faces.reserve(nfaces);
-  for(size_t i = 0; i < nfaces; i++) {
-    const Rcpp::IntegerVector face_rcpp = Faces(Rcpp::_, i);
+  faces.reserve(nFaces);
+  for(size_t i = 0; i < nFaces; i++) {
+    const Rcpp::IntegerVector face_rcpp = faceMat(Rcpp::_, i);
     // need static cast here because initializing with {} instead of ()
     std::vector<size_t> face = { static_cast<size_t>(face_rcpp(0)),
                                  static_cast<size_t>(face_rcpp(1)),
@@ -78,11 +78,11 @@ std::vector<std::vector<size_t>> matrix_to_Tfaces(
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List L) {
-  const size_t nfaces = L.size();
+std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List &L) {
+  const size_t nFaces = L.size();
   std::vector<std::vector<size_t>> faces;
-  faces.reserve(nfaces);
-  for(size_t i = 0; i < nfaces; i++) {
+  faces.reserve(nFaces);
+  for(size_t i = 0; i < nFaces; i++) {
     Rcpp::IntegerVector face_rcpp = Rcpp::as<Rcpp::IntegerVector>(L(i));
     std::vector<size_t> face(face_rcpp.begin(), face_rcpp.end());
     faces.emplace_back(face);
@@ -93,6 +93,7 @@ std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List L) {
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // PMP::polygon_soup_to_polygon_mesh() with a lot of checks
+// points and faces are changed -> no const, no reference
 template <typename MeshT, typename PointT>
 MeshT soup_to_mesh(std::vector<PointT> points,
                    std::vector<std::vector<size_t>> faces,
@@ -186,6 +187,7 @@ template EMesh3 soup_to_mesh<EMesh3, EPoint3>(
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // PMP::polygon_soup_to_polygon_mesh() with fewer checks
+// points and faces are changed -> no const, no reference
 // currently unused (only in unused makeMesh())
 template <typename MeshT, typename PointT>
 MeshT csoup_to_mesh(std::vector<PointT> points,
@@ -216,17 +218,17 @@ template EMesh3 csoup_to_mesh<EMesh3, EPoint3>(
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>
-MeshT vf_to_mesh(const Rcpp::NumericMatrix vertices,
-                 const Rcpp::List faces) {
+MeshT vf_to_mesh(const Rcpp::NumericMatrix &vertices,
+                 const Rcpp::List &faces) {
   MeshT mesh;
-  const size_t nv = vertices.ncol();
-  for(size_t j = 0; j < nv; j++) {
+  const size_t nVerts = vertices.ncol();
+  for(size_t j = 0; j < nVerts; j++) {
     Rcpp::NumericVector vertex = vertices(Rcpp::_, j);
     PointT pt(vertex(0), vertex(1), vertex(2));
     mesh.add_vertex(pt);
   }
-  const size_t nf = faces.size();
-  for(size_t i = 0; i < nf; i++) {
+  const size_t nFaces = faces.size();
+  for(size_t i = 0; i < nFaces; i++) {
     Rcpp::IntegerVector intface = Rcpp::as<Rcpp::IntegerVector>(faces(i));
     const size_t sf = intface.size();
     std::vector<typename MeshT::Vertex_index> face;
@@ -242,8 +244,8 @@ MeshT vf_to_mesh(const Rcpp::NumericMatrix vertices,
   return mesh;
 }
 
-template Mesh3  vf_to_mesh<Mesh3,  Point3>(const Rcpp::NumericMatrix,  const Rcpp::List);
-template EMesh3 vf_to_mesh<EMesh3, EPoint3>(const Rcpp::NumericMatrix, const Rcpp::List);
+template Mesh3  vf_to_mesh<Mesh3,  Point3>(const Rcpp::NumericMatrix&,  const Rcpp::List&);
+template EMesh3 vf_to_mesh<EMesh3, EPoint3>(const Rcpp::NumericMatrix&, const Rcpp::List&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -259,7 +261,7 @@ Rcpp::NumericVector defaultNormal() {
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// TODO template
+// TODO template, decide whether vertices and faces can be reference
 // challenge: normals_map, vertex_descriptor vs. nrmlsmap, vxdescr
 // currently unused
 EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
@@ -295,7 +297,7 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
 // ----------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>
 MeshT makeSurfMesh(
-  const Rcpp::List rmesh, const bool clean, const bool triangulate) {
+  const Rcpp::List &rmesh, const bool clean, const bool triangulate) {
   const Rcpp::NumericMatrix vertices =
       Rcpp::as<Rcpp::NumericMatrix>(rmesh["vertices"]);
   const Rcpp::List rfaces = Rcpp::as<Rcpp::List>(rmesh["faces"]);
@@ -304,14 +306,14 @@ MeshT makeSurfMesh(
   return soup_to_mesh<MeshT, PointT>(points, faces, clean, triangulate);
 }
 
-template Mesh3  makeSurfMesh<Mesh3,  Point3>(const Rcpp::List,  const bool, const bool);
-template EMesh3 makeSurfMesh<EMesh3, EPoint3>(const Rcpp::List, const bool, const bool);
+template Mesh3  makeSurfMesh<Mesh3,  Point3>(const Rcpp::List&,  const bool, const bool);
+template EMesh3 makeSurfMesh<EMesh3, EPoint3>(const Rcpp::List&, const bool, const bool);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>
 MeshT makeSurfTMesh(
-  const Rcpp::List rmesh, const bool clean, const bool triangulate) {
+  const Rcpp::List &rmesh, const bool clean, const bool triangulate) {
   const Rcpp::NumericMatrix vertices =
       Rcpp::as<Rcpp::NumericMatrix>(rmesh["vertices"]);
   const Rcpp::IntegerMatrix rfaces =
@@ -321,8 +323,8 @@ MeshT makeSurfTMesh(
   return soup_to_mesh<MeshT, PointT>(points, faces, clean, triangulate);
 }
 
-template Mesh3  makeSurfTMesh<Mesh3,  Point3>(const Rcpp::List,  const bool, const bool);
-template EMesh3 makeSurfTMesh<EMesh3, EPoint3>(const Rcpp::List, const bool, const bool);
+template Mesh3  makeSurfTMesh<Mesh3,  Point3>(const Rcpp::List&,  const bool, const bool);
+template EMesh3 makeSurfTMesh<EMesh3, EPoint3>(const Rcpp::List&, const bool, const bool);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -345,7 +347,7 @@ property_map_pair(MeshT mesh, const std::string name) {
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-Rcpp::List getRmesh(Mesh3 mesh) {
+Rcpp::List getRmesh(const Mesh3 &mesh) {
   std::pair<nrmlsmap, bool> normalsmap_ =
       property_map_pair<vxdescr, Rcpp::NumericVector>(mesh, "v:normal");
   const bool there_is_normals = normalsmap_.second;
@@ -369,7 +371,7 @@ Rcpp::List getRmesh(Mesh3 mesh) {
   return rmesh;
 }
 
-Rcpp::List getRmesh(EMesh3 mesh) {
+Rcpp::List getRmesh(const EMesh3 &mesh) {
   std::pair<normals_map, bool> normalsmap_ =
       property_map_pair<vertex_descriptor, Rcpp::NumericVector>(mesh, "v:normal");
   const bool there_is_normals = normalsmap_.second;
@@ -396,7 +398,7 @@ Rcpp::List getRmesh(EMesh3 mesh) {
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // EPEC kernel only
-bool is_small_hole(halfedge_descriptor h, EMesh3 & mesh,
+bool is_small_hole(halfedge_descriptor h, const EMesh3 &mesh,
                    double max_hole_diam, int max_num_hole_edges) {
   int num_hole_edges = 0;
   CGAL::Bbox_3 hole_bbox;
@@ -417,13 +419,14 @@ bool is_small_hole(halfedge_descriptor h, EMesh3 & mesh,
   return true;
 }
 
+// mesh is changed in function -> not const, not reference
 EMesh3 fillBoundaryHoles(
     EMesh3 mesh, bool fairhole, double max_hole_diam, int max_num_hole_edges) {
   unsigned int nb_holes = 0;
   std::vector<halfedge_descriptor> border_cycles;
   PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
-  const int nborders = border_cycles.size();
-  if(nborders == 0) {
+  const int nBorders = border_cycles.size();
+  if(nBorders == 0) {
     Rcpp::stop("There's no border in this mesh.");
   }
 

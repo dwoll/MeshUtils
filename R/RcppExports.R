@@ -29,6 +29,10 @@ removeSelfIntersections_cpp <- function(rmeshIn, method) {
     .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmeshIn, method)
 }
 
+getArea_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_getArea_cpp`, rmesh)
+}
+
 getVolume_cpp <- function(rmesh) {
     .Call(`_MeshUtils_getVolume_cpp`, rmesh)
 }
@@ -45,6 +49,10 @@ boundingBox_cpp <- function(rmesh) {
     .Call(`_MeshUtils_boundingBox_cpp`, rmesh)
 }
 
+getDistance_cpp <- function(rmesh, points) {
+    .Call(`_MeshUtils_getDistance_cpp`, rmesh, points)
+}
+
 getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric) {
     .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric)
 }
@@ -57,12 +65,12 @@ remeshIsotropic_cpp <- function(rmeshIn, targetEdgeLen, nIter, nRelaxSteps) {
     .Call(`_MeshUtils_remeshIsotropic_cpp`, rmeshIn, targetEdgeLen, nIter, nRelaxSteps)
 }
 
-jet_normals_cpp <- function(pts, nb_neighbors) {
-    .Call(`_MeshUtils_jet_normals_cpp`, pts, nb_neighbors)
+jet_normals_cpp <- function(pts, nbNeighbors) {
+    .Call(`_MeshUtils_jet_normals_cpp`, pts, nbNeighbors)
 }
 
-pca_normals_cpp <- function(pts, nb_neighbors) {
-    .Call(`_MeshUtils_pca_normals_cpp`, pts, nb_neighbors)
+pca_normals_cpp <- function(pts, nbNeighbors) {
+    .Call(`_MeshUtils_pca_normals_cpp`, pts, nbNeighbors)
 }
 
 intersectionEK_cpp <- function(rmeshes, clean, normals, triangulate) {
@@ -81,8 +89,8 @@ readFile_cpp <- function(filename) {
     .Call(`_MeshUtils_readFile_cpp`, filename)
 }
 
-writeFile_cpp <- function(filename, binary, precision, Vertices, Faces) {
-    invisible(.Call(`_MeshUtils_writeFile_cpp`, filename, binary, precision, Vertices, Faces))
+writeFile_cpp <- function(filename, binary, precision, vertices, faceList) {
+    invisible(.Call(`_MeshUtils_writeFile_cpp`, filename, binary, precision, vertices, faceList))
 }
 
 reconstructAFS_cpp <- function(pts, nNeighs, clean) {

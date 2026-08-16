@@ -377,6 +377,23 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
   fromCPP(mesh)
 }
 
+#' @title Get mesh area
+#' @description Get the surface area of a 3D mesh.
+#'
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object. The mesh must be triangle and must not self-intersect.
+#' @returns \code{numeric}: The mesh area.
+#' @examples
+#' library(MeshUtils)
+#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' getArea(mesh)
+#'
+#' @export
+getArea <- function(x) {
+  meshCPP <- fromR(x)
+  getArea_cpp(meshCPP)
+}
+
 #' @title Get mesh volume
 #' @description Get the volume of a 3D mesh.
 #'
@@ -395,11 +412,11 @@ getVolume <- function(x) {
 }
 
 #' @title Get mesh centroid
-#' @description Get mesh centroid
+#' @description Get mesh centroid.
 #'
 #' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
-#' @returns numeric 3-vector with mesh centroid.
+#'     object. The mesh must be triangle.
+#' @returns \code{numeric} 3-vector with the cartesian coordinates of the mesh centroid.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -454,6 +471,7 @@ getOptimalBoundingBox <- function(x) {
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
+#'
 #' mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #' bb_rgl   <- getBoundingBox(mesh, out="rgl")
@@ -481,6 +499,42 @@ getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
   } else {
     makeMesh(mesh=m_rgl)
   }
+}
+
+#' @title Get distance from points to a mesh
+#' @description Get the Euclidean distance of points
+#' to a 3D mesh.
+#'
+#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
+#'     object. The mesh must be triangle.
+#' @param points \code{numeric} matrix with 3 columns with one point per row.
+#' @returns \code{numeric} vector: The distance of each point in \code{points}
+#'     to the mesh \code{x}.
+#' @examples
+#' library(MeshUtils)
+#' mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' points <- matrix(2*runif(3*4), ncol=3)
+#' getDistance(mesh, points)
+#'
+#' @export
+#' @importFrom stats na.omit
+getDistance <- function(x, points) {
+  if(!is.matrix(points) || !is.numeric(points)) {
+    stop("The `points` argument must be a numeric matrix.", call. = TRUE)
+  }
+  if(ncol(points) != 3L) {
+    stop("The `points` matrix must have three columns.", call. = TRUE)
+  }
+  storage.mode(points) <- "double"
+  n_pts <- nrow(points)
+  is_na <- vapply(seq_len(n_pts), function(i) {
+    anyNA(points[i, ]) }, logical(1))
+
+  dst         <- rep(NA_real_, n_pts)
+  pts_nona    <- na.omit(points)
+  meshCPP     <- fromR(x)
+  dst[!is_na] <- getDistance_cpp(meshCPP, t(pts_nona))
+  dst
 }
 
 #' @title Hausdorff distance between two meshes

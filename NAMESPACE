@@ -13,6 +13,8 @@ export(getHausdorffDistance)
 export(getOptimalBoundingBox)
 export(getSomeNormals)
 export(getVolume)
+export(getArea)
+export(getDistance)
 export(isClosed)
 export(makeMesh)
 export(orientToBoundVolume)
@@ -27,7 +29,6 @@ export(toRGL)
 export(writeMeshFile)
 importFrom(Rcpp,evalCpp)
 importFrom(Rvcg,vcgUpdateNormals)
-importFrom(data.table,uniqueN)
 importFrom(rgl,
   cube3d,
   cylinder3d,
@@ -40,4 +41,5 @@ importFrom(rgl,
   translate3d
 )
 importFrom(utils,hasName)
+importFrom(stats,na.omit)
 useDynLib(MeshUtils, .registration=TRUE)
