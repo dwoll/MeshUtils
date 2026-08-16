@@ -2,11 +2,11 @@
 
 `MeshUtils` ís an R package that supports basic processing of 3D meshes using as backend the 'C++' library [`CGAL`](https://www.cgal.org/) via R package [`RcppCGAL`](https://cran.r-project.org/package=RcppCGAL). Features:
 
-  * Conversion to / from class `mesh3d` from package [`rgl`](https://cran.r-project.org/package=rgl)
+  * Conversion to / from class `mesh3d` from package [`rgl`](https://cran.r-project.org/package=rgl), also compatible with package [Rvcg](https://cran.r-project.org/package=Rvcg)
   * Mesh repair
       * Filling holes
       * Removing self intersections
-  * Boolean mesh operations: union, difference and intersection
+  * Boolean mesh operations: union, difference, intersection
   * Isotropic remeshing
   * Surface reconstruction
       * AFS
@@ -18,7 +18,9 @@
       * Optimal (oriented) bounding box
   * Hausdorff distance between two meshes
   * Centroid
+  * Area
   * Volume
+  * Distance from points to mesh
 
 ## Development
 
