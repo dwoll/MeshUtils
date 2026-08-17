@@ -7,16 +7,23 @@
 getHausdorffDistance(mesh1, mesh2, symmetric = TRUE, errorBound)
 }
 \arguments{
-\item{mesh1}{A \code{CGALmesh} object.}
-\item{mesh2}{A \code{CGALmesh} object.}
-\item{symmetric}{Boolean.}
-\item{errorBound}{A positive number, a bound on the error of the estimate. If missing, the approximate distance is returned.}
+\item{mesh1}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+
+\item{mesh2}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+
+\item{symmetric}{Boolean, whether to consider the symmetric Hausdorff
+distance.}
+
+\item{errorBound}{A positive number, a bound on the error of the
+estimate. If missing, the approximate distance is returned.}
 }
 \value{
-A number. For the apprixmate distance, the algorithm uses some simulations and thus the result can vary.
+A number. For the apprixmate distance, the algorithm uses
+some simulations and thus the result can vary.
 }
 \description{
-Hausdorff distance between two meshes. Either approximate distance, or distance estimate with a given error bound.
+Hausdorff distance between two meshes. Either
+approximate distance, or distance estimate with a given error bound.
 }
 \examples{
 library(MeshUtils)

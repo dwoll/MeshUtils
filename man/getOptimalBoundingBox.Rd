@@ -7,8 +7,7 @@
 getOptimalBoundingBox(x)
 }
 \arguments{
-\item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-object.}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
 A \code{CGALmesh} object.
@@ -19,7 +18,7 @@ Get oriented bounding box
 \examples{
 library(MeshUtils)
 library(rgl)
-mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh     <- dataHeart1
 mesh_rgl <- toRGL(mesh)
 obb      <- getOptimalBoundingBox(mesh)
 obb_rgl  <- toRGL(obb[["mesh"]])

@@ -14,4 +14,7 @@ dataTruncIcosahedron
 A list giving the vertices and the faces of a truncated
 icosahedron. There are some hexagonal faces and some pentagonal faces.
 }
+\author{
+Originally developed by Stephane Laurent.
+}
 \keyword{datasets}

@@ -7,10 +7,9 @@
 toRGL(x, ...)
 }
 \arguments{
-\item{x}{A \code{CGALmesh} object, i.e., a specific list as produced
-by the \code{\link{makeMesh}} function). In order to be
-convertible to a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
-its faces must have at most four sides.}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+In order to be convertible to a \code{\link[rgl]{mesh3d}} object from package
+\strong{rgl}, its faces must have at most four sides.}
 
 \item{...}{Arguments passed to \code{\link[rgl]{mesh3d}}.}
 }
@@ -19,15 +18,15 @@ A \strong{rgl} mesh object, i.e., a list of class \code{\link[rgl]{mesh3d}}.
 }
 \description{
 Converts a \code{CGALmesh} object (the output of the \code{\link{makeMesh}}
-function) to \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+function) to a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 }
 \examples{
 library(MeshUtils)
 library(rgl)
 mesh <- makeMesh(
-  dataTruncIcosahedron[["vertices"]],
-  dataTruncIcosahedron[["faces"]],
-  triangulate=TRUE)
+  mesh       =dataTruncIcosahedron,
+  triangulate=TRUE,
+  normals    =FALSE)
 
 mesh_rgl <- toRGL(mesh, segments=t(mesh[["edges"]]))
 open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)

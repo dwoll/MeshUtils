@@ -67,6 +67,6 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
 
   Mesh3 mesh;
   CGAL::copy_face_graph(poly, mesh);
-  Rcpp::List rmeshOut = getRmesh(mesh);
+  Rcpp::List rmeshOut = getRmesh(mesh, false);
   return rmeshOut;
 }

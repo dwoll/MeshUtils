@@ -30,14 +30,15 @@ check the matrix it takes as argument.
 \examples{
 library(MeshUtils)
 library(rgl)
-mesh     <- dataHeart1
-mesh_rgl <- toRGL(mesh)
-fun      <- getSomeNormals(6)
-mesh_psr <- reconstructPoisson(mesh[["vertices"]],
-                               normals=fun,
-                               smAngle=10,
-                               smRadius=3,
-                               smDistance=0.3)
+mesh      <- dataHeart1
+mesh_rgl  <- toRGL(mesh)
+fun       <- getSomeNormals(6)
+mesh      <- makeMesh(mesh=dataHopfTorus)
+mesh_psr  <- reconstructPoisson(mesh[["vertices"]],
+                                normals=fun,
+                                smAngle=10,
+                                smRadius=3,
+                                smDistance=0.3)
 
 mesh_psr_rgl <- toRGL(mesh_psr)
 

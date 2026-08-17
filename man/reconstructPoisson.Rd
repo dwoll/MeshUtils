@@ -23,16 +23,18 @@ have normals, set \code{normals=NULL} (the default), and some normals will
 be computed with the help of \code{\link[Rvcg]{vcgUpdateNormals}}, or
 use the \code{\link[MeshUtils]{getSomeNormals}} function.}
 
+\item{spacing}{Size parameter. Smaller values increase the precision of the
+output mesh at the cost of higher computation time. Set to \code{NULL}
+(the default) for a reasonable automatic value: an average spacing whose
+value will be displayed in a message and that you can also get in the
+\code{"spacing"} attribute of the output.}
+
 \item{smAngle}{Bound for the minimum facet angle in degrees.}
 
 \item{smRadius}{Relative bound for the radius of the surface Delaunay balls.}
 
 \item{smDistance}{Relative bound for the center-center distances.}
 
-\item{spacing}{Size parameter. Smaller values increase the precision of the
-output mesh at the cost of higher computation time. Set to \code{NULL}
-(the default) for a reasonable automatic value: an average spacing whose
-value will be displayed in a message.}
 \item{clean}{Boolean. Attempt to fix polygon soup?}
 }
 \value{
@@ -54,7 +56,6 @@ mesh_psr <- reconstructPoisson(mesh[["vertices"]],
                                smAngle=10,
                                smRadius=3,
                                smDistance=0.3)
-
 mesh_psr_rgl <- toRGL(mesh_psr)
 
 open3d(windowRect=50 + c(0, 0, 800, 400))

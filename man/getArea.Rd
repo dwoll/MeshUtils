@@ -7,11 +7,10 @@
 getArea(x)
 }
 \arguments{
-\item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-object. The mesh must be triangle and must not self-intersect.}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
-numeric: The mesh area.
+\code{numeric}: The mesh area.
 }
 \description{
 Get the surface area of a 3D mesh.
@@ -21,7 +20,4 @@ library(MeshUtils)
 mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 getArea(mesh)
 
-}
-\author{
-Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 }

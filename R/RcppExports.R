@@ -5,40 +5,52 @@ alphaWrap_cpp <- function(pts, alphaRel, offsetRel) {
     .Call(`_MeshUtils_alphaWrap_cpp`, pts, alphaRel, offsetRel)
 }
 
-SurfMesh_cpp <- function(rmeshIn, clean, triangulate, normals) {
-    .Call(`_MeshUtils_SurfMesh_cpp`, rmeshIn, clean, triangulate, normals)
+SurfMesh_cpp <- function(rmeshIn, clean, triangulate, normals, maxNumHoles) {
+    .Call(`_MeshUtils_SurfMesh_cpp`, rmeshIn, clean, triangulate, normals, maxNumHoles)
 }
 
-doesBoundVolume_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_doesBoundVolume_cpp`, rmesh)
+isValid_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_isValid_cpp`, rmesh)
 }
 
-doesSelfIntersect_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_doesSelfIntersect_cpp`, rmesh)
+hasGarbage_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_hasGarbage_cpp`, rmesh)
+}
+
+doesBoundVolume_cpp <- function(rmesh, triangulate = FALSE) {
+    .Call(`_MeshUtils_doesBoundVolume_cpp`, rmesh, triangulate)
+}
+
+doesSelfIntersect_cpp <- function(rmesh, triangulate = FALSE) {
+    .Call(`_MeshUtils_doesSelfIntersect_cpp`, rmesh, triangulate)
 }
 
 isClosed_cpp <- function(rmesh) {
     .Call(`_MeshUtils_isClosed_cpp`, rmesh)
 }
 
-orientToBoundVolume_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_orientToBoundVolume_cpp`, rmesh)
+orientToBoundVolume_cpp <- function(rmesh, triangulate = FALSE) {
+    .Call(`_MeshUtils_orientToBoundVolume_cpp`, rmesh, triangulate)
 }
 
-removeSelfIntersections_cpp <- function(rmeshIn, method) {
-    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmeshIn, method)
+removeSelfIntersections_cpp <- function(rmeshIn, method, triangulate, maxNumHoles) {
+    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmeshIn, method, triangulate, maxNumHoles)
 }
 
-getArea_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_getArea_cpp`, rmesh)
+fillBoundaryHoles_cpp <- function(rmeshIn, fairHole, triangulate, maxNumHoles) {
+    .Call(`_MeshUtils_fillBoundaryHoles_cpp`, rmeshIn, fairHole, triangulate, maxNumHoles)
 }
 
-getVolume_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_getVolume_cpp`, rmesh)
+getArea_cpp <- function(rmesh, triangulate = FALSE) {
+    .Call(`_MeshUtils_getArea_cpp`, rmesh, triangulate)
 }
 
-getCentroid_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_getCentroid_cpp`, rmesh)
+getVolume_cpp <- function(rmesh, triangulate = FALSE) {
+    .Call(`_MeshUtils_getVolume_cpp`, rmesh, triangulate)
+}
+
+getCentroid_cpp <- function(rmesh, triangulate = FALSE) {
+    .Call(`_MeshUtils_getCentroid_cpp`, rmesh, triangulate)
 }
 
 optimalBoundingBox_cpp <- function(rmeshIn) {
@@ -49,32 +61,32 @@ boundingBox_cpp <- function(rmesh) {
     .Call(`_MeshUtils_boundingBox_cpp`, rmesh)
 }
 
-getDistance_cpp <- function(rmesh, points) {
-    .Call(`_MeshUtils_getDistance_cpp`, rmesh, points)
+getDistance_cpp <- function(rmesh, points, triangulate = FALSE) {
+    .Call(`_MeshUtils_getDistance_cpp`, rmesh, points, triangulate)
 }
 
-getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric) {
-    .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric)
+getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric, triangulate = FALSE) {
+    .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric, triangulate)
 }
 
-getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, errorBound) {
-    .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, errorBound)
+getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, errorBound, triangulate = FALSE) {
+    .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, errorBound, triangulate)
 }
 
 remeshIsotropic_cpp <- function(rmeshIn, targetEdgeLen, nIter, nRelaxSteps) {
     .Call(`_MeshUtils_remeshIsotropic_cpp`, rmeshIn, targetEdgeLen, nIter, nRelaxSteps)
 }
 
-subdivideCatmullClark_cpp <- function(rmeshIn, nIter) {
-    .Call(`_MeshUtils_subdivideCatmullClark_cpp`, rmeshIn, nIter)
+subdivideCatmullClark_cpp <- function(rmeshIn, nIter, triangulate) {
+    .Call(`_MeshUtils_subdivideCatmullClark_cpp`, rmeshIn, nIter, triangulate)
 }
 
-subdivideDooSabin_cpp <- function(rmeshIn, nIter) {
-    .Call(`_MeshUtils_subdivideDooSabin_cpp`, rmeshIn, nIter)
+subdivideDooSabin_cpp <- function(rmeshIn, nIter, triangulate) {
+    .Call(`_MeshUtils_subdivideDooSabin_cpp`, rmeshIn, nIter, triangulate)
 }
 
-subdivideSqrt3_cpp <- function(rmeshIn, nIter) {
-    .Call(`_MeshUtils_subdivideSqrt3_cpp`, rmeshIn, nIter)
+subdivideSqrt3_cpp <- function(rmeshIn, nIter, triangulate) {
+    .Call(`_MeshUtils_subdivideSqrt3_cpp`, rmeshIn, nIter, triangulate)
 }
 
 jet_normals_cpp <- function(pts, nbNeighbors) {

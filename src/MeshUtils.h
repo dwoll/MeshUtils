@@ -96,7 +96,11 @@ namespace PMP = CGAL::Polygon_mesh_processing;
 
 // -------------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>
-MeshT soup_to_mesh(std::vector<PointT>, std::vector<std::vector<size_t>>, const bool, const bool triangulate);
+MeshT soup_to_mesh(std::vector<PointT>,
+                   std::vector<std::vector<size_t>>,
+                   const bool,
+                   const bool,
+                   const unsigned int);
 
 template <typename MeshT, typename PointT>
 MeshT csoup_to_mesh(std::vector<PointT>, std::vector<std::vector<size_t>>, const bool);
@@ -108,10 +112,10 @@ template <typename PointT>
 Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT>&);
 
 template <typename MeshT, typename PointT>
-MeshT makeSurfMesh(const Rcpp::List&, const bool, const bool);
+MeshT makeSurfMesh(const Rcpp::List&, const bool, const bool, const unsigned int);
 
 template <typename MeshT, typename PointT>
-MeshT makeSurfTMesh(const Rcpp::List&, const bool, const bool);
+MeshT makeSurfTMesh(const Rcpp::List&, const bool, const bool, const unsigned int);
 
 template <typename KernelT, typename MeshT, typename PointT>
 Rcpp::DataFrame getEdges(const MeshT&);
@@ -125,10 +129,13 @@ Rcpp::List RSurfMesh2(const MeshT&, const bool, const int);
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List RSurfTMesh(const MeshT&, const bool);
 
+template <typename KernelT, typename MeshT, typename PointT>
+MeshT removeSelfIntersections(const EMesh3&, const unsigned int, const unsigned int);
+
 // -------------------------------------------------------------------------- //
 // TODO template
-Rcpp::List getRmesh(const Mesh3&);
-Rcpp::List getRmesh(const EMesh3&);
+Rcpp::List getRmesh(const Mesh3&,  const bool);
+Rcpp::List getRmesh(const EMesh3&, const bool);
 
 // template <typename KernelT, typename MeshT, typename VectorT>
 // Rcpp::NumericMatrix getNormals(MeshT);
@@ -139,8 +146,12 @@ Rcpp::NumericMatrix getNormals(EMesh3);
 // no template
 void Message(std::string);
 std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List&);
-EMesh3 fillBoundaryHoles(EMesh3, bool, double, int);              // only EPEC kernel
-void removeProperties(EMesh3&mesh, std::vector<std::string>);     // currently only used with EPEC kernel
+
+// only EPEC kernel
+void fillBoundaryHoles(EMesh3&, const bool, const double, const int, const unsigned int);
+
+// currently only used with EPEC kernel
+void removeProperties(EMesh3&, std::vector<std::string>);
 
 // -------------------------------------------------------------------------- //
 #endif

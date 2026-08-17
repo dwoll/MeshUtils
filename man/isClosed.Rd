@@ -7,8 +7,7 @@
 isClosed(x)
 }
 \arguments{
-\item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-object.}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
 TRUE or FALSE.

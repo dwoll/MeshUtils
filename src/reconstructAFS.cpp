@@ -60,7 +60,7 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
   }
 
   PMP::merge_duplicate_points_in_polygon_soup(vertices, triangles);
-  Mesh3 mesh = soup_to_mesh<Mesh3, Point3>(vertices, triangles, clean, false);
-  Rcpp::List rmeshOut = getRmesh(mesh);
+  Mesh3 mesh = soup_to_mesh<Mesh3, Point3>(vertices, triangles, clean, false, 0);
+  Rcpp::List rmeshOut = getRmesh(mesh, false);
   return rmeshOut;
 }

@@ -41,6 +41,6 @@ Rcpp::List reconstructSSS_cpp(
     mesh.add_face(vxdescr(face[0]), vxdescr(face[1]), vxdescr(face[2]));
   }
 
-  Rcpp::List rmeshOut = getRmesh(mesh);
+  Rcpp::List rmeshOut = getRmesh(mesh, false);
   return rmeshOut;
 }

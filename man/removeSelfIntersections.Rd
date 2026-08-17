@@ -7,7 +7,8 @@
 removeSelfIntersections(x, method = c("auto", "auto_snap"))
 }
 \arguments{
-\item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh} object.}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+
 \item{method}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
 }
 \value{
@@ -16,9 +17,12 @@ removeSelfIntersections(x, method = c("auto", "auto_snap"))
 \description{
 Remove self intersections
 }
+\details{
+See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.
+}
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 mesh_nsi <- removeSelfIntersections(mesh)
 getVolume(mesh_nsi)
 

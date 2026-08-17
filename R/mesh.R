@@ -50,9 +50,10 @@ print.CGALmesh <- function(x, ...) {
 #'   and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
 #'   (i.e. a \code{\link[rgl]{mesh3d}} object).
 #' @param clean Boolean, whether to do some mesh cleaning.
-#' @param triangulate Boolean, whether to triangulate the faces. Ignored if faces
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
 #' @param normals Boolean, whether to compute the normals.
+#' @param maxNumHoles \code{integer}: Maximum number of holes to be filled. May be 0.
 #'
 #' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 #'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.
@@ -116,7 +117,11 @@ makeMesh <- function(vertices,
                      mesh       =NULL,
                      clean      =TRUE,
                      triangulate=FALSE,
-                     normals    =FALSE) {
+                     normals    =FALSE,
+                     maxNumHoles=10L) {
+	stopifnot(isBoolean(clean))
+	stopifnot(isBoolean(triangulate))
+	stopifnot(isPositiveInteger(maxNumHoles))
 	if(!is.null(mesh)) {
 		if(inherits(mesh, "mesh3d")) {
 			vft  <- getVFT(mesh, beforeCheck = TRUE)
@@ -135,7 +140,7 @@ makeMesh <- function(vertices,
 	}
 
 	mesh_r   <- list("vertices"=vertices, "faces"=faces)
-	mesh_cpp <- SurfMesh_cpp(mesh_r, clean, triangulate, normals)
+	mesh_cpp <- SurfMesh_cpp(mesh_r, clean, triangulate, normals, maxNumHoles)
 	fromCPP(mesh_cpp)
 }
 
@@ -271,10 +276,82 @@ plotEdges <- function(
 	invisible(NULL)
 }
 
+#' @title Is mesh a valid mesh?
+#' @description Is the given mesh a valid surface mesh?
+#'
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @returns TRUE or FALSE.
+#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' mesh <- makeMesh(mesh=dataPentaPrism)
+#' isValid(mesh)
+#'
+#' @export
+isValid <- function(x) {
+    if(!inherits(x, "CGALmesh")) {
+        stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+    }
+    meshCPP <- fromR(x)
+    isValid_cpp(meshCPP)
+}
+
+#' @title Does mesh have garbage?
+#' @description Does the given surface mesh have garbage?
+#'
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @returns TRUE or FALSE.
+#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' mesh <- makeMesh(mesh=dataPentaPrism)
+#' hasGarbage(mesh)
+#'
+#' @export
+hasGarbage <- function(x) {
+    if(!inherits(x, "CGALmesh")) {
+        stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+    }
+    meshCPP <- fromR(x)
+    hasGarbage_cpp(meshCPP)
+}
+
+#' @title Is mesh a triangle mesh?
+#' @description Is the given surface mesh a triangle mesh?
+#'
+#' @param x A \code{list} with components \code{vertices} and \code{faces},
+#'   e.g., a \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @returns TRUE or FALSE.
+#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=FALSE)
+#' isTriangle(mesh)
+#'
+#' @export
+isTriangle <- function(x) {
+  checkedMesh <- checkMesh(x[["vertices"]],
+                           x[["faces"]],
+                           aslist = TRUE)
+
+  checkedMesh[["isTriangle"]]
+}
+
+
 #' @title Does mesh bound a volume?
 #' @description Does mesh bound a volume?
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns TRUE or FALSE.
 #' @export
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -285,19 +362,22 @@ plotEdges <- function(
 #' doesBoundVolume(mesh)
 #'
 #' @export
-doesBoundVolume <- function(x) {
+doesBoundVolume <- function(x, triangulate = FALSE) {
     if(!inherits(x, "CGALmesh")) {
         stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
     }
+    stopifnot(isBoolean(triangulate))
     meshCPP <- fromR(x)
-    doesBoundVolume_cpp(meshCPP)
+    doesBoundVolume_cpp(meshCPP, triangulate)
 }
 
 #' @title Does mesh self intersect?
 #' @description Does mesh self intersect?
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns TRUE or FALSE.
 #'
 #' @examples
@@ -306,13 +386,14 @@ doesBoundVolume <- function(x) {
 #' doesSelfIntersect(mesh)
 #'
 #' @export
-doesSelfIntersect <- function(x) {
+doesSelfIntersect <- function(x, triangulate = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
+  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  doesSelfIntersect_cpp(meshCPP)
+  doesSelfIntersect_cpp(meshCPP, triangulate)
 }
 
 #' @title Is mesh closed?
@@ -341,6 +422,8 @@ isClosed <- function(x) {
 #' @description Orient mesh to bound a volume
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -351,21 +434,25 @@ isClosed <- function(x) {
 #' getVolume(mesh_o)
 #'
 #' @export
-orientToBoundVolume <- function(x) {
+orientToBoundVolume <- function(x, triangulate = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
+  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  mesh    <- orientToBoundVolume_cpp(meshCPP)
+  mesh    <- orientToBoundVolume_cpp(meshCPP, triangulate)
   fromCPP(mesh)
 }
 
 #' @title Remove self intersections
-#' @description Remove self intersections
+#' @description Remove self intersections.
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param method One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
+#' @param maxNumHoles \code{integer}: Maximum number of holes to be filled.
 #' @returns \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #' @details See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.
@@ -377,16 +464,51 @@ orientToBoundVolume <- function(x) {
 #' getVolume(mesh_nsi)
 #'
 #' @export
-removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
+removeSelfIntersections <- function(x, method=c("auto", "auto_snap"),
+	triangulate = FALSE, maxNumHoles = 0) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
+  stopifnot(isBoolean(triangulate))
+  stopifnot(isPositiveInteger(maxNumHoles))
   method_choices <- c("auto", "auto_snap")
   method     <- match.arg(method, choices=method_choices)
   method_int <- match(method, method_choices)
   meshCPP    <- fromR(x)
-  mesh       <- removeSelfIntersections_cpp(meshCPP, method_int)
+  mesh       <- removeSelfIntersections_cpp(meshCPP, method_int, triangulate, maxNumHoles)
+  fromCPP(mesh)
+}
+
+#' @title Fill boundary holes
+#' @description Fill boundary holes.
+#'
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param fairHole Boolean: Use CGAL `triangulate_refine_and_fair_hole()` (\code{TRUE})
+#'     or `triangulate_and_refine_hole()` (\code{FALSE})?
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
+#' @param maxNumHoles \code{integer}: Maximum number of holes to be filled.
+#' @returns \code{CGALmesh} object.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#' @details See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.
+#'
+#' @examples
+#' library(MeshUtils)
+#' mesh      <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh_fill <- fillBoundaryHoles(mesh)
+#'
+#' @export
+fillBoundaryHoles <- function(x, fairHole = TRUE, triangulate = FALSE, maxNumHoles=10L) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
+  stopifnot(isBoolean(fairHole))
+  stopifnot(isBoolean(triangulate))
+  stopifnot(isStrictPositiveInteger(maxNumHoles))
+  meshCPP <- fromR(x)
+  mesh    <- fillBoundaryHoles_cpp(meshCPP, fairHole, triangulate, maxNumHoles)
   fromCPP(mesh)
 }
 
@@ -394,6 +516,8 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
 #' @description Get the surface area of a 3D mesh.
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns \code{numeric}: The mesh area.
 #' @examples
 #' library(MeshUtils)
@@ -401,19 +525,22 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
 #' getArea(mesh)
 #'
 #' @export
-getArea <- function(x) {
+getArea <- function(x, triangulate = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
+  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  getArea_cpp(meshCPP)
+  getArea_cpp(meshCPP, triangulate)
 }
 
 #' @title Get mesh volume
 #' @description Get the volume of a 3D mesh.
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns \code{numeric}: The mesh volume - if mesh bounds a volume.
 #' @examples
 #' library(MeshUtils)
@@ -421,19 +548,22 @@ getArea <- function(x) {
 #' getVolume(mesh)
 #'
 #' @export
-getVolume <- function(x) {
+getVolume <- function(x, triangulate = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
+  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  getVolume_cpp(meshCPP)
+  getVolume_cpp(meshCPP, triangulate)
 }
 
 #' @title Get mesh centroid
 #' @description Get mesh centroid.
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns \code{numeric} 3-vector with the cartesian coordinates of the mesh centroid.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -444,13 +574,14 @@ getVolume <- function(x) {
 #' getCentroid(mesh)
 #'
 #' @export
-getCentroid <- function(x) {
+getCentroid <- function(x, triangulate = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
+  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  getCentroid_cpp(meshCPP)
+  getCentroid_cpp(meshCPP, triangulate)
 }
 
 #' @title Get optimal bounding box
@@ -462,7 +593,7 @@ getCentroid <- function(x) {
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh     <- dataHeart1
 #' mesh_rgl <- toRGL(mesh)
 #' obb      <- getOptimalBoundingBox(mesh)
 #' obb_rgl  <- toRGL(obb[["mesh"]])
@@ -535,6 +666,8 @@ getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
 #' @param points \code{numeric} matrix with 3 columns with one point per row.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns \code{numeric} vector: The distance of each point in \code{points}
 #'     to the mesh \code{x}.
 #' @examples
@@ -545,7 +678,7 @@ getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
 #'
 #' @export
 #' @importFrom stats na.omit
-getDistance <- function(x, points) {
+getDistance <- function(x, points, triangulate = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
@@ -556,6 +689,7 @@ getDistance <- function(x, points) {
   if(ncol(points) != 3L) {
     stop("The `points` matrix must have three columns.", call. = TRUE)
   }
+  stopifnot(isBoolean(triangulate))
   storage.mode(points) <- "double"
   n_pts <- nrow(points)
   is_na <- vapply(seq_len(n_pts), function(i) {
@@ -564,7 +698,7 @@ getDistance <- function(x, points) {
   dst         <- rep(NA_real_, n_pts)
   pts_nona    <- na.omit(points)
   meshCPP     <- fromR(x)
-  dst[!is_na] <- getDistance_cpp(meshCPP, t(pts_nona))
+  dst[!is_na] <- getDistance_cpp(meshCPP, t(pts_nona), triangulate)
   dst
 }
 
@@ -573,6 +707,8 @@ getDistance <- function(x, points) {
 #'   approximate distance, or distance estimate with a given error bound.
 #' @param mesh1 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param mesh2 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param triangulate Boolean: Whether to triangulate the faces of \code{mesh1} and \code{mesh2}.
+#'   Ignored if faces are already triangle.
 #' @param symmetric Boolean, whether to consider the symmetric Hausdorff
 #'   distance.
 #' @param errorBound A positive number, a bound on the error of the
@@ -591,17 +727,21 @@ getDistance <- function(x, points) {
 #'                      errorBound=0.001)
 #'
 #' @export
-getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound) {
+getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound,
+	triangulate = FALSE) {
   stopifnot(inherits(mesh1, "CGALmesh"))
   stopifnot(inherits(mesh2, "CGALmesh"))
   stopifnot(isBoolean(symmetric))
+  stopifnot(isBoolean(triangulate))
   meshCPP1 <- fromR(mesh1)
   meshCPP2 <- fromR(mesh2)
   if(!missing(errorBound)) {
     stopifnot(isPositiveNumber(errorBound))
-    getHausdorffEst_cpp(meshCPP1, meshCPP2, symmetric, errorBound)
+    getHausdorffEst_cpp(meshCPP1, meshCPP2, symmetric, errorBound,
+                        triangulate)
   } else {
-    getHausdorffApprox_cpp(meshCPP1, meshCPP2, symmetric)
+    getHausdorffApprox_cpp(meshCPP1, meshCPP2, symmetric,
+    	                     triangulate)
   }
 }
 
@@ -610,16 +750,16 @@ getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound) {
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param targetEdgeLen Positive number, the target edge length of the
 #'   remeshed mesh.
-#' @param nIter Positive integer, number of iterations.
-#' @param nRelaxSteps Positive integer, number of relaxation steps.
-#' @param out Character to indicate output mesh format.}
+#' @param nIter Positive \code{integer}: Number of iterations.
+#' @param nRelaxSteps Positive \code{integer}: Number of relaxation steps.
+#' @param out \code{haracter: Indicate output mesh format.
 #' @return A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
 #'   depending on option \code{out}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
-#' library(CGALmesh)
+#' library(MeshUtils)
 #' library(rgl)
 #'
 #' mesh         <- dataHeart1
@@ -668,8 +808,11 @@ remeshIsotropic <- function(
 
 #' @title Catmull-Clark subdivision and deformation
 #' @description Performs the Catmull-Clark subdivision and deformation.
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
-#' @param nIter \code{integer}: Number of iterations.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#'   The mesh must be triangle or be able to be made triangle.
+#' @param nIter Positive \code{integer}: Number of iterations.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns A \code{CGALmesh} object.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -678,9 +821,9 @@ remeshIsotropic <- function(
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh        <- makeMesh(mesh=dataHopfTorus)
+#' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl    <- toRGL(mesh)
-#' mesh_sd     <- subdivisionCatmullClark(nIter=2)
+#' mesh_sd     <- subdivideCatmullClark(mesh, nIter=2)
 #' mesh_sd_rgl <- toRGL(mesh_sd)
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
@@ -692,21 +835,25 @@ remeshIsotropic <- function(
 #' wire3d(mesh_sd_rgl)
 #'
 #' @export
-subdivisionCatmullClark <- function(x, nIter = 1) {
+subdivideCatmullClark <- function(x, nIter = 1, triangulate = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			     " (i.e., the output of the `makeMesh()` function).")
   }
   stopifnot(isStrictPositiveInteger(nIter))
+  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  meshOut <- subdivisionCatmullClark_cpp(meshCPP, as.integer(nIter))
+  meshOut <- subdivideCatmullClark_cpp(meshCPP, as.integer(nIter), triangulate)
   fromCPP(meshOut)
 }
 
 #' @title Doo-Sabin subdivision and deformation
 #' @description Performs the Doo-Sabin subdivision and deformation.
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
-#' @param nIter \code{integer}: Number of iterations.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#'   The mesh must be triangle or be able to be made triangle.
+#' @param nIter Positive \code{integer}: Number of iterations.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns A \code{CGALmesh} object.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -715,9 +862,9 @@ subdivisionCatmullClark <- function(x, nIter = 1) {
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh        <- makeMesh(mesh=dataHopfTorus)
+#' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl    <- toRGL(mesh)
-#' mesh_sd     <- subdivisionDooSabin(nIter=2)
+#' mesh_sd     <- subdivideDooSabin(mesh, nIter=2)
 #' mesh_sd_rgl <- toRGL(mesh_sd)
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
@@ -729,21 +876,25 @@ subdivisionCatmullClark <- function(x, nIter = 1) {
 #' wire3d(mesh_sd_rgl)
 #'
 #' @export
-subdivisionDooSabin <- function(x, nIter = 1) {
+subdivideDooSabin <- function(x, nIter = 1, triangulate = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			     " (i.e., the output of the `makeMesh()` function).")
   }
   stopifnot(isStrictPositiveInteger(nIter))
+  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  meshOut <- subdivisionDooSabin_cpp(meshCPP, as.integer(nIter))
+  meshOut <- subdivideDooSabin_cpp(meshCPP, as.integer(nIter), triangulate)
   fromCPP(meshOut)
 }
 
 #' @title Sqrt3 subdivision and deformation
 #' @description Performs the 'Sqrt3' subdivision and deformation.
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
-#' @param nIter \code{integer}: Number of iterations.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#'   The mesh must be triangle or be able to be made triangle.
+#' @param nIter Positive \code{integer}: Number of iterations.
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
 #' @returns A \code{CGALmesh} object.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -752,9 +903,9 @@ subdivisionDooSabin <- function(x, nIter = 1) {
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh        <- makeMesh(mesh=dataHopfTorus)
+#' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl    <- toRGL(mesh)
-#' mesh_sd     <- subdivisionSqrt3(nIter=2)
+#' mesh_sd     <- subdivideSqrt3(mesh, nIter=2)
 #' mesh_sd_rgl <- toRGL(mesh_sd)
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
@@ -766,13 +917,14 @@ subdivisionDooSabin <- function(x, nIter = 1) {
 #' wire3d(mesh_sd_rgl)
 #'
 #' @export
-subdivisionSqrt3 <- function(x, nIter = 1) {
+subdivideSqrt3 <- function(x, nIter = 1, triangulate = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
   stopifnot(isStrictPositiveInteger(nIter))
+  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  meshOut <- subdivisionSqrt3_cpp(meshCPP, as.integer(nIter))
-  fromCPP(mesh_cpp)
+  meshOut <- subdivideSqrt3_cpp(meshCPP, as.integer(nIter), triangulate)
+  fromCPP(meshOut)
 }

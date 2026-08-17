@@ -2,20 +2,22 @@
 % Please edit documentation in R/mesh.R
 \name{getDistance}
 \alias{getDistance}
-\title{Get mesh centroid}
+\title{Get distance from points to a mesh}
 \usage{
 getDistance(x, points)
 }
 \arguments{
-\item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-object. The mesh must be triangle.}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.}
+
 \item{points}{\code{numeric} matrix with 3 columns with one point per row.}
 }
 \value{
-\code{numeric} vector: The distance of each point in \code{points} to the mesh \code{x}.
+\code{numeric} vector: The distance of each point in \code{points}
+to the mesh \code{x}.
 }
 \description{
-Get the Euclidean distance of points to a mesh.
+Get the Euclidean distance of points
+to a 3D mesh.
 }
 \examples{
 library(MeshUtils)
@@ -23,7 +25,4 @@ mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 points <- matrix(2*runif(3*4), ncol=3)
 getDistance(mesh, points)
 
-}
-\author{
-Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 }

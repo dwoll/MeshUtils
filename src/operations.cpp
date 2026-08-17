@@ -43,7 +43,7 @@ MeshT boolIntersect(const Rcpp::List &rmeshes,
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
-  MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(rmesh, clean, triangulate[0]);
+  MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(rmesh, clean, triangulate[0], 0);
   meshes[0] = mesh_0;
   for(size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
@@ -54,7 +54,7 @@ MeshT boolIntersect(const Rcpp::List &rmeshes,
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
     Message("Processing mesh" + meshnum);
-    MeshT mesh_i = makeSurfMesh<MeshT, PointT>(rmesh_i, clean, triangulate[i]);
+    MeshT mesh_i = makeSurfMesh<MeshT, PointT>(rmesh_i, clean, triangulate[i], 0);
     checkMesh1<MeshT>(mesh_i, i + 1);
     const bool ok = PMP::corefine_and_compute_intersection(
       meshes[i - 1], mesh_i, meshes[i]
@@ -83,10 +83,10 @@ MeshT boolDiff(const Rcpp::List &rmesh1,
                const bool triangulate1,
                const bool triangulate2) {
   Message("Processing mesh1");
-  MeshT smesh1 = makeSurfMesh<MeshT, PointT>(rmesh1, clean, triangulate1);
+  MeshT smesh1 = makeSurfMesh<MeshT, PointT>(rmesh1, clean, triangulate1, 0);
   checkMesh1<MeshT>(smesh1, 1);
   Message("Processing mesh2");
-  MeshT smesh2 = makeSurfMesh<MeshT, PointT>(rmesh2, clean, triangulate2);
+  MeshT smesh2 = makeSurfMesh<MeshT, PointT>(rmesh2, clean, triangulate2, 0);
   checkMesh1<MeshT>(smesh2, 2);
   MeshT meshOut;
   bool ok = PMP::corefine_and_compute_difference(smesh1, smesh2, meshOut);
@@ -117,7 +117,7 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
-  MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(rmesh, clean, triangulate[0]);
+  MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(rmesh, clean, triangulate[0], 0);
   meshes[0] = mesh_0;
   for(size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
@@ -128,7 +128,7 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
     Message("Processing mesh" + meshnum);
-    MeshT mesh_i = makeSurfMesh<MeshT, PointT>(rmesh_i, clean, triangulate[i]);
+    MeshT mesh_i = makeSurfMesh<MeshT, PointT>(rmesh_i, clean, triangulate[i], 0);
     checkMesh1<MeshT>(mesh_i, i + 1);
     const bool ok =
         PMP::corefine_and_compute_union(meshes[i - 1], mesh_i, meshes[i]);

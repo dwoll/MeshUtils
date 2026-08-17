@@ -55,6 +55,7 @@ plotEdges(vertices         =mesh_i[["vertices"]],
           edgesAsTubes     =FALSE,
           lwd              =3,
           verticesAsSpheres=FALSE)
+
 }
 \author{
 Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

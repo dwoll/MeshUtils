@@ -24,6 +24,7 @@ providing the vertex indices of the corresponding face.}
 and \code{faces}, and must be either a list containing the components \code{vertices}
 and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
 (i.e. a \code{\link[rgl]{mesh3d}} object).}
+
 \item{clean}{Boolean, whether to do some mesh cleaning.}
 
 \item{triangulate}{Boolean, whether to triangulate the faces. Ignored if faces
@@ -60,10 +61,8 @@ faces <- rbind(
 
 ## plot the tetrahedron, hiding the back of the faces
 ## then some faces do not appear, as their orientation is not correct
-mesh1_rgl_a <- tmesh3d(
-  vertices   =t(vertices),
-  indices    =t(faces),
-  homogeneous=FALSE)
+mesh1_rgl_a <- tmesh3d(vertices=t(vertices),
+                       indices =t(faces))
 
 open3d(windowRect=c(50, 50, 562, 562))
 shade3d(mesh1_rgl_a, color="green", back = "cull")

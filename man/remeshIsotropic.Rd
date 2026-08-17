@@ -4,20 +4,28 @@
 \alias{remeshIsotropic}
 \title{Isotropic remeshing}
 \usage{
-remeshIsotropic(x, targetEdgeLen, nIter = 1, nRelaxSteps = 1,
-                out = c("CGALmesh", "rgl"))
+remeshIsotropic(
+  x,
+  targetEdgeLen,
+  nIter = 1,
+  nRelaxSteps = 1,
+  out = c("CGALmesh", "rgl")
+)
 }
 \arguments{
-\item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh} object.}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{targetEdgeLen}{Positive number, the target edge length of the remeshed mesh.}
+\item{targetEdgeLen}{Positive number, the target edge length of the
+remeshed mesh.}
 
-\item{nIter}{Positive integer, number of iterations.}
-\item{nRelaxSteps}{Positive integer, number of relaxation steps.}
-\item{out}{Character to indicate output mesh format.}
+\item{nIter}{Positive \code{integer}: Number of iterations.}
+
+\item{nRelaxSteps}{Positive \code{integer}: Number of relaxation steps.}
+\item{out}{\code{character}: Indicate output mesh format.}
 }
 \value{
-A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
+depending on option \code{out}.
 }
 \description{
 Isotropic remeshing.
@@ -35,6 +43,7 @@ mfrow3d(1, 2)
 wire3d(mesh_rgl)
 next3d()
 wire3d(mesh_rem_rgl)
+
 }
 \author{
 Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

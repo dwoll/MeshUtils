@@ -98,7 +98,8 @@ template <typename MeshT, typename PointT>
 MeshT soup_to_mesh(std::vector<PointT> points,
                    std::vector<std::vector<size_t>> faces,
                    const bool clean,
-                   const bool triangulate) {
+                   const bool triangulate,
+                   const unsigned int max_num_holes) {
   if(clean) {
     PMP::repair_polygon_soup(points, faces);
   }
@@ -140,49 +141,46 @@ MeshT soup_to_mesh(std::vector<PointT> points,
     Message("The mesh is not triangle; no way to ensure it "
             "bounds a volume, and whether it is outward oriented.");
   }
-  std::string msg1;
+  std::string msg;
   if(!CGAL::is_closed(mesh)) {
-      if(clean) {
+      if(clean && (max_num_holes > 0)) {
           // boundary hole filling with EPEC kernel
           // need to work around mesh being potentially based on EPIC kernel
           EMesh3 mesh_epeck;
           CGAL::copy_face_graph(mesh, mesh_epeck);
-          EMesh3 mesh_filled = fillBoundaryHoles(mesh_epeck, true, -1, -1);
-          if(!CGAL::is_closed(mesh_filled)) {
+          // mesh_epeck is passed by reference and modified in fillBoundaryHoles()
+          fillBoundaryHoles(mesh_epeck, true, -1, -1, max_num_holes);
+          if(!CGAL::is_closed(mesh_epeck)) {
               Rcpp::stop("The mesh is still not closed after trying to fill holes.");
           } else {
-              MeshT mesh_copy;
-              CGAL::copy_face_graph(mesh_filled, mesh_copy);
-              mesh = mesh_copy;
-              msg1 = " after filling holes";
+              CGAL::copy_face_graph(mesh_epeck, mesh);
+              msg = " after filling holes";
           }
       } else {
           Rcpp::stop("The mesh is not closed.");
       }
   }
-  Message("The mesh is closed" + msg1 + ".");
+  Message("The mesh is closed" + msg + ".");
   if(isTriangle) {
     if(!PMP::is_outward_oriented(mesh)) {
       PMP::reverse_face_orientations(mesh);
     }
     const bool bv = PMP::does_bound_a_volume(mesh);
-    std::string msg2;
     if(bv) {
-      msg2 = "The mesh bounds a volume.";
+      Message("The mesh bounds a volume.");
     } else {
-      msg2 = "The mesh does not bound a volume - reorienting.";
+      Message("The mesh does not bound a volume - reorienting.");
       PMP::orient_to_bound_a_volume(mesh);
     }
-    Message(msg2);
   }
   return mesh;
 }
 
 template Mesh3 soup_to_mesh<Mesh3, Point3>(
-    std::vector<Point3>, std::vector<std::vector<size_t>>, const bool, const bool);
+    std::vector<Point3>, std::vector<std::vector<size_t>>, const bool, const bool, const unsigned int);
 
 template EMesh3 soup_to_mesh<EMesh3, EPoint3>(
-    std::vector<EPoint3>, std::vector<std::vector<size_t>>, const bool, const bool);
+    std::vector<EPoint3>, std::vector<std::vector<size_t>>, const bool, const bool, const unsigned int);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -297,34 +295,34 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
 // ----------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>
 MeshT makeSurfMesh(
-  const Rcpp::List &rmesh, const bool clean, const bool triangulate) {
+  const Rcpp::List &rmesh, const bool clean, const bool triangulate, const unsigned int max_num_holes) {
   const Rcpp::NumericMatrix vertices =
       Rcpp::as<Rcpp::NumericMatrix>(rmesh["vertices"]);
   const Rcpp::List rfaces = Rcpp::as<Rcpp::List>(rmesh["faces"]);
   std::vector<PointT> points = matrix_to_points3<PointT>(vertices);
   std::vector<std::vector<size_t>> faces = list_to_faces(rfaces);
-  return soup_to_mesh<MeshT, PointT>(points, faces, clean, triangulate);
+  return soup_to_mesh<MeshT, PointT>(points, faces, clean, triangulate, max_num_holes);
 }
 
-template Mesh3  makeSurfMesh<Mesh3,  Point3>(const Rcpp::List&,  const bool, const bool);
-template EMesh3 makeSurfMesh<EMesh3, EPoint3>(const Rcpp::List&, const bool, const bool);
+template Mesh3  makeSurfMesh<Mesh3,  Point3>(const Rcpp::List&,  const bool, const bool, const unsigned int);
+template EMesh3 makeSurfMesh<EMesh3, EPoint3>(const Rcpp::List&, const bool, const bool, const unsigned int);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>
 MeshT makeSurfTMesh(
-  const Rcpp::List &rmesh, const bool clean, const bool triangulate) {
+  const Rcpp::List &rmesh, const bool clean, const bool triangulate, const unsigned int max_num_holes) {
   const Rcpp::NumericMatrix vertices =
       Rcpp::as<Rcpp::NumericMatrix>(rmesh["vertices"]);
   const Rcpp::IntegerMatrix rfaces =
       Rcpp::as<Rcpp::IntegerMatrix>(rmesh["faces"]);
   std::vector<PointT> points = matrix_to_points3<PointT>(vertices);
   std::vector<std::vector<size_t>> faces = matrix_to_Tfaces(rfaces);
-  return soup_to_mesh<MeshT, PointT>(points, faces, clean, triangulate);
+  return soup_to_mesh<MeshT, PointT>(points, faces, clean, triangulate, max_num_holes);
 }
 
-template Mesh3  makeSurfTMesh<Mesh3,  Point3>(const Rcpp::List&,  const bool, const bool);
-template EMesh3 makeSurfTMesh<EMesh3, EPoint3>(const Rcpp::List&, const bool, const bool);
+template Mesh3  makeSurfTMesh<Mesh3,  Point3>(const Rcpp::List&,  const bool, const bool, const unsigned int);
+template EMesh3 makeSurfTMesh<EMesh3, EPoint3>(const Rcpp::List&, const bool, const bool, const unsigned int);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -350,19 +348,23 @@ property_map_pair(MeshT mesh, const std::string name) {
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-Rcpp::List getRmesh(const Mesh3 &mesh) {
+Rcpp::List getRmesh(const Mesh3 &mesh, const bool triangulate = false) {
   std::pair<nrmlsmap, bool> normalsmap_ =
       property_map_pair<vxdescr, Rcpp::NumericVector, Mesh3>(mesh, "v:normal");
-  const bool there_is_normals = normalsmap_.second;
+  const bool has_normals = normalsmap_.second;
   Rcpp::List rmesh;
-  if(CGAL::is_triangle_mesh(mesh)) {
+  bool isTriangle = CGAL::is_triangle_mesh(mesh);
+  if(triangulate && !isTriangle) {
+    isTriangle = PMP::triangulate_faces(mesh);
+  }
+  if(isTriangle) {
     rmesh = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, false, 3);
   } else if(CGAL::is_quad_mesh(mesh)) {
     rmesh = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, false, 4);
   } else {
     rmesh = RSurfMesh1<K, Mesh3, Point3, Vector3>(mesh, false);
   }
-  if(there_is_normals) {
+  if(has_normals) {
     nrmlsmap normalsmap = normalsmap_.first;
     Rcpp::NumericMatrix Normals(3, mesh.number_of_vertices());
     for(size_t i = 0; i < mesh.number_of_vertices(); i++) {
@@ -374,19 +376,23 @@ Rcpp::List getRmesh(const Mesh3 &mesh) {
   return rmesh;
 }
 
-Rcpp::List getRmesh(const EMesh3 &mesh) {
+Rcpp::List getRmesh(const EMesh3 &mesh, const bool triangulate = false) {
   std::pair<normals_map, bool> normalsmap_ =
       property_map_pair<vertex_descriptor, Rcpp::NumericVector, EMesh3>(mesh, "v:normal");
-  const bool there_is_normals = normalsmap_.second;
+  const bool has_normals = normalsmap_.second;
   Rcpp::List rmesh;
-  if(CGAL::is_triangle_mesh(mesh)) {
+  bool isTriangle = CGAL::is_triangle_mesh(mesh);
+  if(triangulate && !isTriangle) {
+    isTriangle = PMP::triangulate_faces(mesh);
+  }
+  if(isTriangle) {
     rmesh = RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, false, 3);
   } else if(CGAL::is_quad_mesh(mesh)) {
     rmesh = RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, false, 4);
   } else {
     rmesh = RSurfMesh1<EK, EMesh3, EPoint3, EVector3>(mesh, false);
   }
-  if(there_is_normals) {
+  if(has_normals) {
     normals_map normalsmap = normalsmap_.first;
     Rcpp::NumericMatrix Normals(3, mesh.number_of_vertices());
     for(size_t i = 0; i < mesh.number_of_vertices(); i++) {
@@ -402,7 +408,8 @@ Rcpp::List getRmesh(const EMesh3 &mesh) {
 // ----------------------------------------------------------------------- //
 // EPEC kernel only
 bool is_small_hole(halfedge_descriptor h, const EMesh3 &mesh,
-                   double max_hole_diam, int max_num_hole_edges) {
+                   const double max_hole_diam,
+                   const int max_num_hole_edges) {
   int num_hole_edges = 0;
   CGAL::Bbox_3 hole_bbox;
   for (halfedge_descriptor hc : CGAL::halfedges_around_face(h, mesh))
@@ -422,13 +429,22 @@ bool is_small_hole(halfedge_descriptor h, const EMesh3 &mesh,
   return true;
 }
 
-// mesh is changed in function -> not const, not reference
-EMesh3 fillBoundaryHoles(
-    EMesh3 mesh, bool fairhole, double max_hole_diam, int max_num_hole_edges) {
+// mesh is changed in function -> not const
+// CAVE: pass by reference, modifies mesh
+void fillBoundaryHoles(
+    EMesh3 &mesh,
+    const bool fairHole,
+    const double max_hole_diam,
+    const int max_num_hole_edges,
+    const unsigned int max_num_holes) {
+  if(max_num_holes == 0) {
+    Message("'max_num_holes' is 0 - nothing done.");
+    return;
+  }
   unsigned int nb_holes = 0;
   std::vector<halfedge_descriptor> border_cycles;
   PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
-  const int nBorders = border_cycles.size();
+  const size_t nBorders = border_cycles.size();
   if(nBorders == 0) {
     Rcpp::stop("There's no border in this mesh.");
   }
@@ -442,7 +458,7 @@ EMesh3 fillBoundaryHoles(
 
       std::vector<face_descriptor>   patch_faces;
       std::vector<vertex_descriptor> patch_vertices;
-      if(fairhole) {
+      if(fairHole) {
         const bool success = std::get<0>(
           PMP::triangulate_refine_and_fair_hole(
             mesh, h,
@@ -463,13 +479,14 @@ EMesh3 fillBoundaryHoles(
         );
       }
       ++nb_holes;
+      if(nb_holes >= max_num_holes) {
+        break;
+      }
   }
 
   std::string msg;
   msg = "Filled " + std::to_string(nb_holes) + " boundary holes.";
   Message(msg);
-
-  return mesh;
 }
 
 // ----------------------------------------------------------------------- //
@@ -517,4 +534,40 @@ void removeProperties(EMesh3 &mesh, std::vector<std::string> props) {
       }
     }
   }
+}
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+// TODO template
+template <typename KernelT, typename MeshT, typename PointT>
+MeshT removeSelfIntersections(const MeshT &mesh, const unsigned int method, const unsigned int max_num_holes) {
+  // use a polygon soup as container as the output will most likely be non-manifold
+  std::vector<PointT> points;
+  std::vector<std::vector<std::size_t>> polygons;
+  PMP::polygon_mesh_to_polygon_soup(mesh, points, polygons);
+  bool success;
+  if(method == 1) {
+      success = PMP::autorefine_triangle_soup(points, polygons);
+  } else if(method == 2) {
+      const auto& snap = CGAL::parameters::apply_iterative_snap_rounding(true);
+      success = PMP::autorefine_triangle_soup(points, polygons, snap);
+  }
+  if(success) {
+      Message("Autorefine successful.\n");
+  } else {
+      Message("Autorefine not successful.\n");
+  }
+
+  // PMP::does_polygon_soup_self_intersect(points, polygons));
+  CGAL::Conforming_constrained_Delaunay_triangulation_3<KernelT> ccdt;
+  ccdt = CGAL::make_conforming_constrained_Delaunay_triangulation_3(points, polygons);
+  bool clean = true;
+  bool triangulate = false;
+  MeshT meshNSI = soup_to_mesh<MeshT, PointT>(points, polygons, clean, triangulate, max_num_holes);
+  if(PMP::does_self_intersect(meshNSI)) {
+    Message("Self intersections could not be removed.\n");
+  } else {
+    Message("Self intersections removed.\n");
+  }
+  return meshNSI;
 }

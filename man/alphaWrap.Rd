@@ -36,6 +36,7 @@ mesh.
 \examples{
 library(MeshUtils)
 library(rgl)
+
 # reconstruct the mesh from the points
 mesh_rgl        <- toRGL(dataHeart1)
 mesh_alwrap_rgl <- alphaWrap(dataHeart1[["vertices"]],

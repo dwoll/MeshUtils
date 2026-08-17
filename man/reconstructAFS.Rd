@@ -14,10 +14,11 @@ Then, the point cloud is smoothed before the reconstruction, using
 this integer as the number of neighbors for the smoothing. Note that this
 smoothing preprocessing relocates the points and then should not be used
 if the points have been sampled without noise on the surface.}
+
 \item{clean}{Boolean. Attempt to fix polygon soup?}
 }
 \value{
-A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+A \code{CGALmesh} object.
 }
 \description{
 Reconstruction of a surface from a cloud of 3D points.
@@ -30,20 +31,21 @@ library(MeshUtils)
 library(rgl)
 
 # no smoothing
-mesh      <- makeMesh(mesh=dataHopfTorus)
-mesh_afs1 <- reconstructAFS(mesh[["vertices"]])
-mesh_rgl1 <- toRGL(mesh_afs1)
+mesh          <- makeMesh(mesh=dataHopfTorus)
+mesh_afs1     <- reconstructAFS(mesh[["vertices"]])
+mesh_afs1_rgl <- toRGL(mesh_afs1)
 
 # jet smoothing
-mesh_afs2 <- reconstructAFS(mesh[["vertices"]],
-                            jetSmoothing=30)
-mesh_rgl2 <- toRGL(mesh_afs2)
+mesh_afs2     <- reconstructAFS(mesh[["vertices"]],
+                                jetSmoothing=30)
+mesh_afs2_rgl <- toRGL(mesh_afs2)
 
 open3d(windowRect=50 + c(0, 0, 800, 400))
 mfrow3d(1, 2)
-shade3d(mesh_rgl1, color="gold")
+view3d(20, -40, zoom=0.85)
+shade3d(mesh_afs1_rgl, color="gold")
 next3d()
-shade3d(mesh_rgl2, color="gold")
+shade3d(mesh_afs2_rgl, color="gold")
 
 }
 \seealso{

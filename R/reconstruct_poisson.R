@@ -44,11 +44,12 @@
 #' library(rgl)
 #'
 #' mesh     <- makeMesh(mesh=dataHopfTorus)
-#' mesh_rgl <- toRGL(mesh_psr)
+#' mesh_rgl <- toRGL(mesh)
 #' mesh_psr <- reconstructPoisson(mesh[["vertices"]],
 #'                                smAngle=10,
 #'                                smRadius=3,
 #'                                smDistance=0.3)
+#' mesh_psr_rgl <- toRGL(mesh_psr)
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
 #' mfrow3d(1, 2)

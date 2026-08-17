@@ -7,8 +7,7 @@
 getBoundingBox(x, out = c("CGALmesh", "rgl"))
 }
 \arguments{
-\item{x}{A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-object.}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
 \item{out}{Character to indicate output mesh format.}
 }
@@ -21,6 +20,7 @@ Get axis-parallel bounding box
 \examples{
 library(MeshUtils)
 library(rgl)
+
 mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 mesh_rgl <- toRGL(mesh)
 bb_rgl   <- getBoundingBox(mesh, out="rgl")

@@ -46,6 +46,7 @@ plotEdges(vertices         =mesh_u[["vertices"]],
           edges            =mesh_u[["exteriorEdges"]],
           edgesAsTubes     =TRUE,
           verticesAsSpheres=TRUE)
+
 }
 \author{
 Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

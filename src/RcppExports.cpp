@@ -26,8 +26,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // SurfMesh_cpp
-Rcpp::List SurfMesh_cpp(const Rcpp::List rmeshIn, const bool clean, const bool triangulate, const bool normals);
-RcppExport SEXP _MeshUtils_SurfMesh_cpp(SEXP rmeshInSEXP, SEXP cleanSEXP, SEXP triangulateSEXP, SEXP normalsSEXP) {
+Rcpp::List SurfMesh_cpp(const Rcpp::List rmeshIn, const bool clean, const bool triangulate, const bool normals, const unsigned int maxNumHoles);
+RcppExport SEXP _MeshUtils_SurfMesh_cpp(SEXP rmeshInSEXP, SEXP cleanSEXP, SEXP triangulateSEXP, SEXP normalsSEXP, SEXP maxNumHolesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -35,29 +35,54 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type clean(cleanSEXP);
     Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(SurfMesh_cpp(rmeshIn, clean, triangulate, normals));
+    Rcpp::traits::input_parameter< const unsigned int >::type maxNumHoles(maxNumHolesSEXP);
+    rcpp_result_gen = Rcpp::wrap(SurfMesh_cpp(rmeshIn, clean, triangulate, normals, maxNumHoles));
+    return rcpp_result_gen;
+END_RCPP
+}
+// isValid_cpp
+bool isValid_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_isValid_cpp(SEXP rmeshSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    rcpp_result_gen = Rcpp::wrap(isValid_cpp(rmesh));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hasGarbage_cpp
+bool hasGarbage_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_hasGarbage_cpp(SEXP rmeshSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    rcpp_result_gen = Rcpp::wrap(hasGarbage_cpp(rmesh));
     return rcpp_result_gen;
 END_RCPP
 }
 // doesBoundVolume_cpp
-bool doesBoundVolume_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_doesBoundVolume_cpp(SEXP rmeshSEXP) {
+bool doesBoundVolume_cpp(const Rcpp::List rmesh, const bool triangulate);
+RcppExport SEXP _MeshUtils_doesBoundVolume_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(doesBoundVolume_cpp(rmesh));
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(doesBoundVolume_cpp(rmesh, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
 // doesSelfIntersect_cpp
-bool doesSelfIntersect_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_doesSelfIntersect_cpp(SEXP rmeshSEXP) {
+bool doesSelfIntersect_cpp(const Rcpp::List rmesh, const bool triangulate);
+RcppExport SEXP _MeshUtils_doesSelfIntersect_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(doesSelfIntersect_cpp(rmesh));
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(doesSelfIntersect_cpp(rmesh, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -73,58 +98,78 @@ BEGIN_RCPP
 END_RCPP
 }
 // orientToBoundVolume_cpp
-Rcpp::List orientToBoundVolume_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_orientToBoundVolume_cpp(SEXP rmeshSEXP) {
+Rcpp::List orientToBoundVolume_cpp(const Rcpp::List rmesh, const bool triangulate);
+RcppExport SEXP _MeshUtils_orientToBoundVolume_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(orientToBoundVolume_cpp(rmesh));
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(orientToBoundVolume_cpp(rmesh, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
 // removeSelfIntersections_cpp
-Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmeshIn, const unsigned int method);
-RcppExport SEXP _MeshUtils_removeSelfIntersections_cpp(SEXP rmeshInSEXP, SEXP methodSEXP) {
+Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmeshIn, const unsigned int method, const bool triangulate, const unsigned int maxNumHoles);
+RcppExport SEXP _MeshUtils_removeSelfIntersections_cpp(SEXP rmeshInSEXP, SEXP methodSEXP, SEXP triangulateSEXP, SEXP maxNumHolesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type method(methodSEXP);
-    rcpp_result_gen = Rcpp::wrap(removeSelfIntersections_cpp(rmeshIn, method));
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type maxNumHoles(maxNumHolesSEXP);
+    rcpp_result_gen = Rcpp::wrap(removeSelfIntersections_cpp(rmeshIn, method, triangulate, maxNumHoles));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fillBoundaryHoles_cpp
+Rcpp::List fillBoundaryHoles_cpp(const Rcpp::List rmeshIn, const bool fairHole, const bool triangulate, const unsigned int maxNumHoles);
+RcppExport SEXP _MeshUtils_fillBoundaryHoles_cpp(SEXP rmeshInSEXP, SEXP fairHoleSEXP, SEXP triangulateSEXP, SEXP maxNumHolesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
+    Rcpp::traits::input_parameter< const bool >::type fairHole(fairHoleSEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type maxNumHoles(maxNumHolesSEXP);
+    rcpp_result_gen = Rcpp::wrap(fillBoundaryHoles_cpp(rmeshIn, fairHole, triangulate, maxNumHoles));
     return rcpp_result_gen;
 END_RCPP
 }
 // getArea_cpp
-double getArea_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_getArea_cpp(SEXP rmeshSEXP) {
+double getArea_cpp(const Rcpp::List rmesh, const bool triangulate);
+RcppExport SEXP _MeshUtils_getArea_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(getArea_cpp(rmesh));
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(getArea_cpp(rmesh, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
 // getVolume_cpp
-double getVolume_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_getVolume_cpp(SEXP rmeshSEXP) {
+double getVolume_cpp(const Rcpp::List rmesh, const bool triangulate);
+RcppExport SEXP _MeshUtils_getVolume_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(getVolume_cpp(rmesh));
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(getVolume_cpp(rmesh, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
 // getCentroid_cpp
-Rcpp::NumericVector getCentroid_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_getCentroid_cpp(SEXP rmeshSEXP) {
+Rcpp::NumericVector getCentroid_cpp(const Rcpp::List rmesh, const bool triangulate);
+RcppExport SEXP _MeshUtils_getCentroid_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(getCentroid_cpp(rmesh));
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(getCentroid_cpp(rmesh, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -151,41 +196,44 @@ BEGIN_RCPP
 END_RCPP
 }
 // getDistance_cpp
-Rcpp::NumericVector getDistance_cpp(const Rcpp::List rmesh, const Rcpp::NumericMatrix points);
-RcppExport SEXP _MeshUtils_getDistance_cpp(SEXP rmeshSEXP, SEXP pointsSEXP) {
+Rcpp::NumericVector getDistance_cpp(const Rcpp::List rmesh, const Rcpp::NumericMatrix points, const bool triangulate);
+RcppExport SEXP _MeshUtils_getDistance_cpp(SEXP rmeshSEXP, SEXP pointsSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type points(pointsSEXP);
-    rcpp_result_gen = Rcpp::wrap(getDistance_cpp(rmesh, points));
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(getDistance_cpp(rmesh, points, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
 // getHausdorffApprox_cpp
-double getHausdorffApprox_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric);
-RcppExport SEXP _MeshUtils_getHausdorffApprox_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP) {
+double getHausdorffApprox_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const bool triangulate);
+RcppExport SEXP _MeshUtils_getHausdorffApprox_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh1(rmesh1SEXP);
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
-    Rcpp::traits::input_parameter< bool >::type symmetric(symmetricSEXP);
-    rcpp_result_gen = Rcpp::wrap(getHausdorffApprox_cpp(rmesh1, rmesh2, symmetric));
+    Rcpp::traits::input_parameter< const bool >::type symmetric(symmetricSEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(getHausdorffApprox_cpp(rmesh1, rmesh2, symmetric, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
 // getHausdorffEst_cpp
-double getHausdorffEst_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, bool symmetric, double errorBound);
-RcppExport SEXP _MeshUtils_getHausdorffEst_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP errorBoundSEXP) {
+double getHausdorffEst_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const double errorBound, const bool triangulate);
+RcppExport SEXP _MeshUtils_getHausdorffEst_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP errorBoundSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh1(rmesh1SEXP);
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
-    Rcpp::traits::input_parameter< bool >::type symmetric(symmetricSEXP);
-    Rcpp::traits::input_parameter< double >::type errorBound(errorBoundSEXP);
-    rcpp_result_gen = Rcpp::wrap(getHausdorffEst_cpp(rmesh1, rmesh2, symmetric, errorBound));
+    Rcpp::traits::input_parameter< const bool >::type symmetric(symmetricSEXP);
+    Rcpp::traits::input_parameter< const double >::type errorBound(errorBoundSEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(getHausdorffEst_cpp(rmesh1, rmesh2, symmetric, errorBound, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -204,38 +252,41 @@ BEGIN_RCPP
 END_RCPP
 }
 // subdivideCatmullClark_cpp
-Rcpp::List subdivideCatmullClark_cpp(const Rcpp::List rmeshIn, unsigned int nIter);
-RcppExport SEXP _MeshUtils_subdivideCatmullClark_cpp(SEXP rmeshInSEXP, SEXP nIterSEXP) {
+Rcpp::List subdivideCatmullClark_cpp(const Rcpp::List rmeshIn, unsigned int nIter, bool triangulate);
+RcppExport SEXP _MeshUtils_subdivideCatmullClark_cpp(SEXP rmeshInSEXP, SEXP nIterSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type nIter(nIterSEXP);
-    rcpp_result_gen = Rcpp::wrap(subdivideCatmullClark_cpp(rmeshIn, nIter));
+    Rcpp::traits::input_parameter< bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(subdivideCatmullClark_cpp(rmeshIn, nIter, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
 // subdivideDooSabin_cpp
-Rcpp::List subdivideDooSabin_cpp(const Rcpp::List rmeshIn, unsigned int nIter);
-RcppExport SEXP _MeshUtils_subdivideDooSabin_cpp(SEXP rmeshInSEXP, SEXP nIterSEXP) {
+Rcpp::List subdivideDooSabin_cpp(const Rcpp::List rmeshIn, unsigned int nIter, bool triangulate);
+RcppExport SEXP _MeshUtils_subdivideDooSabin_cpp(SEXP rmeshInSEXP, SEXP nIterSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type nIter(nIterSEXP);
-    rcpp_result_gen = Rcpp::wrap(subdivideDooSabin_cpp(rmeshIn, nIter));
+    Rcpp::traits::input_parameter< bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(subdivideDooSabin_cpp(rmeshIn, nIter, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
 // subdivideSqrt3_cpp
-Rcpp::List subdivideSqrt3_cpp(const Rcpp::List rmeshIn, unsigned int nIter);
-RcppExport SEXP _MeshUtils_subdivideSqrt3_cpp(SEXP rmeshInSEXP, SEXP nIterSEXP) {
+Rcpp::List subdivideSqrt3_cpp(const Rcpp::List rmeshIn, unsigned int nIter, bool triangulate);
+RcppExport SEXP _MeshUtils_subdivideSqrt3_cpp(SEXP rmeshInSEXP, SEXP nIterSEXP, SEXP triangulateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type nIter(nIterSEXP);
-    rcpp_result_gen = Rcpp::wrap(subdivideSqrt3_cpp(rmeshIn, nIter));
+    Rcpp::traits::input_parameter< bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(subdivideSqrt3_cpp(rmeshIn, nIter, triangulate));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -382,24 +433,27 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_alphaWrap_cpp", (DL_FUNC) &_MeshUtils_alphaWrap_cpp, 3},
-    {"_MeshUtils_SurfMesh_cpp", (DL_FUNC) &_MeshUtils_SurfMesh_cpp, 4},
-    {"_MeshUtils_doesBoundVolume_cpp", (DL_FUNC) &_MeshUtils_doesBoundVolume_cpp, 1},
-    {"_MeshUtils_doesSelfIntersect_cpp", (DL_FUNC) &_MeshUtils_doesSelfIntersect_cpp, 1},
+    {"_MeshUtils_SurfMesh_cpp", (DL_FUNC) &_MeshUtils_SurfMesh_cpp, 5},
+    {"_MeshUtils_isValid_cpp", (DL_FUNC) &_MeshUtils_isValid_cpp, 1},
+    {"_MeshUtils_hasGarbage_cpp", (DL_FUNC) &_MeshUtils_hasGarbage_cpp, 1},
+    {"_MeshUtils_doesBoundVolume_cpp", (DL_FUNC) &_MeshUtils_doesBoundVolume_cpp, 2},
+    {"_MeshUtils_doesSelfIntersect_cpp", (DL_FUNC) &_MeshUtils_doesSelfIntersect_cpp, 2},
     {"_MeshUtils_isClosed_cpp", (DL_FUNC) &_MeshUtils_isClosed_cpp, 1},
-    {"_MeshUtils_orientToBoundVolume_cpp", (DL_FUNC) &_MeshUtils_orientToBoundVolume_cpp, 1},
-    {"_MeshUtils_removeSelfIntersections_cpp", (DL_FUNC) &_MeshUtils_removeSelfIntersections_cpp, 2},
-    {"_MeshUtils_getArea_cpp", (DL_FUNC) &_MeshUtils_getArea_cpp, 1},
-    {"_MeshUtils_getVolume_cpp", (DL_FUNC) &_MeshUtils_getVolume_cpp, 1},
-    {"_MeshUtils_getCentroid_cpp", (DL_FUNC) &_MeshUtils_getCentroid_cpp, 1},
+    {"_MeshUtils_orientToBoundVolume_cpp", (DL_FUNC) &_MeshUtils_orientToBoundVolume_cpp, 2},
+    {"_MeshUtils_removeSelfIntersections_cpp", (DL_FUNC) &_MeshUtils_removeSelfIntersections_cpp, 4},
+    {"_MeshUtils_fillBoundaryHoles_cpp", (DL_FUNC) &_MeshUtils_fillBoundaryHoles_cpp, 4},
+    {"_MeshUtils_getArea_cpp", (DL_FUNC) &_MeshUtils_getArea_cpp, 2},
+    {"_MeshUtils_getVolume_cpp", (DL_FUNC) &_MeshUtils_getVolume_cpp, 2},
+    {"_MeshUtils_getCentroid_cpp", (DL_FUNC) &_MeshUtils_getCentroid_cpp, 2},
     {"_MeshUtils_optimalBoundingBox_cpp", (DL_FUNC) &_MeshUtils_optimalBoundingBox_cpp, 1},
     {"_MeshUtils_boundingBox_cpp", (DL_FUNC) &_MeshUtils_boundingBox_cpp, 1},
-    {"_MeshUtils_getDistance_cpp", (DL_FUNC) &_MeshUtils_getDistance_cpp, 2},
-    {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 3},
-    {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 4},
+    {"_MeshUtils_getDistance_cpp", (DL_FUNC) &_MeshUtils_getDistance_cpp, 3},
+    {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 4},
+    {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 5},
     {"_MeshUtils_remeshIsotropic_cpp", (DL_FUNC) &_MeshUtils_remeshIsotropic_cpp, 4},
-    {"_MeshUtils_subdivideCatmullClark_cpp", (DL_FUNC) &_MeshUtils_subdivideCatmullClark_cpp, 2},
-    {"_MeshUtils_subdivideDooSabin_cpp", (DL_FUNC) &_MeshUtils_subdivideDooSabin_cpp, 2},
-    {"_MeshUtils_subdivideSqrt3_cpp", (DL_FUNC) &_MeshUtils_subdivideSqrt3_cpp, 2},
+    {"_MeshUtils_subdivideCatmullClark_cpp", (DL_FUNC) &_MeshUtils_subdivideCatmullClark_cpp, 3},
+    {"_MeshUtils_subdivideDooSabin_cpp", (DL_FUNC) &_MeshUtils_subdivideDooSabin_cpp, 3},
+    {"_MeshUtils_subdivideSqrt3_cpp", (DL_FUNC) &_MeshUtils_subdivideSqrt3_cpp, 3},
     {"_MeshUtils_jet_normals_cpp", (DL_FUNC) &_MeshUtils_jet_normals_cpp, 2},
     {"_MeshUtils_pca_normals_cpp", (DL_FUNC) &_MeshUtils_pca_normals_cpp, 2},
     {"_MeshUtils_intersectionEK_cpp", (DL_FUNC) &_MeshUtils_intersectionEK_cpp, 4},

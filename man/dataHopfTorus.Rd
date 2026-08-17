@@ -14,4 +14,7 @@ dataHopfTorus
 An object of class \code{mesh3d} from package \strong{rgl} representing
 a Hopf torus.
 }
+\author{
+Originally developed by Stephane Laurent.
+}
 \keyword{datasets}

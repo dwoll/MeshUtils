@@ -11,7 +11,8 @@ reconstructSSS(
   samples = 300,
   separateShells = FALSE,
   forceManifold = TRUE,
-  borderAngle = 45)
+  borderAngle = 45
+)
 }
 \arguments{
 \item{x}{Numeric matrix which stores the points, one point per row.}
@@ -29,7 +30,7 @@ reconstructSSS(
 \item{borderAngle}{Bound on the angle in degrees used to detect border edges.}
 }
 \value{
-A \code{CGALmesh} object.
+A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 }
 \description{
 Reconstruction of a surface from a cloud of 3D points.

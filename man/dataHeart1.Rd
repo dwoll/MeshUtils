@@ -3,7 +3,7 @@
 \docType{data}
 \name{dataHeart1}
 \alias{dataHeart1}
-\title{A mesh of the human heart}
+\title{A mesh of a human heart from a CT scan}
 \format{
 A \code{CGALmesh} object.
 }
@@ -11,6 +11,7 @@ A \code{CGALmesh} object.
 dataHeart1
 }
 \description{
-A mesh of the human heart based on a CT scan.
+An object of class \code{CGALmesh} representing a human heart
+based on a CT scan.
 }
 \keyword{datasets}

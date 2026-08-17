@@ -52,17 +52,17 @@ Plot the given edges with \strong{rgl}.
 library(MeshUtils)
 library(rgl)
 
-# we triangulate the pentagrammic prism mesh
+# triangulate the pentagrammic prism mesh
 mesh <- makeMesh(
   mesh       =dataPentaPrism,
   triangulate=TRUE,
   normals    =FALSE)
 
-# now we can plot the pentagrammic prism
+# plot the pentagrammic prism
 mesh_rgl <- toRGL(mesh)
 open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
 shade3d(mesh_rgl, color="navy")
-# we plot the exterior edges only, given in `mesh[["exteriorEdges"]]`
+# plot the exterior edges only, given in `mesh[["exteriorEdges"]]`
 plotEdges(mesh[["vertices"]],
           mesh[["exteriorEdges"]],
           color        ="gold",
