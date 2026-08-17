@@ -52,7 +52,7 @@
 #' shade3d(mesh_afs2_rgl, color="gold")
 #'
 #' @export
-reconstructAFS <- function(x, jetSmoothing=NULL, clean=TRUE) {
+reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE) {
   if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -60,7 +60,7 @@ reconstructAFS <- function(x, jetSmoothing=NULL, clean=TRUE) {
     stop("The `x` matrix must have three columns.", call. = TRUE)
   }
   if(nrow(x) <= 3L) {
-    stop("Insufficient number of x.", call. = TRUE)
+    stop("Insufficient number of points in `x`.", call. = TRUE)
   }
   if(anyNA(x)) {
     stop("Points with missing values are not allowed.", call. = TRUE)
@@ -71,6 +71,7 @@ reconstructAFS <- function(x, jetSmoothing=NULL, clean=TRUE) {
   } else {
     jetSmoothing <- 0L
   }
-  mesh_cpp <- reconstructAFS_cpp(t(x), as.integer(jetSmoothing), clean)
+  stopifnot(isBoolean(repairSoup))
+  mesh_cpp <- reconstructAFS_cpp(t(x), as.integer(jetSmoothing), repairSoup)
   fromCPP(mesh_cpp)
 }

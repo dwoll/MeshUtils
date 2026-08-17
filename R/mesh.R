@@ -484,14 +484,13 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap"),
 #' @description Fill boundary holes.
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param maxNumHoles \code{integer}: Maximum number of holes to be filled.
 #' @param fairHole Boolean: Use CGAL `triangulate_refine_and_fair_hole()` (\code{TRUE})
 #'     or `triangulate_and_refine_hole()` (\code{FALSE})?
-#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
-#'   are already triangle.
-#' @param maxNumHoles \code{integer}: Maximum number of holes to be filled.
 #' @returns \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #' @details See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.
+#'     If faces are not triangle, the mesh is triangulated.
 #'
 #' @examples
 #' library(MeshUtils)
@@ -499,16 +498,15 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap"),
 #' mesh_fill <- fillBoundaryHoles(mesh)
 #'
 #' @export
-fillBoundaryHoles <- function(x, fairHole = TRUE, triangulate = FALSE, maxNumHoles=10L) {
+fillBoundaryHoles <- function(x, maxNumHoles=10L, fairHole = TRUE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
   stopifnot(isBoolean(fairHole))
-  stopifnot(isBoolean(triangulate))
   stopifnot(isStrictPositiveInteger(maxNumHoles))
   meshCPP <- fromR(x)
-  mesh    <- fillBoundaryHoles_cpp(meshCPP, fairHole, triangulate, maxNumHoles)
+  mesh    <- fillBoundaryHoles_cpp(meshCPP, maxNumHoles, fairHole)
   fromCPP(mesh)
 }
 

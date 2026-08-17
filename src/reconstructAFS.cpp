@@ -17,7 +17,7 @@
 // [[Rcpp::export]]
 Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
                               const unsigned nNeighs,
-                              const bool clean) {
+                              const bool repairSoup) {
   std::vector<Point3> points = matrix_to_points3<Point3>(pts);
   if(nNeighs >= 2) {
     CGAL::jet_smooth_point_set<CGAL::Sequential_tag>(points, nNeighs);
@@ -59,8 +59,18 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
     triangles.emplace_back(triangle);
   }
 
-  PMP::merge_duplicate_points_in_polygon_soup(vertices, triangles);
-  Mesh3 mesh = soup_to_mesh<Mesh3, Point3>(vertices, triangles, clean, false, 0);
+  // repair_polygon_soup() is called in soup_to_mesh()
+  // PMP::merge_duplicate_points_in_polygon_soup(vertices, triangles);
+  Mesh3 mesh = soup_to_mesh<Mesh3, Point3>(
+      vertices,
+      triangles,
+      false,      // triangulate
+      repairSoup, // repair_soup
+      false,      // remove_intersections
+      1,          // remove_method
+      false,      // fill_holes
+      false,      // fair hole
+      0);         // max_num_holes
   Rcpp::List rmeshOut = getRmesh(mesh, false);
   return rmeshOut;
 }
