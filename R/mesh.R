@@ -143,10 +143,9 @@ makeMesh <- function(vertices,
 #' @description Converts a \code{CGALmesh} object (the output of the \code{\link{makeMesh}}
 #'   function) to a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
-#' @param x A \code{CGALmesh} object, i.e., a specific list as produced
-#'   by the \code{\link{makeMesh}} function). In order to be
-#'   convertible to a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
-#'   its faces must have at most four sides.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#'   In order to be convertible to a \code{\link[rgl]{mesh3d}} object from package
+#'   \strong{rgl}, its faces must have at most four sides.
 #' @param ... Arguments passed to \code{\link[rgl]{mesh3d}}.
 #'
 #' @returns A \strong{rgl} mesh object, i.e., a list of class \code{\link[rgl]{mesh3d}}.
@@ -170,7 +169,7 @@ makeMesh <- function(vertices,
 toRGL <- function(x, ...) {
 	if(!inherits(x, "CGALmesh")) {
 		stop("The `x` argument must be of class 'CGALmesh'",
-				 " (e.g. an output of the `makeMesh()` function).")
+				 " (i.e., the output of the `makeMesh()` function).")
 	}
 	rgl <- attr(x, "toRGL")
 	if(isFALSE(rgl)) {
@@ -252,8 +251,7 @@ plotEdges <- function(
 		verticesAsSpheres = TRUE,
 		only = NULL,
 		spheresRadius = 0.05,
-		spheresColor = color
-) {
+		spheresColor = color) {
   for(i in seq_len(nrow(edges))) {
 		edge <- edges[i, ]
 		if(edgesAsTubes) {
@@ -276,8 +274,7 @@ plotEdges <- function(
 #' @title Does mesh bound a volume?
 #' @description Does mesh bound a volume?
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @returns TRUE or FALSE.
 #' @export
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -289,6 +286,10 @@ plotEdges <- function(
 #'
 #' @export
 doesBoundVolume <- function(x) {
+    if(!inherits(x, "CGALmesh")) {
+        stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+    }
     meshCPP <- fromR(x)
     doesBoundVolume_cpp(meshCPP)
 }
@@ -296,8 +297,7 @@ doesBoundVolume <- function(x) {
 #' @title Does mesh self intersect?
 #' @description Does mesh self intersect?
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @returns TRUE or FALSE.
 #'
 #' @examples
@@ -307,6 +307,10 @@ doesBoundVolume <- function(x) {
 #'
 #' @export
 doesSelfIntersect <- function(x) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   meshCPP <- fromR(x)
   doesSelfIntersect_cpp(meshCPP)
 }
@@ -314,8 +318,7 @@ doesSelfIntersect <- function(x) {
 #' @title Is mesh closed?
 #' @description Is mesh closed?
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @returns TRUE or FALSE.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -326,6 +329,10 @@ doesSelfIntersect <- function(x) {
 #'
 #' @export
 isClosed <- function(x) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   meshCPP <- fromR(x)
   isClosed_cpp(meshCPP)
 }
@@ -333,8 +340,7 @@ isClosed <- function(x) {
 #' @title Orient mesh to bound a volume
 #' @description Orient mesh to bound a volume
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @returns \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -346,6 +352,10 @@ isClosed <- function(x) {
 #'
 #' @export
 orientToBoundVolume <- function(x) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   meshCPP <- fromR(x)
   mesh    <- orientToBoundVolume_cpp(meshCPP)
   fromCPP(mesh)
@@ -354,8 +364,7 @@ orientToBoundVolume <- function(x) {
 #' @title Remove self intersections
 #' @description Remove self intersections
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param method One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).
 #' @returns \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -369,6 +378,10 @@ orientToBoundVolume <- function(x) {
 #'
 #' @export
 removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   method_choices <- c("auto", "auto_snap")
   method     <- match.arg(method, choices=method_choices)
   method_int <- match(method, method_choices)
@@ -380,8 +393,7 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
 #' @title Get mesh area
 #' @description Get the surface area of a 3D mesh.
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object. The mesh must be triangle and must not self-intersect.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @returns \code{numeric}: The mesh area.
 #' @examples
 #' library(MeshUtils)
@@ -390,6 +402,10 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap")) {
 #'
 #' @export
 getArea <- function(x) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   meshCPP <- fromR(x)
   getArea_cpp(meshCPP)
 }
@@ -397,8 +413,7 @@ getArea <- function(x) {
 #' @title Get mesh volume
 #' @description Get the volume of a 3D mesh.
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @returns \code{numeric}: The mesh volume - if mesh bounds a volume.
 #' @examples
 #' library(MeshUtils)
@@ -407,6 +422,10 @@ getArea <- function(x) {
 #'
 #' @export
 getVolume <- function(x) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   meshCPP <- fromR(x)
   getVolume_cpp(meshCPP)
 }
@@ -414,8 +433,7 @@ getVolume <- function(x) {
 #' @title Get mesh centroid
 #' @description Get mesh centroid.
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object. The mesh must be triangle.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
 #' @returns \code{numeric} 3-vector with the cartesian coordinates of the mesh centroid.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -427,6 +445,10 @@ getVolume <- function(x) {
 #'
 #' @export
 getCentroid <- function(x) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   meshCPP <- fromR(x)
   getCentroid_cpp(meshCPP)
 }
@@ -434,8 +456,7 @@ getCentroid <- function(x) {
 #' @title Get optimal bounding box
 #' @description Get oriented bounding box
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @returns A \code{CGALmesh} object.
 #'
 #' @examples
@@ -451,6 +472,10 @@ getCentroid <- function(x) {
 #'
 #' @export
 getOptimalBoundingBox <- function(x) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   meshCPP <- fromR(x)
   outL    <- optimalBoundingBox_cpp(meshCPP)
   outL[["mesh"]] <- fromCPP(outL[["mesh"]])
@@ -460,8 +485,7 @@ getOptimalBoundingBox <- function(x) {
 #' @title Get axis-parallel bounding box
 #' @description Get axis-parallel bounding box
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param out Character to indicate output mesh format.
 #'
 #' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
@@ -482,6 +506,10 @@ getOptimalBoundingBox <- function(x) {
 #' @export
 #' @importFrom rgl translate3d scale3d cube3d
 getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   out     <- match.arg(out)
   meshCPP <- fromR(x)
   outL    <- boundingBox_cpp(meshCPP)
@@ -505,8 +533,7 @@ getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
 #' @description Get the Euclidean distance of points
 #' to a 3D mesh.
 #'
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object. The mesh must be triangle.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
 #' @param points \code{numeric} matrix with 3 columns with one point per row.
 #' @returns \code{numeric} vector: The distance of each point in \code{points}
 #'     to the mesh \code{x}.
@@ -519,6 +546,10 @@ getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
 #' @export
 #' @importFrom stats na.omit
 getDistance <- function(x, points) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
   if(!is.matrix(points) || !is.numeric(points)) {
     stop("The `points` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -540,8 +571,8 @@ getDistance <- function(x, points) {
 #' @title Hausdorff distance between two meshes
 #' @description Hausdorff distance between two meshes. Either
 #'   approximate distance, or distance estimate with a given error bound.
-#' @param mesh1 A \code{CGALmesh} object.
-#' @param mesh2 A \code{CGALmesh} object.
+#' @param mesh1 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param mesh2 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param symmetric Boolean, whether to consider the symmetric Hausdorff
 #'   distance.
 #' @param errorBound A positive number, a bound on the error of the
@@ -576,8 +607,7 @@ getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound) {
 
 #' @title Isotropic remeshing
 #' @description Isotropic remeshing.
-#' @param x A list with components \code{vertices} and \code{faces}, e.g., a \code{CGALmesh}
-#'     object.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param targetEdgeLen Positive number, the target edge length of the
 #'   remeshed mesh.
 #' @param nIter Positive integer, number of iterations.
@@ -609,6 +639,10 @@ remeshIsotropic <- function(
         nIter = 1,
         nRelaxSteps = 1,
         out = c("CGALmesh", "rgl")) {
+    if(!inherits(x, "CGALmesh")) {
+        stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+    }
     out <- match.arg(out)
     stopifnot(isPositiveNumber(targetEdgeLen))
     stopifnot(isStrictPositiveInteger(nIter))
@@ -630,4 +664,115 @@ remeshIsotropic <- function(
         makeMesh(mesh=meshReWN)
     }
     meshOut
+}
+
+#' @title Catmull-Clark subdivision and deformation
+#' @description Performs the Catmull-Clark subdivision and deformation.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
+#' @param nIter \code{integer}: Number of iterations.
+#' @returns A \code{CGALmesh} object.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' library(rgl)
+#'
+#' mesh        <- makeMesh(mesh=dataHopfTorus)
+#' mesh_rgl    <- toRGL(mesh)
+#' mesh_sd     <- subdivisionCatmullClark(nIter=2)
+#' mesh_sd_rgl <- toRGL(mesh_sd)
+#'
+#' open3d(windowRect=50 + c(0, 0, 800, 400))
+#' mfrow3d(1, 2)
+#' view3d(0, 0, zoom=0.9)
+#' wire3d(mesh_rgl)
+#' next3d()
+#' view3d(0, 0, zoom=0.9)
+#' wire3d(mesh_sd_rgl)
+#'
+#' @export
+subdivisionCatmullClark <- function(x, nIter = 1) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			     " (i.e., the output of the `makeMesh()` function).")
+  }
+  stopifnot(isStrictPositiveInteger(nIter))
+  meshCPP <- fromR(x)
+  meshOut <- subdivisionCatmullClark_cpp(meshCPP, as.integer(nIter))
+  fromCPP(meshOut)
+}
+
+#' @title Doo-Sabin subdivision and deformation
+#' @description Performs the Doo-Sabin subdivision and deformation.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
+#' @param nIter \code{integer}: Number of iterations.
+#' @returns A \code{CGALmesh} object.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' library(rgl)
+#'
+#' mesh        <- makeMesh(mesh=dataHopfTorus)
+#' mesh_rgl    <- toRGL(mesh)
+#' mesh_sd     <- subdivisionDooSabin(nIter=2)
+#' mesh_sd_rgl <- toRGL(mesh_sd)
+#'
+#' open3d(windowRect=50 + c(0, 0, 800, 400))
+#' mfrow3d(1, 2)
+#' view3d(0, 0, zoom=0.9)
+#' wire3d(mesh_rgl)
+#' next3d()
+#' view3d(0, 0, zoom=0.9)
+#' wire3d(mesh_sd_rgl)
+#'
+#' @export
+subdivisionDooSabin <- function(x, nIter = 1) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			     " (i.e., the output of the `makeMesh()` function).")
+  }
+  stopifnot(isStrictPositiveInteger(nIter))
+  meshCPP <- fromR(x)
+  meshOut <- subdivisionDooSabin_cpp(meshCPP, as.integer(nIter))
+  fromCPP(meshOut)
+}
+
+#' @title Sqrt3 subdivision and deformation
+#' @description Performs the 'Sqrt3' subdivision and deformation.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.
+#' @param nIter \code{integer}: Number of iterations.
+#' @returns A \code{CGALmesh} object.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' library(rgl)
+#'
+#' mesh        <- makeMesh(mesh=dataHopfTorus)
+#' mesh_rgl    <- toRGL(mesh)
+#' mesh_sd     <- subdivisionSqrt3(nIter=2)
+#' mesh_sd_rgl <- toRGL(mesh_sd)
+#'
+#' open3d(windowRect=50 + c(0, 0, 800, 400))
+#' mfrow3d(1, 2)
+#' view3d(0, 0, zoom=0.9)
+#' wire3d(mesh_rgl)
+#' next3d()
+#' view3d(0, 0, zoom=0.9)
+#' wire3d(mesh_sd_rgl)
+#'
+#' @export
+subdivisionSqrt3 <- function(x, nIter = 1) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
+  stopifnot(isStrictPositiveInteger(nIter))
+  meshCPP <- fromR(x)
+  meshOut <- subdivisionSqrt3_cpp(meshCPP, as.integer(nIter))
+  fromCPP(mesh_cpp)
 }

@@ -65,6 +65,18 @@ remeshIsotropic_cpp <- function(rmeshIn, targetEdgeLen, nIter, nRelaxSteps) {
     .Call(`_MeshUtils_remeshIsotropic_cpp`, rmeshIn, targetEdgeLen, nIter, nRelaxSteps)
 }
 
+subdivideCatmullClark_cpp <- function(rmeshIn, nIter) {
+    .Call(`_MeshUtils_subdivideCatmullClark_cpp`, rmeshIn, nIter)
+}
+
+subdivideDooSabin_cpp <- function(rmeshIn, nIter) {
+    .Call(`_MeshUtils_subdivideDooSabin_cpp`, rmeshIn, nIter)
+}
+
+subdivideSqrt3_cpp <- function(rmeshIn, nIter) {
+    .Call(`_MeshUtils_subdivideSqrt3_cpp`, rmeshIn, nIter)
+}
+
 jet_normals_cpp <- function(pts, nbNeighbors) {
     .Call(`_MeshUtils_jet_normals_cpp`, pts, nbNeighbors)
 }

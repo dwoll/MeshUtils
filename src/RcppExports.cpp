@@ -203,6 +203,42 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// subdivideCatmullClark_cpp
+Rcpp::List subdivideCatmullClark_cpp(const Rcpp::List rmeshIn, unsigned int nIter);
+RcppExport SEXP _MeshUtils_subdivideCatmullClark_cpp(SEXP rmeshInSEXP, SEXP nIterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nIter(nIterSEXP);
+    rcpp_result_gen = Rcpp::wrap(subdivideCatmullClark_cpp(rmeshIn, nIter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// subdivideDooSabin_cpp
+Rcpp::List subdivideDooSabin_cpp(const Rcpp::List rmeshIn, unsigned int nIter);
+RcppExport SEXP _MeshUtils_subdivideDooSabin_cpp(SEXP rmeshInSEXP, SEXP nIterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nIter(nIterSEXP);
+    rcpp_result_gen = Rcpp::wrap(subdivideDooSabin_cpp(rmeshIn, nIter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// subdivideSqrt3_cpp
+Rcpp::List subdivideSqrt3_cpp(const Rcpp::List rmeshIn, unsigned int nIter);
+RcppExport SEXP _MeshUtils_subdivideSqrt3_cpp(SEXP rmeshInSEXP, SEXP nIterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nIter(nIterSEXP);
+    rcpp_result_gen = Rcpp::wrap(subdivideSqrt3_cpp(rmeshIn, nIter));
+    return rcpp_result_gen;
+END_RCPP
+}
 // jet_normals_cpp
 Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts, const unsigned nbNeighbors);
 RcppExport SEXP _MeshUtils_jet_normals_cpp(SEXP ptsSEXP, SEXP nbNeighborsSEXP) {
@@ -361,6 +397,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 3},
     {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 4},
     {"_MeshUtils_remeshIsotropic_cpp", (DL_FUNC) &_MeshUtils_remeshIsotropic_cpp, 4},
+    {"_MeshUtils_subdivideCatmullClark_cpp", (DL_FUNC) &_MeshUtils_subdivideCatmullClark_cpp, 2},
+    {"_MeshUtils_subdivideDooSabin_cpp", (DL_FUNC) &_MeshUtils_subdivideDooSabin_cpp, 2},
+    {"_MeshUtils_subdivideSqrt3_cpp", (DL_FUNC) &_MeshUtils_subdivideSqrt3_cpp, 2},
     {"_MeshUtils_jet_normals_cpp", (DL_FUNC) &_MeshUtils_jet_normals_cpp, 2},
     {"_MeshUtils_pca_normals_cpp", (DL_FUNC) &_MeshUtils_pca_normals_cpp, 2},
     {"_MeshUtils_intersectionEK_cpp", (DL_FUNC) &_MeshUtils_intersectionEK_cpp, 4},

@@ -328,9 +328,10 @@ template EMesh3 makeSurfTMesh<EMesh3, EPoint3>(const Rcpp::List&, const bool, co
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// Compatibility wrapper for CGAL property_map API changes:
-// Older CGAL returned std::pair<Property_map, bool>; newer returns std::optional<Property_map>.
-// property_map_pair returns a std::pair<Property_map, bool> in both cases.
+// compatibility wrapper for CGAL property_map(std::string) API changes:
+// older returned std::pair<Property_map, bool>
+// newer returns  std::optional<Property_map>
+// property_map_pair returns a std::pair<Property_map, bool> in both cases
 template <typename KeyT, typename T, typename MeshT>
 std::pair<typename MeshT::template Property_map<KeyT,T>, bool>
 property_map_pair(MeshT mesh, const std::string name) {
@@ -340,7 +341,9 @@ property_map_pair(MeshT mesh, const std::string name) {
     return mesh.template property_map<KeyT,T>(name);
   } else {
     auto opt = mesh.template property_map<KeyT,T>(name);
-    if(opt) return std::make_pair(*opt, true);
+    if(opt) {
+        return std::make_pair(*opt, true);
+    }
     return std::make_pair(Pmap(), false);
   }
 }
@@ -349,7 +352,7 @@ property_map_pair(MeshT mesh, const std::string name) {
 // ----------------------------------------------------------------------- //
 Rcpp::List getRmesh(const Mesh3 &mesh) {
   std::pair<nrmlsmap, bool> normalsmap_ =
-      property_map_pair<vxdescr, Rcpp::NumericVector>(mesh, "v:normal");
+      property_map_pair<vxdescr, Rcpp::NumericVector, Mesh3>(mesh, "v:normal");
   const bool there_is_normals = normalsmap_.second;
   Rcpp::List rmesh;
   if(CGAL::is_triangle_mesh(mesh)) {
@@ -373,7 +376,7 @@ Rcpp::List getRmesh(const Mesh3 &mesh) {
 
 Rcpp::List getRmesh(const EMesh3 &mesh) {
   std::pair<normals_map, bool> normalsmap_ =
-      property_map_pair<vertex_descriptor, Rcpp::NumericVector>(mesh, "v:normal");
+      property_map_pair<vertex_descriptor, Rcpp::NumericVector, EMesh3>(mesh, "v:normal");
   const bool there_is_normals = normalsmap_.second;
   Rcpp::List rmesh;
   if(CGAL::is_triangle_mesh(mesh)) {
@@ -471,43 +474,47 @@ EMesh3 fillBoundaryHoles(
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// TODO use property_map_pair() defined above
-// and write analogous function remove_property_map_pair()
-/*
-void removeProperties(EMesh3& mesh, std::vector<std::string> props) {
+// TODO template
+// use property_map_pair() as defined above
+// CAVE: pass by reference, modifies mesh
+void removeProperties(EMesh3 &mesh, std::vector<std::string> props) {
   for(unsigned int i = 0; i < props.size(); i++) {
     std::string prop = props[i];
-    if(prop == "f:color") {
+    if(prop == "v:color") {
       std::pair<Fcolors_map, bool> pmap_ =
-        mesh.property_map<face_descriptor, std::string>("f:color");
+         property_map_pair<face_descriptor, std::string, EMesh3>(mesh, "v:color");
+        // mesh.property_map<face_descriptor, std::string>("f:color");
       if(pmap_.second) {
         mesh.remove_property_map(pmap_.first);
       }
-    } else if(prop == "v:color") {
+    } else if(prop == "f:color") {
       std::pair<Vcolors_map, bool> pmap_ =
-        mesh.property_map<vertex_descriptor, std::string>("v:color");
+        property_map_pair<vertex_descriptor, std::string, EMesh3>(mesh, "f:color");
+        // mesh.property_map<vertex_descriptor, std::string>("v:color");
       if(pmap_.second) {
         mesh.remove_property_map(pmap_.first);
       }
     } else if(prop == "v:normal") {
       std::pair<normals_map, bool> pmap_ =
-        mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+        property_map_pair<vertex_descriptor, Rcpp::NumericVector, EMesh3>(mesh, "v:normal");
+        // mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
       if(pmap_.second) {
         mesh.remove_property_map(pmap_.first);
       }
     } else if(prop == "v:scalar") {
       std::pair<Vscalars_map, bool> pmap_ =
-        mesh.property_map<vertex_descriptor, double>("v:scalar");
+        property_map_pair<vertex_descriptor, double, EMesh3>(mesh, "v:scalar");
+        // mesh.property_map<vertex_descriptor, double>("v:scalar");
       if(pmap_.second) {
         mesh.remove_property_map(pmap_.first);
       }
     } else if(prop == "f:scalar") {
       std::pair<Fscalars_map, bool> pmap_ =
-        mesh.property_map<face_descriptor, double>("f:scalar");
+        property_map_pair<face_descriptor, double, EMesh3>(mesh, "f:scalar");
+        // mesh.property_map<face_descriptor, double>("f:scalar");
       if(pmap_.second) {
         mesh.remove_property_map(pmap_.first);
       }
     }
   }
 }
-*/

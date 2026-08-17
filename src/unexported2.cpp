@@ -162,6 +162,7 @@ template Rcpp::IntegerMatrix getTFaces<EMesh3>(const EMesh3&);
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // mesh used as this -> no const, no reference
+
 Rcpp::NumericMatrix getNormals(Mesh3 mesh) {
   const size_t nVerts = mesh.number_of_vertices();
   Rcpp::NumericMatrix Normals(3, nVerts);
@@ -212,6 +213,38 @@ Rcpp::NumericMatrix getNormals(EMesh3 mesh) {
   return Normals;
 }
 
+/*
+template <typename KernelT, typename MeshT, typename VectorT>
+Rcpp::NumericMatrix getNormals(MeshT mesh) {
+  const size_t nVerts = mesh.number_of_vertices();
+  Rcpp::NumericMatrix Normals(3, nVerts);
+
+  auto vnormals = mesh.add_property_map<typename MeshT::Vertex_index, VectorT>(
+                          "v:normals", CGAL::NULL_VECTOR)
+                      .first;
+  auto fnormals = mesh.add_property_map<typename MeshT::Face_index, VectorT>(
+                          "f:normals", CGAL::NULL_VECTOR)
+                      .first;
+
+  PMP::compute_normals(mesh, vnormals, fnormals);
+  {
+    size_t i = 0;
+    for(typename MeshT::Vertex_index vd : vertices(mesh)) {
+      Rcpp::NumericVector col_i(3);
+      const VectorT normal = vnormals[vd];
+      col_i(0) = CGAL::to_double<typename KernelT::FT>(normal.x());
+      col_i(1) = CGAL::to_double<typename KernelT::FT>(normal.y());
+      col_i(2) = CGAL::to_double<typename KernelT::FT>(normal.z());
+      Normals(Rcpp::_, i) = col_i;
+      i++;
+    }
+  }
+  return Normals;
+}
+
+template Rcpp::NumericMatrix getNormals<K,  Mesh3,  Vector3>(Mesh3);
+template Rcpp::NumericMatrix getNormals<EK, EMesh3, EVector3>(EMesh3);
+*/
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
@@ -223,6 +256,7 @@ Rcpp::List RSurfMesh1(const MeshT &mesh, const bool normals) {
                                       Rcpp::Named("edges") = Edges,
                                       Rcpp::Named("faces") = Faces);
   if(normals) {
+    // Rcpp::NumericMatrix Normals = getNormals<KernelT, MeshT, VectorT>(mesh);
     Rcpp::NumericMatrix Normals = getNormals(mesh);
     out["normals"] = Normals;
   }
@@ -243,6 +277,7 @@ Rcpp::List RSurfMesh2(const MeshT &mesh, const bool normals, const int nSides) {
                                       Rcpp::Named("edges") = Edges,
                                       Rcpp::Named("faces") = Faces);
   if(normals) {
+    // Rcpp::NumericMatrix Normals = getNormals<KernelT, MeshT, VectorT>(mesh);
     Rcpp::NumericMatrix Normals = getNormals(mesh);
     out["normals"] = Normals;
   }
@@ -263,6 +298,7 @@ Rcpp::List RSurfTMesh(const MeshT &mesh, const bool normals) {
                                       Rcpp::Named("edges") = Edges,
                                       Rcpp::Named("faces") = Faces);
   if(normals) {
+    // Rcpp::NumericMatrix Normals = getNormals<KernelT, MeshT, VectorT>(mesh);
     Rcpp::NumericMatrix Normals = getNormals(mesh);
     out["normals"] = Normals;
   }

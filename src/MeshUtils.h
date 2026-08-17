@@ -54,7 +54,7 @@
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
 
 // TODO CatmullClark, DooSabin, Sqrt3 subdivision
-// #include <CGAL/Subdivision_method_3/subdivision_methods_3.h>
+#include <CGAL/Subdivision_method_3/subdivision_methods_3.h>
 
 // -------------------------------------------------------------------------- //
 typedef CGAL::Advancing_front_surface_reconstruction<>     AFS_reconstruction;
@@ -86,6 +86,10 @@ typedef boost::graph_traits<EMesh3>::face_descriptor        face_descriptor;
 typedef boost::graph_traits<EMesh3>::edge_descriptor        edge_descriptor;
 typedef boost::graph_traits<EMesh3>::halfedge_descriptor    halfedge_descriptor;
 typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector> normals_map;
+typedef EMesh3::Property_map<vertex_descriptor, std::string> Vcolors_map;
+typedef EMesh3::Property_map<face_descriptor, std::string>   Fcolors_map;
+typedef EMesh3::Property_map<vertex_descriptor, double>      Vscalars_map;
+typedef EMesh3::Property_map<face_descriptor, double>        Fscalars_map;
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;
@@ -126,6 +130,8 @@ Rcpp::List RSurfTMesh(const MeshT&, const bool);
 Rcpp::List getRmesh(const Mesh3&);
 Rcpp::List getRmesh(const EMesh3&);
 
+// template <typename KernelT, typename MeshT, typename VectorT>
+// Rcpp::NumericMatrix getNormals(MeshT);
 Rcpp::NumericMatrix getNormals(Mesh3);
 Rcpp::NumericMatrix getNormals(EMesh3);
 
@@ -134,6 +140,7 @@ Rcpp::NumericMatrix getNormals(EMesh3);
 void Message(std::string);
 std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List&);
 EMesh3 fillBoundaryHoles(EMesh3, bool, double, int);              // only EPEC kernel
+void removeProperties(EMesh3&mesh, std::vector<std::string>);     // currently only used with EPEC kernel
 
 // -------------------------------------------------------------------------- //
 #endif

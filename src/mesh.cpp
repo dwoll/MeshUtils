@@ -325,11 +325,10 @@ Rcpp::List remeshIsotropic_cpp(
     return rmeshOut;
 }
 
-/*
-// TODO need to fix removeProperties() first
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // use EPEC kernel here
+// [[Rcpp::export]]
 Rcpp::List subdivideCatmullClark_cpp(const Rcpp::List rmeshIn, unsigned int nIter) {
     EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(rmeshIn, false, false);
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -337,16 +336,16 @@ Rcpp::List subdivideCatmullClark_cpp(const Rcpp::List rmeshIn, unsigned int nIte
     }
     removeProperties(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::CatmullClark_subdivision(
-      mesh, CGAL::parameters::number_of_iterations(nIter)
-    );
+      mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
-    rmeshOut = getRmesh(mesh);
+    Rcpp::List rmeshOut = getRmesh(mesh);
     return rmeshOut;
 }
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // use EPEC kernel here
+// [[Rcpp::export]]
 Rcpp::List subdivideDooSabin_cpp(const Rcpp::List rmeshIn, unsigned int nIter) {
     EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(rmeshIn, false, false);
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -356,13 +355,14 @@ Rcpp::List subdivideDooSabin_cpp(const Rcpp::List rmeshIn, unsigned int nIter) {
     CGAL::Subdivision_method_3::DooSabin_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
-    rmeshOut = getRmesh(mesh);
+    Rcpp::List rmeshOut = getRmesh(mesh);
     return rmeshOut;
 }
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // use EPEC kernel here
+// [[Rcpp::export]]
 Rcpp::List subdivideSqrt3_cpp(const Rcpp::List rmeshIn, unsigned int nIter) {
     EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(rmeshIn, false, false);
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -370,8 +370,7 @@ Rcpp::List subdivideSqrt3_cpp(const Rcpp::List rmeshIn, unsigned int nIter) {
     }
     removeProperties(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::Sqrt3_subdivision(
-      mesh, CGAL::parameters::number_of_iterations(iterations));
-      rmeshOut = getRmesh(mesh);
-      return rmeshOut;
+      mesh, CGAL::parameters::number_of_iterations(nIter));
+    Rcpp::List rmeshOut = getRmesh(mesh);
+    return rmeshOut;
 }
-*/
