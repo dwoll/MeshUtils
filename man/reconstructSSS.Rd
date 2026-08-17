@@ -12,7 +12,6 @@ reconstructSSS(
   separateShells = FALSE,
   forceManifold = TRUE,
   borderAngle = 45)
-)
 }
 \arguments{
 \item{x}{Numeric matrix which stores the points, one point per row.}
