@@ -14,14 +14,14 @@
 #include "MeshUtils.h"
 #endif
 
+// ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
                                   const Rcpp::NumericMatrix normals,
                                   const double spacing,
                                   const double smAngle,
                                   const double smRadius,
-                                  const double smDistance,
-                                  const bool clean) {
+                                  const double smDistance) {
   const size_t nPts = pts.ncol();
   std::vector<P3wn> points(nPts);
   for(size_t i = 0; i < nPts; i++) {
@@ -67,6 +67,5 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
 
   Mesh3 mesh;
   CGAL::copy_face_graph(poly, mesh);
-  Rcpp::List rmeshOut = getRmesh(mesh, false);
-  return rmeshOut;
+  return getRmesh(mesh, false);
 }

@@ -36,14 +36,23 @@ void checkMesh2(const MeshT &mesh, const std::string& what) {
 
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
-MeshT boolIntersect(const Rcpp::List &rmeshes,
-                    const bool clean,
-                    const Rcpp::LogicalVector triangulate) {
+MeshT boolIntersection(const Rcpp::List &rmeshes,
+                       const Rcpp::LogicalVector triangulate,
+                       const bool repairSoup) {
   const size_t nMeshes = rmeshes.size();
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
-  MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(rmesh, clean, triangulate[0], 0);
+  MeshT mesh_0 = makeSurfMesh<KernelT, MeshT, PointT>(
+      rmesh,
+      triangulate[0], // triangulate
+      repairSoup,     // repair_soup
+      false,          // remove_intersections
+      1,              // remove_method
+      false,          // fill_holes
+      false,          // fair hole
+      0);             // max_num_holes
+
   meshes[0] = mesh_0;
   for(size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
@@ -54,7 +63,15 @@ MeshT boolIntersect(const Rcpp::List &rmeshes,
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
     Message("Processing mesh" + meshnum);
-    MeshT mesh_i = makeSurfMesh<MeshT, PointT>(rmesh_i, clean, triangulate[i], 0);
+    MeshT mesh_i = makeSurfMesh<KernelT, MeshT, PointT>(
+        rmesh_i,
+        triangulate[i], // triangulate
+        repairSoup,     // repair_soup
+        false,          // remove_intersections
+        1,              // remove_method
+        false,          // fill_holes
+        false,          // fair hole
+        0);             // max_num_holes
     checkMesh1<MeshT>(mesh_i, i + 1);
     const bool ok = PMP::corefine_and_compute_intersection(
       meshes[i - 1], mesh_i, meshes[i]
@@ -68,25 +85,46 @@ MeshT boolIntersect(const Rcpp::List &rmeshes,
 
 // [[Rcpp::export]]
 Rcpp::List intersectionEK_cpp(const Rcpp::List rmeshes,
-                              const bool clean,
-                              const bool normals,
-                              const Rcpp::LogicalVector triangulate) {
-  EMesh3 mesh = boolIntersect<EK, EMesh3, EPoint3>(rmeshes, clean, triangulate);
+                              const Rcpp::LogicalVector triangulate,
+                              const bool repairSoup,
+                              const bool normals) {
+  EMesh3 mesh = boolIntersection<EK, EMesh3, EPoint3>(
+      rmeshes,
+      triangulate,
+      repairSoup);
+  // PMP::corefine_and_compute_intersection() requires triangle mesh
+  // -> output is triangle
   return RSurfTMesh<EK, EMesh3, EPoint3, EVector3>(mesh, normals);
 }
 
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
-MeshT boolDiff(const Rcpp::List &rmesh1,
-               const Rcpp::List &rmesh2,
-               const bool clean,
-               const bool triangulate1,
-               const bool triangulate2) {
+MeshT boolDifference(const Rcpp::List &rmesh1,
+                     const Rcpp::List &rmesh2,
+                     const bool triangulate1,
+                     const bool triangulate2,
+                     const bool repairSoup) {
   Message("Processing mesh1");
-  MeshT smesh1 = makeSurfMesh<MeshT, PointT>(rmesh1, clean, triangulate1, 0);
+  MeshT smesh1 = makeSurfMesh<KernelT, MeshT, PointT>(
+      rmesh1,
+      triangulate1,   // triangulate
+      repairSoup,     // repair_soup
+      false,          // remove_intersections
+      1,              // remove_method
+      false,          // fill_holes
+      false,          // fair hole
+      0);             // max_num_holes
   checkMesh1<MeshT>(smesh1, 1);
   Message("Processing mesh2");
-  MeshT smesh2 = makeSurfMesh<MeshT, PointT>(rmesh2, clean, triangulate2, 0);
+  MeshT smesh2 = makeSurfMesh<KernelT, MeshT, PointT>(
+      rmesh2,
+      triangulate2,   // triangulate
+      repairSoup,     // repair_soup
+      false,          // remove_intersections
+      1,              // remove_method
+      false,          // fill_holes
+      false,          // fair hole
+      0);             // max_num_holes
   checkMesh1<MeshT>(smesh2, 2);
   MeshT meshOut;
   bool ok = PMP::corefine_and_compute_difference(smesh1, smesh2, meshOut);
@@ -99,25 +137,35 @@ MeshT boolDiff(const Rcpp::List &rmesh1,
 // [[Rcpp::export]]
 Rcpp::List differenceEK_cpp(const Rcpp::List rmesh1,
                             const Rcpp::List rmesh2,
-                            const bool clean,
-                            const bool normals,
                             const bool triangulate1,
-                            const bool triangulate2) {
-  EMesh3 mesh = boolDiff<EK, EMesh3, EPoint3>(
-    rmesh1, rmesh2, clean, triangulate1, triangulate2);
+                            const bool triangulate2,
+                            const bool repairSoup,
+                            const bool normals) {
+  EMesh3 mesh = boolDifference<EK, EMesh3, EPoint3>(
+    rmesh1, rmesh2, triangulate1, triangulate2, repairSoup);
+  // PMP::corefine_and_compute_difference() requires triangle mesh
+  // -> output is triangle
   return RSurfTMesh<EK, EMesh3, EPoint3, EVector3>(mesh, normals);
 }
 
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolUnion(const Rcpp::List &rmeshes,
-                const bool clean,
-                const Rcpp::LogicalVector triangulate) {
+                const Rcpp::LogicalVector triangulate,
+                const bool repairSoup) {
   const size_t nMeshes = rmeshes.size();
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
-  MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(rmesh, clean, triangulate[0], 0);
+  MeshT mesh_0 = makeSurfMesh<KernelT, MeshT, PointT>(
+      rmesh,
+      triangulate[0], // triangulate
+      repairSoup,     // repair_soup
+      false,          // remove_intersections
+      1,              // remove_method
+      false,          // fill_holes
+      false,          // fair hole
+      0);             // max_num_holes
   meshes[0] = mesh_0;
   for(size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
@@ -128,7 +176,15 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
     Message("Processing mesh" + meshnum);
-    MeshT mesh_i = makeSurfMesh<MeshT, PointT>(rmesh_i, clean, triangulate[i], 0);
+    MeshT mesh_i = makeSurfMesh<KernelT, MeshT, PointT>(
+        rmesh_i,
+        triangulate[i], // triangulate
+        repairSoup,     // repair_soup
+        false,          // remove_intersections
+        1,              // remove_method
+        false,          // fill_holes
+        false,          // fair hole
+        0);             // max_num_holes
     checkMesh1<MeshT>(mesh_i, i + 1);
     const bool ok =
         PMP::corefine_and_compute_union(meshes[i - 1], mesh_i, meshes[i]);
@@ -141,9 +197,14 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
 
 // [[Rcpp::export]]
 Rcpp::List unionEK_cpp(const Rcpp::List rmeshes,
-                       const bool clean,
-                       const bool normals,
-                       const Rcpp::LogicalVector triangulate) {
-  EMesh3 mesh = boolUnion<EK, EMesh3, EPoint3>(rmeshes, clean, triangulate);
+                       const Rcpp::LogicalVector triangulate,
+                       const bool repairSoup,
+                       const bool normals) {
+  EMesh3 mesh = boolUnion<EK, EMesh3, EPoint3>(
+      rmeshes,
+      triangulate,
+      repairSoup);
+  // PMP::corefine_and_compute_union() requires triangle mesh
+  // -> output is triangle
   return RSurfTMesh<EK, EMesh3, EPoint3, EVector3>(mesh, normals);
 }

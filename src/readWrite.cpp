@@ -30,13 +30,13 @@ std::string toLower(std::string s) {
 // ----------------------------------------------------------------------- //
 std::pair<std::vector<std::vector<int>>, bool> list_to_faces2(
     const Rcpp::List &L) {
-  const size_t nfaces = L.size();
-  std::vector<std::vector<int>> faces;
-  faces.reserve(nfaces);
+  const size_t nFaces = L.size();
+  std::vector<std::vector<unsigned int>> faces;
+  faces.reserve(nFaces);
   bool triangle = true;
-  for(size_t i = 0; i < nfaces; i++) {
+  for(size_t i = 0; i < nFaces; i++) {
     Rcpp::IntegerVector face_rcpp = Rcpp::as<Rcpp::IntegerVector>(L(i));
-    std::vector<int> face(face_rcpp.begin(), face_rcpp.end());
+    std::vector<unsigned int> face(face_rcpp.begin(), face_rcpp.end());
 //     std::transform(
 //       face.begin(), face.end(), face.begin(),
 // 	  std::bind(std::minus<int>(), std::placeholders::_1, 1)
@@ -84,22 +84,22 @@ Rcpp::List readFile_cpp(const std::string filename) {
   Rcpp::List out;
   if(ok) {
     const size_t nPts = points.size();
-    Rcpp::NumericMatrix Vertices(3, nPts);
+    Rcpp::NumericMatrix vertex_mat(3, nPts);
     for(size_t i = 0; i < nPts; i++) {
       const Point3 point_i = points[i];
       Rcpp::NumericVector col_i =
           Rcpp::NumericVector::create(point_i.x(), point_i.y(), point_i.z());
-      Vertices(Rcpp::_, i) = col_i;
+      vertex_mat(Rcpp::_, i) = col_i;
     }
     const size_t nFaces = faces.size();
-    Rcpp::List Faces(nFaces);
+    Rcpp::List face_list(nFaces);
     for(size_t i = 0; i < nFaces; i++) {
       const std::vector<int> face_i = faces[i];
       Rcpp::IntegerVector col_i(face_i.begin(), face_i.end());
-      Faces(i) = col_i + 1;
+      face_list(i) = col_i + 1;
     }
-    out["vertices"] = Rcpp::transpose(Vertices);
-    out["faces"] = Faces;
+    out["vertices"] = Rcpp::transpose(vertex_mat);
+    out["faces"] = face_list;
   } else {
     Rcpp::stop("Reading failure.");
   }

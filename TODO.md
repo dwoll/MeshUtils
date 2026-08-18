@@ -1,5 +1,8 @@
 # TODO
 
+  * `RSurfTMesh()` vs. `getRmesh()`
+  * `makeSurfTMesh()` instead of `makeSurfMesh()` where appropriate
+  * `RSurfTMesh()` instead of `RSurfMesh()` where appropriate
   * `mesh.collect_garbage();` required in more places? (remeshing), `mesh.has_garbage()`
   * normals handling - get, calculate, and assign normals (`cgalMesh::get/compute/assignNormals()`)
   * `fillBoundaryHole()`: pass parameters

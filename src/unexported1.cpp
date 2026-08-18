@@ -60,6 +60,7 @@ template Rcpp::NumericMatrix points3_to_matrix<EPoint3>(const std::vector<EPoint
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+// create triangle faces
 std::vector<std::vector<size_t>> matrix_to_Tfaces(
   const Rcpp::IntegerMatrix &faceMat) {
   const size_t nFaces = faceMat.ncol();
@@ -78,6 +79,7 @@ std::vector<std::vector<size_t>> matrix_to_Tfaces(
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+// create faces - may not be triangle
 std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List &L) {
   const size_t nFaces = L.size();
   std::vector<std::vector<size_t>> faces;
@@ -180,7 +182,7 @@ MeshT soup_to_mesh(std::vector<PointT> points,
   return mesh;
 }
 
-template Mesh3 soup_to_mesh<Mesh3, Point3>(
+template Mesh3 soup_to_mesh<K, Mesh3, Point3>(
     std::vector<Point3>,
     std::vector<std::vector<std::size_t>>,
     const bool,
@@ -191,7 +193,7 @@ template Mesh3 soup_to_mesh<Mesh3, Point3>(
     const bool,
     const unsigned int);
 
-template EMesh3 soup_to_mesh<EMesh3, EPoint3>(
+template EMesh3 soup_to_mesh<EK, EMesh3, EPoint3>(
     std::vector<EPoint3>,
     std::vector<std::vector<std::size_t>>,
     const bool,
@@ -313,7 +315,9 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-template <typename MeshT, typename PointT>
+// general conversion from R list to Surface_mesh_3
+// faces may not be triangle
+template <typename KernelT, typename MeshT, typename PointT>
 MeshT makeSurfMesh(
   const Rcpp::List &rmesh,
   const bool triangulate,
@@ -328,7 +332,7 @@ MeshT makeSurfMesh(
   const Rcpp::List rfaces = Rcpp::as<Rcpp::List>(rmesh["faces"]);
   std::vector<PointT> points = matrix_to_points3<PointT>(vertices);
   std::vector<std::vector<size_t>> faces = list_to_faces(rfaces);
-  return soup_to_mesh<MeshT, PointT>(
+  return soup_to_mesh<KernelT, MeshT, PointT>(
       points,
       faces,
       triangulate,
@@ -340,7 +344,7 @@ MeshT makeSurfMesh(
       max_num_holes);
 }
 
-template Mesh3  makeSurfMesh<Mesh3,  Point3>(
+template Mesh3 makeSurfMesh<K, Mesh3,  Point3>(
     const Rcpp::List&,
     const bool,
     const bool,
@@ -350,7 +354,7 @@ template Mesh3  makeSurfMesh<Mesh3,  Point3>(
     const bool,
     const unsigned int);
 
-template EMesh3 makeSurfMesh<EMesh3, EPoint3>(
+template EMesh3 makeSurfMesh<EK, EMesh3, EPoint3>(
     const Rcpp::List&,
     const bool,
     const bool,
@@ -362,10 +366,10 @@ template EMesh3 makeSurfMesh<EMesh3, EPoint3>(
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-template <typename MeshT, typename PointT>
+// like makeSurfMesh() but for triangles -> rfaces is matrix
+template <typename KernelT, typename MeshT, typename PointT>
 MeshT makeSurfTMesh(
     const Rcpp::List &rmesh,
-    const bool triangulate,
     const bool repair_soup,
     const bool remove_intersections,
     const unsigned int remove_method,
@@ -378,9 +382,9 @@ MeshT makeSurfTMesh(
       Rcpp::as<Rcpp::IntegerMatrix>(rmesh["faces"]);
   std::vector<PointT> points = matrix_to_points3<PointT>(vertices);
   std::vector<std::vector<size_t>> faces = matrix_to_Tfaces(rfaces);
-  return soup_to_mesh<MeshT, PointT>(
+  return soup_to_mesh<KernelT, MeshT, PointT>(
       points,
-      triangulate,
+      false,               // triangulate
       repair_soup,
       remove_intersections,
       remove_method,
@@ -389,9 +393,8 @@ MeshT makeSurfTMesh(
       max_num_holes);
 }
 
-template Mesh3 makeSurfTMesh<Mesh3, Point3>(
+template Mesh3 makeSurfTMesh<K, Mesh3, Point3>(
     const Rcpp::List&,
-    const bool,
     const bool,
     const bool,
     const unsigned int,
@@ -399,9 +402,8 @@ template Mesh3 makeSurfTMesh<Mesh3, Point3>(
     const bool,
     const unsigned int);
 
-template EMesh3 makeSurfTMesh<EMesh3, EPoint3>(
+template EMesh3 makeSurfTMesh<EK, EMesh3, EPoint3>(
     const Rcpp::List&,
-    const bool,
     const bool,
     const bool,
     const unsigned int,

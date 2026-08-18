@@ -27,7 +27,6 @@
 #' @param smAngle Bound for the minimum facet angle in degrees.
 #' @param smRadius Relative bound for the radius of the surface Delaunay balls.
 #' @param smDistance Relative bound for the center-center distances.
-#' @param clean Boolean. Attempt to fix polygon soup?
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -65,8 +64,7 @@ reconstructPoisson <- function(
   spacing   = NULL,
   smAngle   = 20,
   smRadius  = 30,
-  smDistance= 0.375,
-  clean     =TRUE) {
+  smDistance= 0.375) {
   if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -101,6 +99,6 @@ reconstructPoisson <- function(
   stopifnot(isPositiveNumber(smRadius))
   stopifnot(isPositiveNumber(smDistance))
   mesh_cpp <- reconstructPoisson_cpp(
-    t(x), normals, spacing, smAngle, smRadius, smDistance, clean)
+    t(x), normals, spacing, smAngle, smRadius, smDistance)
   fromCPP(mesh_cpp)
 }

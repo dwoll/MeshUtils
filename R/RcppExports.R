@@ -5,8 +5,8 @@ alphaWrap_cpp <- function(pts, alphaRel, offsetRel) {
     .Call(`_MeshUtils_alphaWrap_cpp`, pts, alphaRel, offsetRel)
 }
 
-SurfMesh_cpp <- function(rmeshIn, clean, triangulate, normals, maxNumHoles) {
-    .Call(`_MeshUtils_SurfMesh_cpp`, rmeshIn, clean, triangulate, normals, maxNumHoles)
+SurfMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals) {
+    .Call(`_MeshUtils_SurfMesh_cpp`, rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals)
 }
 
 isValid_cpp <- function(rmesh) {
@@ -33,12 +33,12 @@ orientToBoundVolume_cpp <- function(rmesh, triangulate = FALSE) {
     .Call(`_MeshUtils_orientToBoundVolume_cpp`, rmesh, triangulate)
 }
 
-removeSelfIntersections_cpp <- function(rmeshIn, method, triangulate, maxNumHoles) {
-    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmeshIn, method, triangulate, maxNumHoles)
+removeSelfIntersections_cpp <- function(rmesh, triangulate, method) {
+    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmesh, triangulate, method)
 }
 
-fillBoundaryHoles_cpp <- function(rmeshIn, fairHole, triangulate, maxNumHoles) {
-    .Call(`_MeshUtils_fillBoundaryHoles_cpp`, rmeshIn, fairHole, triangulate, maxNumHoles)
+fillBoundaryHoles_cpp <- function(rmesh, fairHole, maxNumHoles) {
+    .Call(`_MeshUtils_fillBoundaryHoles_cpp`, rmesh, fairHole, maxNumHoles)
 }
 
 getArea_cpp <- function(rmesh, triangulate = FALSE) {
@@ -65,28 +65,28 @@ getDistance_cpp <- function(rmesh, points, triangulate = FALSE) {
     .Call(`_MeshUtils_getDistance_cpp`, rmesh, points, triangulate)
 }
 
-getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric, triangulate = FALSE) {
-    .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric, triangulate)
+getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric, triangulate1 = FALSE, triangulate2 = FALSE) {
+    .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric, triangulate1, triangulate2)
 }
 
-getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, errorBound, triangulate = FALSE) {
-    .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, errorBound, triangulate)
+getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, errorBound, triangulate1 = FALSE, triangulate2 = FALSE) {
+    .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, errorBound, triangulate1, triangulate2)
 }
 
-remeshIsotropic_cpp <- function(rmeshIn, targetEdgeLen, nIter, nRelaxSteps) {
-    .Call(`_MeshUtils_remeshIsotropic_cpp`, rmeshIn, targetEdgeLen, nIter, nRelaxSteps)
+remeshIsotropic_cpp <- function(rmesh, targetEdgeLen, nIter, nRelaxSteps) {
+    .Call(`_MeshUtils_remeshIsotropic_cpp`, rmesh, targetEdgeLen, nIter, nRelaxSteps)
 }
 
-subdivideCatmullClark_cpp <- function(rmeshIn, nIter, triangulate) {
-    .Call(`_MeshUtils_subdivideCatmullClark_cpp`, rmeshIn, nIter, triangulate)
+subdivideCatmullClark_cpp <- function(rmesh, nIter, triangulate) {
+    .Call(`_MeshUtils_subdivideCatmullClark_cpp`, rmesh, nIter, triangulate)
 }
 
-subdivideDooSabin_cpp <- function(rmeshIn, nIter, triangulate) {
-    .Call(`_MeshUtils_subdivideDooSabin_cpp`, rmeshIn, nIter, triangulate)
+subdivideDooSabin_cpp <- function(rmesh, nIter, triangulate) {
+    .Call(`_MeshUtils_subdivideDooSabin_cpp`, rmesh, nIter, triangulate)
 }
 
-subdivideSqrt3_cpp <- function(rmeshIn, nIter, triangulate) {
-    .Call(`_MeshUtils_subdivideSqrt3_cpp`, rmeshIn, nIter, triangulate)
+subdivideSqrt3_cpp <- function(rmesh, nIter, triangulate) {
+    .Call(`_MeshUtils_subdivideSqrt3_cpp`, rmesh, nIter, triangulate)
 }
 
 jet_normals_cpp <- function(pts, nbNeighbors) {
@@ -97,16 +97,16 @@ pca_normals_cpp <- function(pts, nbNeighbors) {
     .Call(`_MeshUtils_pca_normals_cpp`, pts, nbNeighbors)
 }
 
-intersectionEK_cpp <- function(rmeshes, clean, normals, triangulate) {
-    .Call(`_MeshUtils_intersectionEK_cpp`, rmeshes, clean, normals, triangulate)
+intersectionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
+    .Call(`_MeshUtils_intersectionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
 }
 
-differenceEK_cpp <- function(rmesh1, rmesh2, clean, normals, triangulate1, triangulate2) {
-    .Call(`_MeshUtils_differenceEK_cpp`, rmesh1, rmesh2, clean, normals, triangulate1, triangulate2)
+differenceEK_cpp <- function(rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals) {
+    .Call(`_MeshUtils_differenceEK_cpp`, rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals)
 }
 
-unionEK_cpp <- function(rmeshes, clean, normals, triangulate) {
-    .Call(`_MeshUtils_unionEK_cpp`, rmeshes, clean, normals, triangulate)
+unionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
+    .Call(`_MeshUtils_unionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
 }
 
 readFile_cpp <- function(filename) {
@@ -117,15 +117,15 @@ writeFile_cpp <- function(filename, binary, precision, vertices, faceList) {
     invisible(.Call(`_MeshUtils_writeFile_cpp`, filename, binary, precision, vertices, faceList))
 }
 
-reconstructAFS_cpp <- function(pts, nNeighs, clean) {
-    .Call(`_MeshUtils_reconstructAFS_cpp`, pts, nNeighs, clean)
+reconstructAFS_cpp <- function(pts, nNeighs, repairSoup) {
+    .Call(`_MeshUtils_reconstructAFS_cpp`, pts, nNeighs, repairSoup)
 }
 
-reconstructPoisson_cpp <- function(pts, normals, spacing, smAngle, smRadius, smDistance, clean) {
-    .Call(`_MeshUtils_reconstructPoisson_cpp`, pts, normals, spacing, smAngle, smRadius, smDistance, clean)
+reconstructPoisson_cpp <- function(pts, normals, spacing, smAngle, smRadius, smDistance) {
+    .Call(`_MeshUtils_reconstructPoisson_cpp`, pts, normals, spacing, smAngle, smRadius, smDistance)
 }
 
-reconstructSSS_cpp <- function(pts, scaleIterations, nNeighs, nSamples, separateShells, forceManifold, borderAngle) {
-    .Call(`_MeshUtils_reconstructSSS_cpp`, pts, scaleIterations, nNeighs, nSamples, separateShells, forceManifold, borderAngle)
+reconstructSSS_cpp <- function(pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle) {
+    .Call(`_MeshUtils_reconstructSSS_cpp`, pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle)
 }
 

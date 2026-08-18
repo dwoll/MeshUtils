@@ -14,6 +14,7 @@
 #include "MeshUtils.h"
 #endif
 
+// ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
                               const unsigned nNeighs,
@@ -51,7 +52,7 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
       }
     }
   }
-  std::vector<std::vector<size_t>> triangles;
+  std::vector<std::vector<int>> triangles;
   triangles.reserve(counter);
   for(size_t i = 0; i < counter; i++) {
     const size_t k = 3*i;
@@ -61,7 +62,7 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
 
   // repair_polygon_soup() is called in soup_to_mesh()
   // PMP::merge_duplicate_points_in_polygon_soup(vertices, triangles);
-  Mesh3 mesh = soup_to_mesh<Mesh3, Point3>(
+  Mesh3 mesh = soup_to_mesh<K, Mesh3, Point3>(
       vertices,
       triangles,
       false,      // triangulate

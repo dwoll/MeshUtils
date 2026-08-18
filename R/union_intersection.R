@@ -16,7 +16,7 @@
 #' @param x A list of meshes, each being either a \code{mesh3d} object
 #'   from package \strong{rgl}, or as a list with (at least) two fields:
 #'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
-#' @param clean Boolean, whether to clean the meshes (merging
+#' @param repairSoup Boolean, whether to clean the meshes (merging
 #'   duplicated vertices, duplicated faces, removing isolated vertices).
 #'   Set to \code{FALSE} if you are sure your meshes are clean, to
 #'   gain some speed.
@@ -59,9 +59,11 @@
 #'           verticesAsSpheres=FALSE)
 #'
 #' @export
-boolIntersection <- function(x, clean=TRUE, normals=FALSE) {
+boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE) {
   stopifnot(is.list(x))
   stopifnot(length(x) >= 2L)
+  stopifnot(isBoolean(repairSoup))
+  stopifnot(isBoolean(normals))
   checkMeshes <- lapply(x, function(mesh) {
     if(inherits(mesh, "mesh3d")) {
       vft  <- getVFT(mesh, beforeCheck = TRUE)
@@ -72,7 +74,7 @@ boolIntersection <- function(x, clean=TRUE, normals=FALSE) {
   areTriangle <- vapply(checkMeshes, `[[`, logical(1L), "isTriangle")
   triangulate <- !areTriangle
   meshes      <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  inter       <- intersectionEK_cpp(meshes, clean, normals, triangulate)
+  inter       <- intersectionEK_cpp(meshes, triangulate, repairSoup, normals)
   fromCPP(inter)
 }
 
@@ -85,7 +87,7 @@ boolIntersection <- function(x, clean=TRUE, normals=FALSE) {
 #' @param mesh2 A mesh, either being given a \code{mesh3d} object
 #'   from package \strong{rgl}, or by a list with (at least) two fields:
 #'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
-#' @param clean Boolean, whether to clean the meshes (merging duplicated
+#' @param repairSoup Boolean, whether to clean the meshes (merging duplicated
 #'   vertices, duplicated faces, removing isolated vertices). Set to
 #'   \code{FALSE} if you know your meshes are clean.
 #' @param normals Boolean, whether to return the per-vertex normals of the
@@ -120,8 +122,10 @@ boolIntersection <- function(x, clean=TRUE, normals=FALSE) {
 #'           verticesAsSpheres=TRUE)
 #'
 #' @export
-boolDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
+boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE) {
   stopifnot(is.list(mesh1), is.list(mesh2))
+  stopifnot(isBoolean(repairSoup))
+  stopifnot(isBoolean(normals))
 
   if(inherits(mesh1, "mesh3d")) {
     vft   <- getVFT(mesh1, beforeCheck = TRUE)
@@ -139,7 +143,7 @@ boolDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
 
   mesh1  <- checkMesh1[c("vertices", "faces")]
   mesh2  <- checkMesh2[c("vertices", "faces")]
-  differ <- differenceEK_cpp(mesh1, mesh2, clean, normals, triangulate1, triangulate2)
+  differ <- differenceEK_cpp(mesh1, mesh2, triangulate1, triangulate2, repairSoup, normals)
   fromCPP(differ)
 }
 
@@ -149,7 +153,7 @@ boolDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
 #' @param x A list of meshes, each being either a \code{mesh3d} object
 #'   from package \strong{rgl}, or as a list with (at least) two fields:
 #'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
-#' @param clean Boolean, whether to clean the meshes (merging
+#' @param repairSoup Boolean, whether to clean the meshes (merging
 #'   duplicated vertices, duplicated faces, removing isolated vertices).
 #'   Set to \code{FALSE} if you are sure your meshes are clean, to
 #'   gain some speed.
@@ -183,9 +187,11 @@ boolDifference <- function(mesh1, mesh2, clean=TRUE, normals=FALSE) {
 #'           verticesAsSpheres=TRUE)
 #'
 #' @export
-boolUnion <- function(x, clean = TRUE, normals = FALSE) {
+boolUnion <- function(x, repairSoup = TRUE, normals = FALSE) {
   stopifnot(is.list(x))
   stopifnot(length(x) >= 2L)
+  stopifnot(isBoolean(repairSoup))
+  stopifnot(isBoolean(normals))
 
   checkMeshes <- lapply(x, function(mesh) {
     if(inherits(mesh, "mesh3d")) {
@@ -198,6 +204,6 @@ boolUnion <- function(x, clean = TRUE, normals = FALSE) {
   areTriangle <- vapply(checkMeshes, `[[`, logical(1L), "isTriangle")
   triangulate <- !areTriangle
   meshes      <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  umesh       <- unionEK_cpp(meshes, clean, normals, triangulate)
+  umesh       <- unionEK_cpp(meshes, triangulate, repairSoup, normals)
   fromCPP(umesh)
 }

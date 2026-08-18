@@ -36,17 +36,17 @@ Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
       CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
           .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
 
-  Rcpp::NumericMatrix normals(3, nPts);
+  Rcpp::NumericMatrix normals_mat(3, nPts);
   for(size_t i = 0; i < nPts; i++) {
     Rcpp::NumericVector normal_i(3);
     const Vector3 normal = points[i].second;
     normal_i(0) = normal.x();
     normal_i(1) = normal.y();
     normal_i(2) = normal.z();
-    normals(Rcpp::_, i) = normal_i;
+    normals_mat(Rcpp::_, i) = normal_i;
   }
 
-  return normals;
+  return normals_mat;
 }
 
 // ----------------------------------------------------------------------- //
@@ -71,15 +71,15 @@ Rcpp::NumericMatrix pca_normals_cpp(Rcpp::NumericMatrix pts,
       CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
           .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
 
-  Rcpp::NumericMatrix normals(3, nPts);
+  Rcpp::NumericMatrix normals_mat(3, nPts);
   for(size_t i = 0; i < nPts; i++) {
     Rcpp::NumericVector normal_i(3);
     const Vector3 normal = points[i].second;
     normal_i(0) = normal.x();
     normal_i(1) = normal.y();
     normal_i(2) = normal.z();
-    normals(Rcpp::_, i) = normal_i;
+    normals_mat(Rcpp::_, i) = normal_i;
   }
 
-  return normals;
+  return normals_mat;
 }

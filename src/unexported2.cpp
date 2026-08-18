@@ -257,8 +257,8 @@ Rcpp::List RSurfMesh1(const MeshT &mesh, const bool normals) {
                                       Rcpp::Named("faces") = Faces);
   if(normals) {
     // Rcpp::NumericMatrix Normals = getNormals<KernelT, MeshT, VectorT>(mesh);
-    Rcpp::NumericMatrix Normals = getNormals(mesh);
-    out["normals"] = Normals;
+    Rcpp::NumericMatrix normals_mat = getNormals(mesh);
+    out["normals"] = normals_mat;
   }
   return out;
 }

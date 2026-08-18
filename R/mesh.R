@@ -49,11 +49,16 @@ print.CGALmesh <- function(x, ...) {
 #'   and \code{faces}, and must be either a list containing the components \code{vertices}
 #'   and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
 #'   (i.e. a \code{\link[rgl]{mesh3d}} object).
-#' @param clean Boolean, whether to do some mesh cleaning.
 #' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
-#' @param normals Boolean, whether to compute the normals.
+#' @param repairSoup Boolean: Whether to do some mesh cleaning.
+#' @param removeIntersections Boolean: Whether to attempt to remove self intersections.
+#' @param method One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).
+#' @param fillHoles Boolean: Whether to attempt to fill boundary holes.
+#' @param fairHole Boolean: Use CGAL `triangulate_refine_and_fair_hole()` (\code{TRUE})
+#'     or `triangulate_and_refine_hole()` (\code{FALSE})?
 #' @param maxNumHoles \code{integer}: Maximum number of holes to be filled. May be 0.
+#' @param normals Boolean: Whether to compute the normals.
 #'
 #' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 #'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.
@@ -114,14 +119,25 @@ print.CGALmesh <- function(x, ...) {
 #' @export
 makeMesh <- function(vertices,
                      faces,
-                     mesh       =NULL,
-                     clean      =TRUE,
-                     triangulate=FALSE,
-                     normals    =FALSE,
-                     maxNumHoles=10L) {
-	stopifnot(isBoolean(clean))
-	stopifnot(isBoolean(triangulate))
+                     mesh               =NULL,
+                     triangulate        =FALSE,
+                     repairSoup         =TRUE,
+                     removeIntersections=FALSE,
+                     removeMethod       =c("auto", "auto_snap"),
+                     fillHoles          =FALSE,
+                     fairHole           =FALSE,
+                     maxNumHoles        =0L,
+                     normals            =FALSE) {
+  stopifnot(isBoolean(triangulate))
+	stopifnot(isBoolean(repairSoup))
+	stopifnot(isBoolean(removeIntersections))
+	method_choices  <- c("auto", "auto_snap")
+  removeMethod    <- match.arg(removeMethod, choices=method_choices)
+  removeMethodInt <- match(removeMethod, method_choices)
+	stopifnot(isBoolean(fillHoles))
+	stopifnot(isBoolean(fairHole))
 	stopifnot(isPositiveInteger(maxNumHoles))
+	stopifnot(isBoolean(normals))
 	if(!is.null(mesh)) {
 		if(inherits(mesh, "mesh3d")) {
 			vft  <- getVFT(mesh, beforeCheck = TRUE)
@@ -140,7 +156,15 @@ makeMesh <- function(vertices,
 	}
 
 	mesh_r   <- list("vertices"=vertices, "faces"=faces)
-	mesh_cpp <- SurfMesh_cpp(mesh_r, clean, triangulate, normals, maxNumHoles)
+	mesh_cpp <- SurfMesh_cpp(mesh_r,
+                           triangulate,
+	                         repairSoup,
+	                         removeIntersections,
+													 removeMethodInt,
+	                         fillHoles,
+	                         fairHole,
+													 maxNumHoles,
+											     normals)
 	fromCPP(mesh_cpp)
 }
 
@@ -209,9 +233,9 @@ toRGL <- function(x, ...) {
 #'   vertex indices.
 #' @param color A color for the edges.
 #' @param lwd Line width, a positive number, ignored if \code{edgesAsTubes=TRUE}.
-#' @param edgesAsTubes Boolean, whether to draw the edges as tubes.
+#' @param edgesAsTubes Boolean: Whether to draw the edges as tubes.
 #' @param tubesRadius The radius of the tubes when \code{edgesAsTubes=TRUE}.
-#' @param verticesAsSpheres Boolean, whether to draw the vertices as spheres.
+#' @param verticesAsSpheres Boolean: Whether to draw the vertices as spheres.
 #' @param only Integer vector made of the indices of the vertices you want
 #'   to plot (as spheres), or \code{NULL} to plot all vertices.
 #' @param spheresRadius The radius of the spheres when
@@ -345,7 +369,6 @@ isTriangle <- function(x) {
   checkedMesh[["isTriangle"]]
 }
 
-
 #' @title Does mesh bound a volume?
 #' @description Does mesh bound a volume?
 #'
@@ -449,10 +472,9 @@ orientToBoundVolume <- function(x, triangulate = FALSE) {
 #' @description Remove self intersections.
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param method One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).
 #' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
-#' @param maxNumHoles \code{integer}: Maximum number of holes to be filled.
+#' @param method One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).
 #' @returns \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #' @details See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.
@@ -464,19 +486,17 @@ orientToBoundVolume <- function(x, triangulate = FALSE) {
 #' getVolume(mesh_nsi)
 #'
 #' @export
-removeSelfIntersections <- function(x, method=c("auto", "auto_snap"),
-	triangulate = FALSE, maxNumHoles = 0) {
+removeSelfIntersections <- function(x, triangulate = FALSE, method=c("auto", "auto_snap")) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
   stopifnot(isBoolean(triangulate))
-  stopifnot(isPositiveInteger(maxNumHoles))
   method_choices <- c("auto", "auto_snap")
-  method     <- match.arg(method, choices=method_choices)
-  method_int <- match(method, method_choices)
-  meshCPP    <- fromR(x)
-  mesh       <- removeSelfIntersections_cpp(meshCPP, method_int, triangulate, maxNumHoles)
+  method    <- match.arg(method, choices=method_choices)
+  methodInt <- match(method, method_choices)
+  meshCPP   <- fromR(x)
+  mesh      <- removeSelfIntersections_cpp(meshCPP, triangulate, methodInt)
   fromCPP(mesh)
 }
 
@@ -484,9 +504,9 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap"),
 #' @description Fill boundary holes.
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param maxNumHoles \code{integer}: Maximum number of holes to be filled.
 #' @param fairHole Boolean: Use CGAL `triangulate_refine_and_fair_hole()` (\code{TRUE})
 #'     or `triangulate_and_refine_hole()` (\code{FALSE})?
+#' @param maxNumHoles \code{integer}: Maximum number of holes to be filled.
 #' @returns \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #' @details See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.
@@ -498,7 +518,7 @@ removeSelfIntersections <- function(x, method=c("auto", "auto_snap"),
 #' mesh_fill <- fillBoundaryHoles(mesh)
 #'
 #' @export
-fillBoundaryHoles <- function(x, maxNumHoles=10L, fairHole = TRUE) {
+fillBoundaryHoles <- function(x, fairHole = TRUE, maxNumHoles=10L) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
@@ -506,7 +526,7 @@ fillBoundaryHoles <- function(x, maxNumHoles=10L, fairHole = TRUE) {
   stopifnot(isBoolean(fairHole))
   stopifnot(isStrictPositiveInteger(maxNumHoles))
   meshCPP <- fromR(x)
-  mesh    <- fillBoundaryHoles_cpp(meshCPP, maxNumHoles, fairHole)
+  mesh    <- fillBoundaryHoles_cpp(meshCPP, fairHole, maxNumHoles)
   fromCPP(mesh)
 }
 
@@ -654,7 +674,7 @@ getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
   if(out == "rgl") {
     m_rgl
   } else {
-    makeMesh(mesh=m_rgl)
+    makeMesh(mesh=m_rgl, repairSoup=FALSE)
   }
 }
 
@@ -684,10 +704,10 @@ getDistance <- function(x, points, triangulate = FALSE) {
   if(!is.matrix(points) || !is.numeric(points)) {
     stop("The `points` argument must be a numeric matrix.", call. = TRUE)
   }
-  if(ncol(points) != 3L) {
-    stop("The `points` matrix must have three columns.", call. = TRUE)
-  }
   stopifnot(isBoolean(triangulate))
+  if((ncol(points) != 3L) && !triangulate) {
+    stop("The `points` matrix must have three columns. Need 'triangulate=TRUE'", call. = TRUE)
+  }
   storage.mode(points) <- "double"
   n_pts <- nrow(points)
   is_na <- vapply(seq_len(n_pts), function(i) {
@@ -705,9 +725,11 @@ getDistance <- function(x, points, triangulate = FALSE) {
 #'   approximate distance, or distance estimate with a given error bound.
 #' @param mesh1 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param mesh2 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param triangulate Boolean: Whether to triangulate the faces of \code{mesh1} and \code{mesh2}.
+#' @param triangulate1 Boolean: Whether to triangulate the faces of \code{mesh1}.
 #'   Ignored if faces are already triangle.
-#' @param symmetric Boolean, whether to consider the symmetric Hausdorff
+#' @param triangulate2 Boolean: Whether to triangulate the faces of \code{mesh2}.
+#'   Ignored if faces are already triangle.
+#' @param symmetric Boolean: Whether to consider the symmetric Hausdorff
 #'   distance.
 #' @param errorBound A positive number, a bound on the error of the
 #'   estimate. If missing, the approximate distance is returned.
@@ -726,20 +748,21 @@ getDistance <- function(x, points, triangulate = FALSE) {
 #'
 #' @export
 getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound,
-	triangulate = FALSE) {
+	triangulate1 = FALSE, triangulate2 = FALSE) {
   stopifnot(inherits(mesh1, "CGALmesh"))
   stopifnot(inherits(mesh2, "CGALmesh"))
   stopifnot(isBoolean(symmetric))
-  stopifnot(isBoolean(triangulate))
+  stopifnot(isBoolean(triangulate1))
+  stopifnot(isBoolean(triangulate1))
   meshCPP1 <- fromR(mesh1)
   meshCPP2 <- fromR(mesh2)
   if(!missing(errorBound)) {
     stopifnot(isPositiveNumber(errorBound))
     getHausdorffEst_cpp(meshCPP1, meshCPP2, symmetric, errorBound,
-                        triangulate)
+                        triangulate1, triangulate2)
   } else {
     getHausdorffApprox_cpp(meshCPP1, meshCPP2, symmetric,
-    	                     triangulate)
+    	                     triangulate1, triangulate2)
   }
 }
 

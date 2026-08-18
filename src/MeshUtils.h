@@ -100,7 +100,7 @@ std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix&);
 template <typename PointT>
 Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT>&);
 
-template <typename MeshT, typename PointT>
+template <typename KernelT, typename MeshT, typename PointT>
 MeshT soup_to_mesh(
     std::vector<Point3>,                    // points
     std::vector<std::vector<std::size_t>>,  // faces
@@ -113,9 +113,9 @@ MeshT soup_to_mesh(
     const unsigned int);                    // max_num_holes
 
 template <typename MeshT, typename PointT>
-MeshT csoup_to_mesh(std::vector<PointT>, std::vector<std::vector<size_t>>, const bool);
+MeshT csoup_to_mesh(std::vector<PointT>, std::vector<std::vector<std::size_t>>, const bool);
 
-template <typename MeshT, typename PointT>
+template <typename KernelT, typename MeshT, typename PointT>
 MeshT makeSurfMesh(
     const Rcpp::List&,
     const bool,
@@ -126,10 +126,10 @@ MeshT makeSurfMesh(
     const bool,
     const unsigned int);
 
-template <typename MeshT, typename PointT>
+// no bool triangulate as triangle mesh assumed
+template <typename KernelT, typename MeshT, typename PointT>
 MeshT makeSurfTMesh(
     const Rcpp::List&,
-    const bool,
     const bool,
     const bool,
     const unsigned int,
@@ -150,7 +150,10 @@ template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List RSurfTMesh(const MeshT&, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT>
-void removeSelfIntersections(std::vector<PointT>&, std::vector<std::vector<std::size_t>>&, const unsigned int);
+void removeSelfIntersections(
+    std::vector<PointT>&,
+    std::vector<std::vector<std::size_t>>&,
+    const unsigned int);
 
 // -------------------------------------------------------------------------- //
 // TODO template
@@ -165,7 +168,7 @@ Rcpp::NumericMatrix getNormals(EMesh3);
 // -------------------------------------------------------------------------- //
 // no template
 void Message(std::string);
-std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List&);
+std::vector<std::vector<std::size_t>> list_to_faces(const Rcpp::List&);
 
 // use only EPEC kernel
 void fillBoundaryHoles(EMesh3&, const bool, const double, const int, const unsigned int);

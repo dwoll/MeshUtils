@@ -19,14 +19,14 @@
 Rcpp::List reconstructSSS_cpp(
   const Rcpp::NumericMatrix pts,
   const size_t scaleIterations,
-  const unsigned nNeighs,
-  const unsigned nSamples,
+  const unsigned int nNeighbors,
+  const unsigned int nSamples,
   const bool separateShells,
   const bool forceManifold,
   const double borderAngle) {
   std::vector<Point3> points = matrix_to_points3<Point3>(pts);
   SSS_reconstruction SSSR(points.begin(), points.end());
-  SSS_smoother smoother(nNeighs, nSamples);
+  SSS_smoother smoother(nNeighbors, nSamples);
   SSSR.increase_scale(scaleIterations, smoother);
   SSS_mesher mesher(
     smoother.squared_radius(), separateShells, forceManifold, borderAngle
