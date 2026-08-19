@@ -35,12 +35,12 @@
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh     <- makeMesh(mesh=dataHopfTorus)
+#' mesh     <- dataHeart1
 #' mesh_rgl <- toRGL(mesh)
 #' mesh_sss <- reconstructSSS(mesh[["vertices"]],
-#'                            scaleIterations=4,
+#'                            scaleIterations=1,
 #'                            forceManifold  =TRUE,
-#'                            neighbors      =3)
+#'                            neighbors      =6)
 #'
 #' mesh_sss_rgl <- toRGL(mesh_sss)
 #'

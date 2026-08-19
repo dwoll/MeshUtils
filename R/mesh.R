@@ -106,12 +106,7 @@ print.CGALmesh <- function(x, ...) {
 #' ## the faces of the truncated icosahedron are hexagonal or pentagonal:
 #' dataTruncIcosahedron[["faces"]]
 #' # so we triangulate them:
-#' mesh2 <- makeMesh(
-#'   mesh       =dataTruncIcosahedron,
-#'   triangulate=TRUE,
-#'   normals    =FALSE)
-#'
-#' ## now we can plot the truncated icosahedron
+#' mesh2     <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
 #' mesh2_rgl <- toRGL(mesh2)
 #' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
 #' shade3d(mesh2_rgl, color="orange")
@@ -184,14 +179,10 @@ makeMesh <- function(vertices,
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' mesh <- makeMesh(
-#'   mesh       =dataTruncIcosahedron,
-#'   triangulate=TRUE,
-#'   normals    =FALSE)
-#'
+#' mesh     <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh, segments=t(mesh[["edges"]]))
 #' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
-#' shade3d(mesh_rgl, color="darkred")
+#' wire3d(mesh_rgl, color="darkred")
 #'
 #' @export
 #' @importFrom rgl mesh3d
@@ -452,8 +443,8 @@ isClosed <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
-#' mesh_o <- orientToBoundVolume(mesh)
+#' mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=FALSE)
+#' mesh_o <- orientToBoundVolume(mesh, triangulate=TRUE)
 #' getVolume(mesh_o)
 #'
 #' @export
@@ -783,9 +774,9 @@ getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound,
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh         <- dataHeart1
+#' mesh         <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
 #' mesh_rgl     <- toRGL(mesh)
-#' mesh_rem_rgl <- remeshIsotropic(mesh, targetEdgeLen=10, out="rgl")
+#' mesh_rem_rgl <- remeshIsotropic(mesh, targetEdgeLen=1, out="rgl")
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
 #' mfrow3d(1, 2)
@@ -885,8 +876,8 @@ subdivideCatmullClark <- function(x, nIter = 1, triangulate = FALSE) {
 #'
 #' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl    <- toRGL(mesh)
-#' mesh_sd     <- subdivideDooSabin(mesh, nIter=2)
-#' mesh_sd_rgl <- toRGL(mesh_sd)
+#' mesh_ds     <- subdivideDooSabin(mesh, nIter=2, triangulate=TRUE)
+#' mesh_ds_rgl <- toRGL(mesh_ds)
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
 #' mfrow3d(1, 2)
@@ -894,7 +885,7 @@ subdivideCatmullClark <- function(x, nIter = 1, triangulate = FALSE) {
 #' wire3d(mesh_rgl)
 #' next3d()
 #' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_sd_rgl)
+#' wire3d(mesh_ds_rgl)
 #'
 #' @export
 subdivideDooSabin <- function(x, nIter = 1, triangulate = FALSE) {
@@ -926,8 +917,8 @@ subdivideDooSabin <- function(x, nIter = 1, triangulate = FALSE) {
 #'
 #' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl    <- toRGL(mesh)
-#' mesh_sd     <- subdivideSqrt3(mesh, nIter=2)
-#' mesh_sd_rgl <- toRGL(mesh_sd)
+#' mesh_s3     <- subdivideSqrt3(mesh, nIter=2)
+#' mesh_s3_rgl <- toRGL(mesh_s3)
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
 #' mfrow3d(1, 2)
@@ -935,7 +926,7 @@ subdivideDooSabin <- function(x, nIter = 1, triangulate = FALSE) {
 #' wire3d(mesh_rgl)
 #' next3d()
 #' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_sd_rgl)
+#' wire3d(mesh_s3_rgl)
 #'
 #' @export
 subdivideSqrt3 <- function(x, nIter = 1, triangulate = FALSE) {

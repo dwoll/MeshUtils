@@ -31,7 +31,8 @@ library(MeshUtils)
 library(rgl)
 
 # no smoothing
-mesh          <- makeMesh(mesh=dataHopfTorus)
+mesh          <- dataHeart1
+mesh_rgl      <- toRGL(mesh)
 mesh_afs1     <- reconstructAFS(mesh[["vertices"]])
 mesh_afs1_rgl <- toRGL(mesh_afs1)
 
@@ -40,12 +41,13 @@ mesh_afs2     <- reconstructAFS(mesh[["vertices"]],
                                 jetSmoothing=30)
 mesh_afs2_rgl <- toRGL(mesh_afs2)
 
-open3d(windowRect=50 + c(0, 0, 800, 400))
-mfrow3d(1, 2)
-view3d(20, -40, zoom=0.85)
-shade3d(mesh_afs1_rgl, color="gold")
+open3d(windowRect=50 + c(0, 0, 1200, 400))
+mfrow3d(1, 3)
+wire3d(mesh_rgl)
 next3d()
-shade3d(mesh_afs2_rgl, color="gold")
+wire3d(mesh_afs1_rgl)
+next3d()
+wire3d(mesh_afs2_rgl)
 
 }
 \seealso{

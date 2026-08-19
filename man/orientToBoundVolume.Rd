@@ -19,8 +19,8 @@ Orient mesh to bound a volume
 }
 \examples{
 library(MeshUtils)
-mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
-mesh_o <- orientToBoundVolume(mesh)
+mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=FALSE)
+mesh_o <- orientToBoundVolume(mesh, triangulate=TRUE)
 getVolume(mesh_o)
 
 }

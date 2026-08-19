@@ -34,9 +34,9 @@ Isotropic remeshing.
 library(MeshUtils)
 library(rgl)
 
-mesh         <- dataHeart1
+mesh         <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
 mesh_rgl     <- toRGL(mesh)
-mesh_rem_rgl <- remeshIsotropic(mesh, targetEdgeLen=10, out="rgl")
+mesh_rem_rgl <- remeshIsotropic(mesh, targetEdgeLen=1, out="rgl")
 
 open3d(windowRect=50 + c(0, 0, 800, 400))
 mfrow3d(1, 2)

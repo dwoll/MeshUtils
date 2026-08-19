@@ -23,7 +23,7 @@ Performs the Catmull-Clark subdivision and deformation.
 library(MeshUtils)
 library(rgl)
 
-mesh        <- makeMesh(mesh=dataHopfTorus)
+mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 mesh_rgl    <- toRGL(mesh)
 mesh_sd     <- subdivideCatmullClark(mesh, nIter=2)
 mesh_sd_rgl <- toRGL(mesh_sd)
