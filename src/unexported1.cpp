@@ -114,9 +114,9 @@ MeshT soup_to_mesh(std::vector<PointT> points,
     Message("Successful polygon orientation.");
   } else {
     Rcpp::warning("Polygon orientation failed.",
-                  "Try to check for, and then remove self-intersections.");
+                  "Try to remove self-intersections if present.");
   }
-  bool hasSelfIntersections = PMP::does_polygon_soup_self_intersect(points, faces));
+  bool hasSelfIntersections = PMP::does_polygon_soup_self_intersect(points, faces);
   if(hasSelfIntersections) {
       Message("Polygon soup has self-intersections.");
   }
@@ -128,7 +128,7 @@ MeshT soup_to_mesh(std::vector<PointT> points,
       [](const auto& p) { return p.size() == 3; });
     if(is_triangle_soup) {
         Message("Attempting to remove self-intersections.");
-        removeSelfIntersections<KernelT, MeshT, PointT>(points, faces, remove_method)
+        removeSelfIntersections<KernelT, MeshT, PointT>(points, faces, remove_method);
     } else {
         Rcpp::warning("Not a triangle mesh, could not try to remove self-intersections.");
     }
@@ -140,11 +140,11 @@ MeshT soup_to_mesh(std::vector<PointT> points,
   if(!isValid) {
     Rcpp::warning("The mesh is not valid.");
   }
-  bool isTriangle = CGAL::is_triangle_mesh(mesh);
-  if(triangulate && !isTriangle) {
-    isTriangle = PMP::triangulate_faces(mesh);
+  bool is_triangle = CGAL::is_triangle_mesh(mesh);
+  if(triangulate && !is_triangle) {
+    is_triangle = PMP::triangulate_faces(mesh);
   }
-  if(isTriangle) {
+  if(is_triangle) {
     Message("The mesh is triangle.");
   } else {
     Message("The mesh is not triangle; no way to ensure it "
@@ -167,7 +167,7 @@ MeshT soup_to_mesh(std::vector<PointT> points,
   } else {
       Message("The mesh is not closed.");
   }
-  if(isTriangle) {
+  if(is_triangle) {
     if(!PMP::is_outward_oriented(mesh)) {
       PMP::reverse_face_orientations(mesh);
     }
@@ -344,7 +344,7 @@ MeshT makeSurfMesh(
       max_num_holes);
 }
 
-template Mesh3 makeSurfMesh<K, Mesh3,  Point3>(
+template Mesh3 makeSurfMesh<K, Mesh3, Point3>(
     const Rcpp::List&,
     const bool,
     const bool,
@@ -384,6 +384,7 @@ MeshT makeSurfTMesh(
   std::vector<std::vector<size_t>> faces = matrix_to_Tfaces(rfaces);
   return soup_to_mesh<KernelT, MeshT, PointT>(
       points,
+      faces,
       false,               // triangulate
       repair_soup,
       remove_intersections,
@@ -440,12 +441,12 @@ Rcpp::List getRmesh(Mesh3 &mesh, const bool triangulate) {
   std::pair<nrmlsmap, bool> normalsmap_ =
       property_map_pair<vxdescr, Rcpp::NumericVector, Mesh3>(mesh, "v:normal");
   const bool has_normals = normalsmap_.second;
-  bool isTriangle = CGAL::is_triangle_mesh(mesh);
-  if(triangulate && !isTriangle) {
-    isTriangle = PMP::triangulate_faces(mesh);
+  bool is_triangle = CGAL::is_triangle_mesh(mesh);
+  if(triangulate && !is_triangle) {
+    is_triangle = PMP::triangulate_faces(mesh);
   }
   Rcpp::List rmesh;
-  if(isTriangle) {
+  if(is_triangle) {
     rmesh = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, false, 3);
   } else if(CGAL::is_quad_mesh(mesh)) {
     rmesh = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, false, 4);
@@ -469,12 +470,12 @@ Rcpp::List getRmesh(EMesh3 &mesh, const bool triangulate) {
   std::pair<normals_map, bool> normalsmap_ =
       property_map_pair<vertex_descriptor, Rcpp::NumericVector, EMesh3>(mesh, "v:normal");
   const bool has_normals = normalsmap_.second;
-  bool isTriangle = CGAL::is_triangle_mesh(mesh);
-  if(triangulate && !isTriangle) {
-    isTriangle = PMP::triangulate_faces(mesh);
+  bool is_triangle = CGAL::is_triangle_mesh(mesh);
+  if(triangulate && !is_triangle) {
+    is_triangle = PMP::triangulate_faces(mesh);
   }
   Rcpp::List rmesh;
-  if(isTriangle) {
+  if(is_triangle) {
     rmesh = RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, false, 3);
   } else if(CGAL::is_quad_mesh(mesh)) {
     rmesh = RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, false, 4);
@@ -660,5 +661,5 @@ void removeSelfIntersections(std::vector<PointT> &points,
   }
 }
 
-template void removeSelfIntersections<K,  Mesh3,  Point3>(std::vector<PointT>&,  std::vector<std::vector<std::size_t>>&, const unsigned int);
-template void removeSelfIntersections<EK, EMesh3, EPoint3>(std::vector<PointT>&, std::vector<std::vector<std::size_t>>&, const unsigned int);
+template void removeSelfIntersections<K,  Mesh3,  Point3>(std::vector<Point3>&,   std::vector<std::vector<std::size_t>>&, const unsigned int);
+template void removeSelfIntersections<EK, EMesh3, EPoint3>(std::vector<EPoint3>&, std::vector<std::vector<std::size_t>>&, const unsigned int);

@@ -52,7 +52,7 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
       }
     }
   }
-  std::vector<std::vector<int>> triangles;
+  std::vector<std::vector<size_t>> triangles;
   triangles.reserve(counter);
   for(size_t i = 0; i < counter; i++) {
     const size_t k = 3*i;
@@ -72,6 +72,5 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
       false,      // fill_holes
       false,      // fair hole
       0);         // max_num_holes
-  Rcpp::List rmeshOut = getRmesh(mesh, false);
-  return rmeshOut;
+  return getRmesh(mesh, false);
 }

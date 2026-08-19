@@ -28,15 +28,15 @@ std::string toLower(std::string s) {
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-std::pair<std::vector<std::vector<int>>, bool> list_to_faces2(
+std::pair<std::vector<std::vector<size_t>>, bool> list_to_faces2(
     const Rcpp::List &L) {
   const size_t nFaces = L.size();
-  std::vector<std::vector<unsigned int>> faces;
+  std::vector<std::vector<size_t>> faces;
   faces.reserve(nFaces);
   bool triangle = true;
   for(size_t i = 0; i < nFaces; i++) {
     Rcpp::IntegerVector face_rcpp = Rcpp::as<Rcpp::IntegerVector>(L(i));
-    std::vector<unsigned int> face(face_rcpp.begin(), face_rcpp.end());
+    std::vector<size_t> face(face_rcpp.begin(), face_rcpp.end());
 //     std::transform(
 //       face.begin(), face.end(), face.begin(),
 // 	  std::bind(std::minus<int>(), std::placeholders::_1, 1)
@@ -114,7 +114,7 @@ void writeFile_cpp(const std::string filename,
                    const Rcpp::NumericMatrix vertices,
                    const Rcpp::List faceList) {
   const std::vector<Point3> points = matrix_to_points3<Point3>(vertices);
-  const std::pair<std::vector<std::vector<int>>, bool> faces =
+  const std::pair<std::vector<std::vector<size_t>>, bool> faces =
       list_to_faces2(faceList);
   const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
   bool ok = false;

@@ -4,10 +4,12 @@
 \alias{getArea}
 \title{Get mesh area}
 \usage{
-getArea(x)
+getArea(x, triangulate = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
+are already triangle.}
 }
 \value{
 \code{numeric}: The mesh area.

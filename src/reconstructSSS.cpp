@@ -18,12 +18,13 @@
 // [[Rcpp::export]]
 Rcpp::List reconstructSSS_cpp(
   const Rcpp::NumericMatrix pts,
-  const size_t scaleIterations,
+  const unsigned int scaleIterations,
   const unsigned int nNeighbors,
   const unsigned int nSamples,
   const bool separateShells,
   const bool forceManifold,
-  const double borderAngle) {
+  const double borderAngle,
+  const bool repairSoup) {
   std::vector<Point3> points = matrix_to_points3<Point3>(pts);
   SSS_reconstruction SSSR(points.begin(), points.end());
   SSS_smoother smoother(nNeighbors, nSamples);
@@ -32,15 +33,23 @@ Rcpp::List reconstructSSS_cpp(
     smoother.squared_radius(), separateShells, forceManifold, borderAngle
   );
   SSSR.reconstruct_surface(mesher);
-  Mesh3 mesh;
-  for(SSS_point_iterator it = SSSR.points_begin(); it != SSSR.points_end(); ++it) {
-    mesh.add_vertex(*it);
-  }
-  for(SSS_facet_iterator it = SSSR.facets_begin(); it != SSSR.facets_end(); ++it) {
-    std::array<size_t, 3> face = *it;
-    mesh.add_face(vxdescr(face[0]), vxdescr(face[1]), vxdescr(face[2]));
-  }
+  SSS_reconstruction::Point_range smoothed(SSSR.points());
+  SSS_reconstruction::Facet_range polygons(SSSR.facets());
 
-  Rcpp::List rmeshOut = getRmesh(mesh, false);
-  return rmeshOut;
+  Mesh3 mesh;
+  if(repairSoup) {
+    PMP::repair_polygon_soup(smoothed, polygons);
+  }
+  PMP::orient_polygon_soup(smoothed, polygons);
+  PMP::polygon_soup_to_polygon_mesh(smoothed, polygons, mesh);
+  if(CGAL::is_triangle_mesh(mesh)) {
+      if(!PMP::is_outward_oriented(mesh)) {
+        PMP::reverse_face_orientations(mesh);
+      }
+
+      if(!PMP::does_bound_a_volume(mesh)) {
+          PMP::orient_to_bound_a_volume(mesh);
+      }
+  }
+  return getRmesh(mesh, false);
 }

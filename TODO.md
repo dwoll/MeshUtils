@@ -1,13 +1,10 @@
 # TODO
 
-  * `RSurfTMesh()` vs. `getRmesh()`
-  * `makeSurfTMesh()` instead of `makeSurfMesh()` where appropriate
-  * `RSurfTMesh()` instead of `RSurfMesh()` where appropriate
   * `mesh.collect_garbage();` required in more places? (remeshing), `mesh.has_garbage()`
+  * `soup_to_mesh()`: triangulate at polygon soup stage before calling `removeSelfIntersections()`, if necessary
   * normals handling - get, calculate, and assign normals (`cgalMesh::get/compute/assignNormals()`)
   * `fillBoundaryHole()`: pass parameters
-  * is it possible to make CGAL `Mesh_3` without polygon soup step?
-  * `remeshIsotropic()` does not work well for pentagrammic prism -> because of `soup_to_mesh()`?
+  * `remeshIsotropic()` does not work well for pentagrammic prism
       * `targetEdgeLen` param passed correctly?
       * `Uniform_sizing_field` vs. `Adaptive_sizing_field`
   * `readFile_cpp()` STL filename instead of `infile`?
@@ -15,7 +12,7 @@
 
   # Wishlist
 
-  * add CGAL documentation links to help pages for seealso
+  * add CGAL documentation links to help pages for details
   * silent option to remove output during processing
   * fewer checks than in `soup_to_mesh()` when not required (via `SurfMesh_cpp` -> `makeSurfMesh()`)
       * use `vf_to_emesh()`, `csoup_to_mesh()`?

@@ -4,10 +4,12 @@
 \alias{doesBoundVolume}
 \title{Does mesh bound a volume?}
 \usage{
-doesBoundVolume(x)
+doesBoundVolume(x, triangulate = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
+are already triangle.}
 }
 \value{
 TRUE or FALSE.

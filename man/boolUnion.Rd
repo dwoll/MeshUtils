@@ -4,14 +4,14 @@
 \alias{boolUnion}
 \title{Meshes union}
 \usage{
-boolUnion(x, clean = TRUE, normals = FALSE)
+boolUnion(x, repairSoup = TRUE, normals = FALSE)
 }
 \arguments{
 \item{x}{A list of meshes, each being either a \code{mesh3d} object
 from package \strong{rgl}, or as a list with (at least) two fields:
 \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.}
 
-\item{clean}{Boolean, whether to clean the meshes (merging
+\item{repairSoup}{Boolean, whether to clean the meshes (merging
 duplicated vertices, duplicated faces, removing isolated vertices).
 Set to \code{FALSE} if you are sure your meshes are clean, to
 gain some speed.}

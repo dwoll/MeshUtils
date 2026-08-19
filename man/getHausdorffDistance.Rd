@@ -4,7 +4,8 @@
 \alias{getHausdorffDistance}
 \title{Hausdorff distance between two meshes}
 \usage{
-getHausdorffDistance(mesh1, mesh2, symmetric = TRUE, errorBound)
+getHausdorffDistance(mesh1, mesh2, symmetric = TRUE, errorBound,
+                     triangulate1 = FALSE, triangulate2 = FALSE)
 }
 \arguments{
 \item{mesh1}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
@@ -16,6 +17,10 @@ distance.}
 
 \item{errorBound}{A positive number, a bound on the error of the
 estimate. If missing, the approximate distance is returned.}
+\item{triangulate1}{Boolean: Whether to triangulate the faces of \code{mesh1}. Ignored if faces
+are already triangle.}
+\item{triangulate2}{Boolean: Whether to triangulate the faces of \code{mesh2}. Ignored if faces
+are already triangle.}
 }
 \value{
 A number. For the apprixmate distance, the algorithm uses

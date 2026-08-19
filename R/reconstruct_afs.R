@@ -19,7 +19,7 @@
 #'   this integer as the number of neighbors for the smoothing. Note that this
 #'   smoothing preprocessing relocates the points and then should not be used
 #'   if the points have been sampled without noise on the surface.
-#' @param clean Boolean. Attempt to fix polygon soup?
+#' @param repairSoup Boolean. Attempt to fix polygon soup?
 #'
 #' @returns A \code{CGALmesh} object.
 #'

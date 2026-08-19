@@ -4,10 +4,13 @@
 \alias{removeSelfIntersections}
 \title{Remove self intersections}
 \usage{
-removeSelfIntersections(x, method = c("auto", "auto_snap"))
+removeSelfIntersections(x, triangulate = FALSE, method = c("auto", "auto_snap"))
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+
+\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
+are already triangle.}
 
 \item{method}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
 }

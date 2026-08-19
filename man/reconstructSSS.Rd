@@ -11,7 +11,8 @@ reconstructSSS(
   samples = 300,
   separateShells = FALSE,
   forceManifold = TRUE,
-  borderAngle = 45
+  borderAngle = 45,
+  repairSoup =TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ reconstructSSS(
 \item{forceManifold}{Boolean, whether to force a manifold output mesh.}
 
 \item{borderAngle}{Bound on the angle in degrees used to detect border edges.}
+
+\item{repairSoup}{Boolean: Repair polygon soup?}
 }
 \value{
 A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.

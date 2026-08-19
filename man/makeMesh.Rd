@@ -8,8 +8,13 @@ makeMesh(
   vertices,
   faces,
   mesh = NULL,
-  clean = TRUE,
   triangulate = FALSE,
+  repairSoup = TRUE,
+  removeIntersections = FALSE,
+  removeMethod =c("auto", "auto_snap"),
+  fillHoles = FALSE,
+  fairHole = FALSE,
+  maxNumHoles = 0L,
   normals = FALSE
 )
 }
@@ -25,10 +30,19 @@ and \code{faces}, and must be either a list containing the components \code{vert
 and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
 (i.e. a \code{\link[rgl]{mesh3d}} object).}
 
-\item{clean}{Boolean, whether to do some mesh cleaning.}
-
-\item{triangulate}{Boolean, whether to triangulate the faces. Ignored if faces
+\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
 are already triangle.}
+
+\item{repairSoup}{Boolean: Whether to do some mesh cleaning.}
+
+\item{removeIntersections}{Boolean: Whether to try to remove self intersections.}
+
+\item{removeMethod}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
+
+\item{fillHoles}{Boolean: Whether to try to fill boundary holes.}
+
+\item{fairHole}{Boolean.}
+\item{maxNumHoles}{\code{integer}.}
 
 \item{normals}{Boolean, whether to compute the normals.}
 }

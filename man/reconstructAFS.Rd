@@ -4,7 +4,7 @@
 \alias{reconstructAFS}
 \title{Advancing front surface reconstruction}
 \usage{
-reconstructAFS(x, jetSmoothing = NULL, clean = TRUE)
+reconstructAFS(x, jetSmoothing = NULL, repairSoup = TRUE)
 }
 \arguments{
 \item{x}{Numeric matrix which stores the points, one point per row.}
@@ -15,7 +15,7 @@ this integer as the number of neighbors for the smoothing. Note that this
 smoothing preprocessing relocates the points and then should not be used
 if the points have been sampled without noise on the surface.}
 
-\item{clean}{Boolean. Attempt to fix polygon soup?}
+\item{repairSoup}{Boolean. Attempt to fix polygon soup?}
 }
 \value{
 A \code{CGALmesh} object.

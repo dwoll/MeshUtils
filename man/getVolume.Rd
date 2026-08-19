@@ -4,10 +4,12 @@
 \alias{getVolume}
 \title{Get mesh volume}
 \usage{
-getVolume(x)
+getVolume(x, triangulate = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
+are already triangle.}
 }
 \value{
 \code{numeric}: The mesh volume - if mesh bounds a volume.

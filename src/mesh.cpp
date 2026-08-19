@@ -464,7 +464,7 @@ Rcpp::List remeshIsotropic_cpp(
     const unsigned nRelaxSteps) {
     Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
         rmesh,
-        triangulate, // triangulate
+        true,        // triangulate
         false,       // repair_soup
         false,       // remove_intersections
         1,           // remove_method

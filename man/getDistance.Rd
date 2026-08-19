@@ -4,12 +4,14 @@
 \alias{getDistance}
 \title{Get distance from points to a mesh}
 \usage{
-getDistance(x, points)
+getDistance(x, points, triangulate = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.}
 
 \item{points}{\code{numeric} matrix with 3 columns with one point per row.}
+\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
+are already triangle.}
 }
 \value{
 \code{numeric} vector: The distance of each point in \code{points}

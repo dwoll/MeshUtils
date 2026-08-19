@@ -89,6 +89,7 @@ template Rcpp::DataFrame getEdges<EK, EMesh3, EPoint3>(const EMesh3&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+// for possibly heterogeneous faces -> list
 template <typename MeshT>
 Rcpp::List getFaces1(const MeshT &mesh) {
   const size_t nFaces = mesh.number_of_faces();
@@ -113,6 +114,7 @@ template Rcpp::List getFaces1<EMesh3>(const EMesh3&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+// for homogeneous faces -> matrix
 template <typename MeshT>
 Rcpp::IntegerMatrix getFaces2(const MeshT &mesh, const int nSides) {
   const size_t nFaces = mesh.number_of_faces();
@@ -137,32 +139,7 @@ template Rcpp::IntegerMatrix getFaces2<EMesh3>(const EMesh3&, const int);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-template <typename MeshT>
-Rcpp::IntegerMatrix getTFaces(const MeshT &mesh) {
-  const size_t nFaces = mesh.number_of_faces();
-  Rcpp::IntegerMatrix Faces(3, nFaces);
-  {
-    size_t i = 0;
-    for(typename MeshT::Face_index fd : mesh.faces()) {
-      Rcpp::IntegerVector col_i;
-      for(typename MeshT::Vertex_index vd :
-          vertices_around_face(mesh.halfedge(fd), mesh)) {
-        col_i.push_back(vd + 1);
-      }
-      Faces(Rcpp::_, i) = col_i;
-      i++;
-    }
-  }
-  return Faces;
-}
-
-template Rcpp::IntegerMatrix getTFaces<Mesh3>(const Mesh3&);
-template Rcpp::IntegerMatrix getTFaces<EMesh3>(const EMesh3&);
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
 // mesh used as this -> no const, no reference
-
 Rcpp::NumericMatrix getNormals(Mesh3 mesh) {
   const size_t nVerts = mesh.number_of_vertices();
   Rcpp::NumericMatrix Normals(3, nVerts);
@@ -247,6 +224,7 @@ template Rcpp::NumericMatrix getNormals<EK, EMesh3, EVector3>(EMesh3);
 */
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+// for possibly heterogeneous faces -> list
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List RSurfMesh1(const MeshT &mesh, const bool normals) {
   Rcpp::DataFrame Edges = getEdges<KernelT, MeshT, PointT>(mesh);
@@ -268,6 +246,7 @@ template Rcpp::List RSurfMesh1<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, con
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+// for homogeneous faces -> matrix
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List RSurfMesh2(const MeshT &mesh, const bool normals, const int nSides) {
   Rcpp::DataFrame Edges = getEdges<KernelT, MeshT, PointT>(mesh);
@@ -286,24 +265,3 @@ Rcpp::List RSurfMesh2(const MeshT &mesh, const bool normals, const int nSides) {
 
 template Rcpp::List RSurfMesh2<K,  Mesh3,  Point3,  Vector3>(const Mesh3&,   const bool, const int);
 template Rcpp::List RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, const bool, const int);
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfTMesh(const MeshT &mesh, const bool normals) {
-  Rcpp::DataFrame Edges = getEdges<KernelT, MeshT, PointT>(mesh);
-  Rcpp::NumericMatrix Vertices = getVertices<KernelT, MeshT, PointT>(mesh);
-  Rcpp::IntegerMatrix Faces = getTFaces<MeshT>(mesh);
-  Rcpp::List out = Rcpp::List::create(Rcpp::Named("vertices") = Vertices,
-                                      Rcpp::Named("edges") = Edges,
-                                      Rcpp::Named("faces") = Faces);
-  if(normals) {
-    // Rcpp::NumericMatrix Normals = getNormals<KernelT, MeshT, VectorT>(mesh);
-    Rcpp::NumericMatrix Normals = getNormals(mesh);
-    out["normals"] = Normals;
-  }
-  return out;
-}
-
-template Rcpp::List RSurfTMesh<K,  Mesh3,  Point3,  Vector3>(const Mesh3&,   const bool);
-template Rcpp::List RSurfTMesh<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, const bool);

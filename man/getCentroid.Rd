@@ -4,10 +4,12 @@
 \alias{getCentroid}
 \title{Get mesh centroid}
 \usage{
-getCentroid(x)
+getCentroid(x, triangulate = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.}
+\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
+are already triangle.}
 }
 \value{
 \code{numeric} 3-vector with the cartesian coordinates of the mesh centroid.

@@ -20,6 +20,7 @@
 #' @param separateShells Boolean, whether to separate the shells.
 #' @param forceManifold Boolean, whether to force a manifold output mesh.
 #' @param borderAngle Bound on the angle in degrees used to detect border edges.
+#' @param repairSoup Boolean. Attempt to fix polygon soup?
 #'
 #' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
@@ -57,7 +58,8 @@ reconstructSSS <- function(
   samples        =300,
   separateShells =FALSE,
   forceManifold  =TRUE,
-  borderAngle    =45) {
+  borderAngle    =45,
+  repairSoup     =TRUE) {
   if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -76,6 +78,7 @@ reconstructSSS <- function(
   stopifnot(isBoolean(separateShells))
   stopifnot(isBoolean(forceManifold))
   stopifnot(isNonNegativeNumber(borderAngle))
+  stopifnot(isBoolean(repairSoup))
   mesh_cpp <- reconstructSSS_cpp(
     t(x),
     as.integer(scaleIterations),
@@ -83,6 +86,7 @@ reconstructSSS <- function(
     as.integer(samples),
     separateShells,
     forceManifold,
-    as.double(borderAngle))
+    as.double(borderAngle),
+    repairSoup)
   fromCPP(mesh_cpp)
 }

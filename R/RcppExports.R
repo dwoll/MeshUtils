@@ -5,6 +5,18 @@ alphaWrap_cpp <- function(pts, alphaRel, offsetRel) {
     .Call(`_MeshUtils_alphaWrap_cpp`, pts, alphaRel, offsetRel)
 }
 
+intersectionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
+    .Call(`_MeshUtils_intersectionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
+}
+
+differenceEK_cpp <- function(rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals) {
+    .Call(`_MeshUtils_differenceEK_cpp`, rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals)
+}
+
+unionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
+    .Call(`_MeshUtils_unionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
+}
+
 SurfMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals) {
     .Call(`_MeshUtils_SurfMesh_cpp`, rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals)
 }
@@ -97,18 +109,6 @@ pca_normals_cpp <- function(pts, nbNeighbors) {
     .Call(`_MeshUtils_pca_normals_cpp`, pts, nbNeighbors)
 }
 
-intersectionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
-    .Call(`_MeshUtils_intersectionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
-}
-
-differenceEK_cpp <- function(rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals) {
-    .Call(`_MeshUtils_differenceEK_cpp`, rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals)
-}
-
-unionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
-    .Call(`_MeshUtils_unionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
-}
-
 readFile_cpp <- function(filename) {
     .Call(`_MeshUtils_readFile_cpp`, filename)
 }
@@ -125,7 +125,7 @@ reconstructPoisson_cpp <- function(pts, normals, spacing, smAngle, smRadius, smD
     .Call(`_MeshUtils_reconstructPoisson_cpp`, pts, normals, spacing, smAngle, smRadius, smDistance)
 }
 
-reconstructSSS_cpp <- function(pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle) {
-    .Call(`_MeshUtils_reconstructSSS_cpp`, pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle)
+reconstructSSS_cpp <- function(pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle, repairSoup) {
+    .Call(`_MeshUtils_reconstructSSS_cpp`, pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle, repairSoup)
 }
 

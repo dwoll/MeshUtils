@@ -4,7 +4,7 @@
 \alias{boolDifference}
 \title{Mesh difference}
 \usage{
-boolDifference(mesh1, mesh2, clean = TRUE, normals = FALSE)
+boolDifference(mesh1, mesh2, repairSoup = TRUE, normals = FALSE)
 }
 \arguments{
 \item{mesh1}{A mesh, either being given a \code{mesh3d} object
@@ -15,7 +15,7 @@ from package \strong{rgl}, or by a list with (at least) two fields:
 from package \strong{rgl}, or by a list with (at least) two fields:
 \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.}
 
-\item{clean}{Boolean, whether to clean the meshes (merging duplicated
+\item{repairSoup}{Boolean, whether to clean the meshes (merging duplicated
 vertices, duplicated faces, removing isolated vertices). Set to
 \code{FALSE} if you know your meshes are clean.}
 

@@ -25,6 +25,50 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// intersectionEK_cpp
+Rcpp::List intersectionEK_cpp(const Rcpp::List rmeshes, const Rcpp::LogicalVector triangulate, const bool repairSoup, const bool normals);
+RcppExport SEXP _MeshUtils_intersectionEK_cpp(SEXP rmeshesSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshes(rmeshesSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::LogicalVector >::type triangulate(triangulateSEXP);
+    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    rcpp_result_gen = Rcpp::wrap(intersectionEK_cpp(rmeshes, triangulate, repairSoup, normals));
+    return rcpp_result_gen;
+END_RCPP
+}
+// differenceEK_cpp
+Rcpp::List differenceEK_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool triangulate1, const bool triangulate2, const bool repairSoup, const bool normals);
+RcppExport SEXP _MeshUtils_differenceEK_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP triangulate1SEXP, SEXP triangulate2SEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh1(rmesh1SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate1(triangulate1SEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate2(triangulate2SEXP);
+    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    rcpp_result_gen = Rcpp::wrap(differenceEK_cpp(rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals));
+    return rcpp_result_gen;
+END_RCPP
+}
+// unionEK_cpp
+Rcpp::List unionEK_cpp(const Rcpp::List rmeshes, const Rcpp::LogicalVector triangulate, const bool repairSoup, const bool normals);
+RcppExport SEXP _MeshUtils_unionEK_cpp(SEXP rmeshesSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshes(rmeshesSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::LogicalVector >::type triangulate(triangulateSEXP);
+    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    rcpp_result_gen = Rcpp::wrap(unionEK_cpp(rmeshes, triangulate, repairSoup, normals));
+    return rcpp_result_gen;
+END_RCPP
+}
 // SurfMesh_cpp
 Rcpp::List SurfMesh_cpp(const Rcpp::List rmesh, const bool triangulate, const bool repairSoup, const bool removeIntersections, const unsigned int removeMethod, const bool fillHoles, const bool fairHole, const unsigned int maxNumHoles, const bool normals);
 RcppExport SEXP _MeshUtils_SurfMesh_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP removeIntersectionsSEXP, SEXP removeMethodSEXP, SEXP fillHolesSEXP, SEXP fairHoleSEXP, SEXP maxNumHolesSEXP, SEXP normalsSEXP) {
@@ -318,50 +362,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// intersectionEK_cpp
-Rcpp::List intersectionEK_cpp(const Rcpp::List rmeshes, const Rcpp::LogicalVector triangulate, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_intersectionEK_cpp(SEXP rmeshesSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshes(rmeshesSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::LogicalVector >::type triangulate(triangulateSEXP);
-    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
-    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(intersectionEK_cpp(rmeshes, triangulate, repairSoup, normals));
-    return rcpp_result_gen;
-END_RCPP
-}
-// differenceEK_cpp
-Rcpp::List differenceEK_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool triangulate1, const bool triangulate2, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_differenceEK_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP triangulate1SEXP, SEXP triangulate2SEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh1(rmesh1SEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
-    Rcpp::traits::input_parameter< const bool >::type triangulate1(triangulate1SEXP);
-    Rcpp::traits::input_parameter< const bool >::type triangulate2(triangulate2SEXP);
-    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
-    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(differenceEK_cpp(rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals));
-    return rcpp_result_gen;
-END_RCPP
-}
-// unionEK_cpp
-Rcpp::List unionEK_cpp(const Rcpp::List rmeshes, const Rcpp::LogicalVector triangulate, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_unionEK_cpp(SEXP rmeshesSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshes(rmeshesSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::LogicalVector >::type triangulate(triangulateSEXP);
-    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
-    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(unionEK_cpp(rmeshes, triangulate, repairSoup, normals));
-    return rcpp_result_gen;
-END_RCPP
-}
 // readFile_cpp
 Rcpp::List readFile_cpp(const std::string filename);
 RcppExport SEXP _MeshUtils_readFile_cpp(SEXP filenameSEXP) {
@@ -417,25 +417,29 @@ BEGIN_RCPP
 END_RCPP
 }
 // reconstructSSS_cpp
-Rcpp::List reconstructSSS_cpp(const Rcpp::NumericMatrix pts, const size_t scaleIterations, const unsigned int nNeighbors, const unsigned int nSamples, const bool separateShells, const bool forceManifold, const double borderAngle);
-RcppExport SEXP _MeshUtils_reconstructSSS_cpp(SEXP ptsSEXP, SEXP scaleIterationsSEXP, SEXP nNeighborsSEXP, SEXP nSamplesSEXP, SEXP separateShellsSEXP, SEXP forceManifoldSEXP, SEXP borderAngleSEXP) {
+Rcpp::List reconstructSSS_cpp(const Rcpp::NumericMatrix pts, const unsigned int scaleIterations, const unsigned int nNeighbors, const unsigned int nSamples, const bool separateShells, const bool forceManifold, const double borderAngle, const bool repairSoup);
+RcppExport SEXP _MeshUtils_reconstructSSS_cpp(SEXP ptsSEXP, SEXP scaleIterationsSEXP, SEXP nNeighborsSEXP, SEXP nSamplesSEXP, SEXP separateShellsSEXP, SEXP forceManifoldSEXP, SEXP borderAngleSEXP, SEXP repairSoupSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type pts(ptsSEXP);
-    Rcpp::traits::input_parameter< const size_t >::type scaleIterations(scaleIterationsSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type scaleIterations(scaleIterationsSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type nNeighbors(nNeighborsSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type nSamples(nSamplesSEXP);
     Rcpp::traits::input_parameter< const bool >::type separateShells(separateShellsSEXP);
     Rcpp::traits::input_parameter< const bool >::type forceManifold(forceManifoldSEXP);
     Rcpp::traits::input_parameter< const double >::type borderAngle(borderAngleSEXP);
-    rcpp_result_gen = Rcpp::wrap(reconstructSSS_cpp(pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle));
+    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
+    rcpp_result_gen = Rcpp::wrap(reconstructSSS_cpp(pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle, repairSoup));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_alphaWrap_cpp", (DL_FUNC) &_MeshUtils_alphaWrap_cpp, 3},
+    {"_MeshUtils_intersectionEK_cpp", (DL_FUNC) &_MeshUtils_intersectionEK_cpp, 4},
+    {"_MeshUtils_differenceEK_cpp", (DL_FUNC) &_MeshUtils_differenceEK_cpp, 6},
+    {"_MeshUtils_unionEK_cpp", (DL_FUNC) &_MeshUtils_unionEK_cpp, 4},
     {"_MeshUtils_SurfMesh_cpp", (DL_FUNC) &_MeshUtils_SurfMesh_cpp, 9},
     {"_MeshUtils_isValid_cpp", (DL_FUNC) &_MeshUtils_isValid_cpp, 1},
     {"_MeshUtils_hasGarbage_cpp", (DL_FUNC) &_MeshUtils_hasGarbage_cpp, 1},
@@ -459,14 +463,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_subdivideSqrt3_cpp", (DL_FUNC) &_MeshUtils_subdivideSqrt3_cpp, 3},
     {"_MeshUtils_jet_normals_cpp", (DL_FUNC) &_MeshUtils_jet_normals_cpp, 2},
     {"_MeshUtils_pca_normals_cpp", (DL_FUNC) &_MeshUtils_pca_normals_cpp, 2},
-    {"_MeshUtils_intersectionEK_cpp", (DL_FUNC) &_MeshUtils_intersectionEK_cpp, 4},
-    {"_MeshUtils_differenceEK_cpp", (DL_FUNC) &_MeshUtils_differenceEK_cpp, 6},
-    {"_MeshUtils_unionEK_cpp", (DL_FUNC) &_MeshUtils_unionEK_cpp, 4},
     {"_MeshUtils_readFile_cpp", (DL_FUNC) &_MeshUtils_readFile_cpp, 1},
     {"_MeshUtils_writeFile_cpp", (DL_FUNC) &_MeshUtils_writeFile_cpp, 5},
     {"_MeshUtils_reconstructAFS_cpp", (DL_FUNC) &_MeshUtils_reconstructAFS_cpp, 3},
     {"_MeshUtils_reconstructPoisson_cpp", (DL_FUNC) &_MeshUtils_reconstructPoisson_cpp, 6},
-    {"_MeshUtils_reconstructSSS_cpp", (DL_FUNC) &_MeshUtils_reconstructSSS_cpp, 7},
+    {"_MeshUtils_reconstructSSS_cpp", (DL_FUNC) &_MeshUtils_reconstructSSS_cpp, 8},
     {NULL, NULL, 0}
 };
 

@@ -4,10 +4,12 @@
 \alias{fillBoundaryHoles}
 \title{Fill boundary holes}
 \usage{
-fillBoundaryHoles(x)
+fillBoundaryHoles(x, fairHole = TRUE, maxNumHoles=10L)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+\item{fairHole}{Boolean.}
+\item{maxNumHoles}{\code{integer}.}
 }
 \value{
 \code{CGALmesh} object.

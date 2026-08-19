@@ -4,12 +4,14 @@
 \alias{subdivideSqrt3}
 \title{Sqrt3 subdivision and deformation}
 \usage{
-subdivideSqrt3(x, nIter = 1)
+subdivideSqrt3(x, nIter = 1, triangulate = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.}
 
 \item{nIter}{\code{integer}: Number of iterations.}
+\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
+are already triangle.}
 }
 \value{
 A \code{CGALmesh} object.

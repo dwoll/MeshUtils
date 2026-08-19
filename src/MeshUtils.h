@@ -102,7 +102,7 @@ Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT>&);
 
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT soup_to_mesh(
-    std::vector<Point3>,                    // points
+    std::vector<PointT>,                    // points
     std::vector<std::vector<std::size_t>>,  // faces
     const bool,                             // triangulate
     const bool,                             // repair_soup
@@ -145,9 +145,6 @@ Rcpp::List RSurfMesh1(const MeshT&, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List RSurfMesh2(const MeshT&, const bool, const int);
-
-template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfTMesh(const MeshT&, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT>
 void removeSelfIntersections(

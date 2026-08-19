@@ -10,8 +10,7 @@ reconstructPoisson(
   spacing = NULL,
   smAngle = 20,
   smRadius = 30,
-  smDistance = 0.375,
-  clean = TRUE
+  smDistance = 0.375
 )
 }
 \arguments{
@@ -34,8 +33,6 @@ value will be displayed in a message and that you can also get in the
 \item{smRadius}{Relative bound for the radius of the surface Delaunay balls.}
 
 \item{smDistance}{Relative bound for the center-center distances.}
-
-\item{clean}{Boolean. Attempt to fix polygon soup?}
 }
 \value{
 A \code{CGALmesh} object.
