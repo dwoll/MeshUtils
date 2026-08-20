@@ -43,7 +43,7 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
-  MeshT mesh_0 = makeSurfMesh<KernelT, MeshT, PointT>(
+  MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(
       rmesh,
       triangulate[0], // triangulate
       repairSoup,     // repair_soup
@@ -63,7 +63,7 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
     Message("Processing mesh" + meshnum);
-    MeshT mesh_i = makeSurfMesh<KernelT, MeshT, PointT>(
+    MeshT mesh_i = makeSurfMesh<MeshT, PointT>(
         rmesh_i,
         triangulate[i], // triangulate
         repairSoup,     // repair_soup
@@ -105,7 +105,7 @@ MeshT boolDifference(const Rcpp::List &rmesh1,
                      const bool triangulate2,
                      const bool repairSoup) {
   Message("Processing mesh1");
-  MeshT smesh1 = makeSurfMesh<KernelT, MeshT, PointT>(
+  MeshT smesh1 = makeSurfMesh<MeshT, PointT>(
       rmesh1,
       triangulate1,   // triangulate
       repairSoup,     // repair_soup
@@ -116,7 +116,7 @@ MeshT boolDifference(const Rcpp::List &rmesh1,
       0);             // max_num_holes
   checkMesh1<MeshT>(smesh1, 1);
   Message("Processing mesh2");
-  MeshT smesh2 = makeSurfMesh<KernelT, MeshT, PointT>(
+  MeshT smesh2 = makeSurfMesh<MeshT, PointT>(
       rmesh2,
       triangulate2,   // triangulate
       repairSoup,     // repair_soup
@@ -157,7 +157,7 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
-  MeshT mesh_0 = makeSurfMesh<KernelT, MeshT, PointT>(
+  MeshT mesh_0 = makeSurfMesh<MeshT, PointT>(
       rmesh,
       triangulate[0], // triangulate
       repairSoup,     // repair_soup
@@ -176,7 +176,7 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
     Message("Processing mesh" + meshnum);
-    MeshT mesh_i = makeSurfMesh<KernelT, MeshT, PointT>(
+    MeshT mesh_i = makeSurfMesh<MeshT, PointT>(
         rmesh_i,
         triangulate[i], // triangulate
         repairSoup,     // repair_soup

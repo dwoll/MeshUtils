@@ -146,7 +146,7 @@ makeMesh <- function(vertices,
 	faces       <- checkedMesh[["faces"]]
 	isTriangle  <- checkedMesh[["isTriangle"]]
 	if(triangulate && isTriangle) {
-		message("Ignored option `triangulate` as mesh is already triangulated.")
+		message("Ignored option `triangulate` as mesh is already triangle")
 		triangulate <- FALSE
 	}
 

@@ -65,11 +65,11 @@ Rcpp::DataFrame getEdges(const MeshT &mesh) {
       points[3] = mesh.point(mesh.target(mesh.next(h1)));
       typename KernelT::FT angle = CGAL::abs(CGAL::approximate_dihedral_angle(
           points[0], points[1], points[2], points[3]));
-      Angle(i) = CGAL::to_double(angle);
+      Angle(i) = CGAL::to_double<typename KernelT::FT>(angle);
       Exterior(i) = angle < 179.0 || angle > 181.0;
       Coplanar(i) = CGAL::coplanar(points[0], points[1], points[2], points[3]);
       typename KernelT::FT el = PMP::edge_length(h0, mesh);
-      Length(i) = CGAL::to_double(el);
+      Length(i) = CGAL::to_double<typename KernelT::FT>(el);
       i++;
     }
   }
@@ -265,3 +265,55 @@ Rcpp::List RSurfMesh2(const MeshT &mesh, const bool normals, const std::size_t n
 
 template Rcpp::List RSurfMesh2<K,  Mesh3,  Point3,  Vector3>(const Mesh3&,   const bool, const std::size_t);
 template Rcpp::List RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, const bool, const std::size_t);
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+Mesh3 epeck_to_epick(EMesh3 &emesh) {
+  const std::size_t nVertices = emesh.number_of_vertices();
+  const std::size_t nEdges    = emesh.number_of_edges();
+  const std::size_t nFaces    = emesh.number_of_faces();
+  Mesh3 mesh;
+  mesh.reserve(nVertices, nEdges, nFaces);
+  for(EMesh3::Vertex_index vd : emesh.vertices()) {
+    const EPoint3 vertex = emesh.point(vd);
+    const double x = CGAL::to_double<EK::FT>(vertex.x());
+    const double y = CGAL::to_double<EK::FT>(vertex.y());
+    const double z = CGAL::to_double<EK::FT>(vertex.z());
+    mesh.add_vertex(Point3(x, y, z));
+  }
+  for(EMesh3::Face_index fd : emesh.faces()) {
+    std::vector<EMesh3::Vertex_index> face;
+    for(EMesh3::Vertex_index vd :
+          vertices_around_face(emesh.halfedge(fd), emesh)) {
+      face.push_back(vd);
+    }
+    mesh.add_face(face);
+  }
+  return mesh;
+}
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+EMesh3 epick_to_epeck(Mesh3 &mesh) {
+  const std::size_t nVertices = mesh.number_of_vertices();
+  const std::size_t nEdges    = mesh.number_of_edges();
+  const std::size_t nFaces    = mesh.number_of_faces();
+  EMesh3 emesh;
+  emesh.reserve(nVertices, nEdges, nFaces);
+  for(Mesh3::Vertex_index vd : mesh.vertices()) {
+    const Point3 vertex = mesh.point(vd);
+    const double x = vertex.x();
+    const double y = vertex.y();
+    const double z = vertex.z();
+    emesh.add_vertex(EPoint3(x, y, z));
+  }
+  for(Mesh3::Face_index fd : mesh.faces()) {
+    std::vector<Mesh3::Vertex_index> face;
+    for(Mesh3::Vertex_index vd :
+          vertices_around_face(mesh.halfedge(fd), mesh)) {
+      face.push_back(vd);
+    }
+    emesh.add_face(face);
+  }
+  return emesh;
+}

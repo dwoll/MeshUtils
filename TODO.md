@@ -1,7 +1,9 @@
 # TODO
 
   * `mesh.collect_garbage();` required in more places? (remeshing), `mesh.has_garbage()`
-  * `soup_to_mesh()`: triangulate at polygon soup stage before calling `removeSelfIntersections()`, if necessary
+  * `soup_to_mesh()`
+      * removing self-intersections and filling holes requires two passes 
+      * triangulate at polygon soup stage before calling `removeSelfInt()`, if necessary
   * normals handling - get, calculate, and assign normals (`cgalMesh::get/compute/assignNormals()`)
   * `fillBoundaryHole()`: pass parameters
   * `remeshIsotropic()` does not work well for pentagrammic prism

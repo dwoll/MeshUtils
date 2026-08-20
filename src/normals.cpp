@@ -51,8 +51,8 @@ Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::NumericMatrix pca_normals_cpp(Rcpp::NumericMatrix pts,
-                                    int nbNeighbors) {
+Rcpp::NumericMatrix pca_normals_cpp(const Rcpp::NumericMatrix pts,
+                                    const int nbNeighbors) {
   const std::size_t nPts = pts.ncol();
   std::vector<P3wn> points(nPts);
   for(std::size_t i = 0; i < nPts; i++) {
