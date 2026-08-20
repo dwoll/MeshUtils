@@ -16,7 +16,7 @@
 
 // ----------------------------------------------------------------------- //
 template <typename MeshT>
-void checkMesh1(const MeshT &mesh, size_t i) {
+void checkMesh1(const MeshT &mesh, std::size_t i) {
   const bool si = PMP::does_self_intersect(mesh);
   if(si) {
     std::string msg = "Mesh n" + std::to_string(i) + " self-intersects.";
@@ -39,7 +39,7 @@ template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolIntersection(const Rcpp::List &rmeshes,
                        const Rcpp::LogicalVector triangulate,
                        const bool repairSoup) {
-  const size_t nMeshes = rmeshes.size();
+  const std::size_t nMeshes = rmeshes.size();
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
@@ -54,7 +54,7 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
       0);             // max_num_holes
 
   meshes[0] = mesh_0;
-  for(size_t i = 1; i < nMeshes; i++) {
+  for(std::size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
       checkMesh1<MeshT>(meshes[0], 1);
     } else {
@@ -153,7 +153,7 @@ template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolUnion(const Rcpp::List &rmeshes,
                 const Rcpp::LogicalVector triangulate,
                 const bool repairSoup) {
-  const size_t nMeshes = rmeshes.size();
+  const std::size_t nMeshes = rmeshes.size();
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
@@ -167,7 +167,7 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
       false,          // fair hole
       0);             // max_num_holes
   meshes[0] = mesh_0;
-  for(size_t i = 1; i < nMeshes; i++) {
+  for(std::size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
       checkMesh1<MeshT>(meshes[0], 1);
     } else {

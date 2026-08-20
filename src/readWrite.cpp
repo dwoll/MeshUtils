@@ -28,15 +28,15 @@ std::string toLower(std::string s) {
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-std::pair<std::vector<std::vector<size_t>>, bool> list_to_faces2(
+std::pair<std::vector<std::vector<std::size_t>>, bool> list_to_faces2(
     const Rcpp::List &L) {
-  const size_t nFaces = L.size();
-  std::vector<std::vector<size_t>> faces;
+  const std::size_t nFaces = L.size();
+  std::vector<std::vector<std::size_t>> faces;
   faces.reserve(nFaces);
   bool triangle = true;
-  for(size_t i = 0; i < nFaces; i++) {
+  for(std::size_t i = 0; i < nFaces; i++) {
     Rcpp::IntegerVector face_rcpp = Rcpp::as<Rcpp::IntegerVector>(L(i));
-    std::vector<size_t> face(face_rcpp.begin(), face_rcpp.end());
+    std::vector<std::size_t> face(face_rcpp.begin(), face_rcpp.end());
 //     std::transform(
 //       face.begin(), face.end(), face.begin(),
 // 	  std::bind(std::minus<int>(), std::placeholders::_1, 1)
@@ -55,7 +55,7 @@ Rcpp::List readFile_cpp(const std::string filename) {
   infile.open(filename);
   const bool binary = CGAL::IO::is_binary(infile);
   std::vector<Point3> points;
-  std::vector<std::vector<int>> faces;
+  std::vector<std::vector<std::size_t>> faces;
   bool ok = false;
   if(ext == "ply") {
     ok = CGAL::IO::read_PLY(
@@ -83,18 +83,18 @@ Rcpp::List readFile_cpp(const std::string filename) {
   infile.close();
   Rcpp::List out;
   if(ok) {
-    const size_t nPts = points.size();
+    const std::size_t nPts = points.size();
     Rcpp::NumericMatrix vertex_mat(3, nPts);
-    for(size_t i = 0; i < nPts; i++) {
+    for(std::size_t i = 0; i < nPts; i++) {
       const Point3 point_i = points[i];
       Rcpp::NumericVector col_i =
           Rcpp::NumericVector::create(point_i.x(), point_i.y(), point_i.z());
       vertex_mat(Rcpp::_, i) = col_i;
     }
-    const size_t nFaces = faces.size();
+    const std::size_t nFaces = faces.size();
     Rcpp::List face_list(nFaces);
-    for(size_t i = 0; i < nFaces; i++) {
-      const std::vector<int> face_i = faces[i];
+    for(std::size_t i = 0; i < nFaces; i++) {
+      const std::vector<std::size_t> face_i = faces[i];
       Rcpp::IntegerVector col_i(face_i.begin(), face_i.end());
       face_list(i) = col_i + 1;
     }
@@ -114,7 +114,7 @@ void writeFile_cpp(const std::string filename,
                    const Rcpp::NumericMatrix vertices,
                    const Rcpp::List faceList) {
   const std::vector<Point3> points = matrix_to_points3<Point3>(vertices);
-  const std::pair<std::vector<std::vector<size_t>>, bool> faces =
+  const std::pair<std::vector<std::vector<std::size_t>>, bool> faces =
       list_to_faces2(faceList);
   const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
   bool ok = false;

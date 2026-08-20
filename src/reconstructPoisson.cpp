@@ -22,9 +22,9 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
                                   const double smAngle,
                                   const double smRadius,
                                   const double smDistance) {
-  const size_t nPts = pts.ncol();
+  const std::size_t nPts = pts.ncol();
   std::vector<P3wn> points(nPts);
-  for(size_t i = 0; i < nPts; i++) {
+  for(std::size_t i = 0; i < nPts; i++) {
     const Rcpp::NumericVector pt_i = pts(Rcpp::_, i);
     const Rcpp::NumericVector nrml_i = normals(Rcpp::_, i);
     points[i] =
@@ -53,7 +53,7 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
     Rcpp::stop("Poisson surface reconstruction has failed.");
   }
 
-  size_t id = 1;
+  std::size_t id = 1;
   for(Polyhedron::Vertex_iterator vit = poly.vertices_begin();
       vit != poly.vertices_end(); ++vit) {
     vit->id() = id;

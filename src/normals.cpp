@@ -17,10 +17,10 @@
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
-                                    const unsigned nbNeighbors) {
-  const size_t nPts = pts.ncol();
+                                    const int nbNeighbors) {
+  const std::size_t nPts = pts.ncol();
   std::vector<P3wn> points(nPts);
-  for(size_t i = 0; i < nPts; i++) {
+  for(std::size_t i = 0; i < nPts; i++) {
     const Rcpp::NumericVector pt_i = pts(Rcpp::_, i);
     points[i] = std::make_pair(Point3(pt_i(0), pt_i(1), pt_i(2)),
                                Vector3(0.0, 0.0, 0.0));
@@ -37,7 +37,7 @@ Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
           .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
 
   Rcpp::NumericMatrix normals_mat(3, nPts);
-  for(size_t i = 0; i < nPts; i++) {
+  for(std::size_t i = 0; i < nPts; i++) {
     Rcpp::NumericVector normal_i(3);
     const Vector3 normal = points[i].second;
     normal_i(0) = normal.x();
@@ -52,10 +52,10 @@ Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::NumericMatrix pca_normals_cpp(Rcpp::NumericMatrix pts,
-                                    unsigned nbNeighbors) {
-  const size_t nPts = pts.ncol();
+                                    int nbNeighbors) {
+  const std::size_t nPts = pts.ncol();
   std::vector<P3wn> points(nPts);
-  for(size_t i = 0; i < nPts; i++) {
+  for(std::size_t i = 0; i < nPts; i++) {
     const Rcpp::NumericVector pt_i = pts(Rcpp::_, i);
     points[i] = std::make_pair(Point3(pt_i(0), pt_i(1), pt_i(2)),
                                Vector3(0.0, 0.0, 0.0));
@@ -72,7 +72,7 @@ Rcpp::NumericMatrix pca_normals_cpp(Rcpp::NumericMatrix pts,
           .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
 
   Rcpp::NumericMatrix normals_mat(3, nPts);
-  for(size_t i = 0; i < nPts; i++) {
+  for(std::size_t i = 0; i < nPts; i++) {
     Rcpp::NumericVector normal_i(3);
     const Vector3 normal = points[i].second;
     normal_i(0) = normal.x();

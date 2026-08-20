@@ -117,8 +117,8 @@ writeFile_cpp <- function(filename, binary, precision, vertices, faceList) {
     invisible(.Call(`_MeshUtils_writeFile_cpp`, filename, binary, precision, vertices, faceList))
 }
 
-reconstructAFS_cpp <- function(pts, nNeighs, repairSoup) {
-    .Call(`_MeshUtils_reconstructAFS_cpp`, pts, nNeighs, repairSoup)
+reconstructAFS_cpp <- function(pts, nNeighbors, repairSoup) {
+    .Call(`_MeshUtils_reconstructAFS_cpp`, pts, nNeighbors, repairSoup)
 }
 
 reconstructPoisson_cpp <- function(pts, normals, spacing, smAngle, smRadius, smDistance) {

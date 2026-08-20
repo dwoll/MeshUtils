@@ -18,9 +18,9 @@
 // [[Rcpp::export]]
 Rcpp::List reconstructSSS_cpp(
   const Rcpp::NumericMatrix pts,
-  const unsigned int scaleIterations,
-  const unsigned int nNeighbors,
-  const unsigned int nSamples,
+  const int scaleIterations,
+  const int nNeighbors,
+  const int nSamples,
   const bool separateShells,
   const bool forceManifold,
   const double borderAngle,

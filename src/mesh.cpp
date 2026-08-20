@@ -20,7 +20,7 @@ Rcpp::List SurfMesh_cpp(const Rcpp::List rmesh,
                         const bool triangulate,
                         const bool repairSoup,
                         const bool removeIntersections,
-                        const unsigned int removeMethod,
+                        const int removeMethod,
                         const bool fillHoles,
                         const bool fairHole,
                         const unsigned int maxNumHoles,
@@ -150,7 +150,7 @@ Rcpp::List orientToBoundVolume_cpp(
 Rcpp::List removeSelfIntersections_cpp(
   const Rcpp::List rmesh,
   const bool triangulate,
-  const unsigned int method) {
+  const int method) {
   EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
       rmesh,
       triangulate, // triangulate
@@ -333,15 +333,15 @@ Rcpp::NumericVector getDistance_cpp(
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
-  const size_t nPts = points.ncol();
+  const std::size_t nPts = points.ncol();
   Rcpp::NumericVector distances(nPts);
   if(!CGAL::is_triangle_mesh(mesh)) {
     Message("The mesh is not triangle.");
-    for(size_t i = 0; i < nPts; i++){
+    for(std::size_t i = 0; i < nPts; i++){
       distances(i) = Rcpp::NumericVector::get_na();
     }
   } else {
-      for(size_t i = 0; i < nPts; i++){
+      for(std::size_t i = 0; i < nPts; i++){
         Rcpp::NumericVector point_i = points(Rcpp::_, i);
         std::vector<Point3> pt = { Point3(point_i(0), point_i(1), point_i(2)) };
         distances(i) = PMP::max_distance_to_triangle_mesh<CGAL::Sequential_tag>(pt, mesh);
@@ -460,8 +460,8 @@ double getHausdorffEst_cpp(
 Rcpp::List remeshIsotropic_cpp(
     const Rcpp::List rmesh,
     const double targetEdgeLen,
-    const unsigned nIter,
-    const unsigned nRelaxSteps) {
+    const unsigned int nIter,
+    const unsigned int nRelaxSteps) {
     Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
         rmesh,
         true,        // triangulate
@@ -474,9 +474,9 @@ Rcpp::List remeshIsotropic_cpp(
     std::vector<hedgdescr> borderHalfEdges;
     PMP::border_halfedges(mesh.faces(), mesh, std::back_inserter(borderHalfEdges));
     std::vector<edgdescr> border;
-    unsigned int nhBorder = borderHalfEdges.size();
+    std::size_t nhBorder = borderHalfEdges.size();
     border.reserve(nhBorder);
-    for(unsigned int i = 0; i < nhBorder; i++) {
+    for(std::size_t i = 0; i < nhBorder; i++) {
       border.emplace_back(mesh.edge(borderHalfEdges[i]));
     }
     PMP::split_long_edges(border, targetEdgeLen, mesh);
@@ -496,7 +496,7 @@ Rcpp::List remeshIsotropic_cpp(
 // use EPEC kernel here
 // [[Rcpp::export]]
 Rcpp::List subdivideCatmullClark_cpp(
-  const Rcpp::List rmesh, unsigned int nIter, bool triangulate) {
+  const Rcpp::List rmesh, const unsigned int nIter, const bool triangulate) {
     EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
         rmesh,
         triangulate, // triangulate
@@ -521,7 +521,7 @@ Rcpp::List subdivideCatmullClark_cpp(
 // use EPEC kernel here
 // [[Rcpp::export]]
 Rcpp::List subdivideDooSabin_cpp(
-  const Rcpp::List rmesh, unsigned int nIter, bool triangulate) {
+  const Rcpp::List rmesh, const unsigned int nIter, const bool triangulate) {
     EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
         rmesh,
         triangulate, // triangulate
@@ -546,7 +546,7 @@ Rcpp::List subdivideDooSabin_cpp(
 // use EPEC kernel here
 // [[Rcpp::export]]
 Rcpp::List subdivideSqrt3_cpp(
-  const Rcpp::List rmesh, unsigned int nIter, bool triangulate) {
+  const Rcpp::List rmesh, const unsigned int nIter, const bool triangulate) {
     EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
         rmesh,
         triangulate, // triangulate

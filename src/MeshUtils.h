@@ -107,7 +107,7 @@ MeshT soup_to_mesh(
     const bool,                             // triangulate
     const bool,                             // repair_soup
     const bool,                             // remove_intersections
-    const unsigned int,                     // remove_method
+    const int,                              // remove_method
     const bool,                             // fill_holes
     const bool,                             // fair_hole
     const unsigned int);                    // max_num_holes
@@ -121,7 +121,7 @@ MeshT makeSurfMesh(
     const bool,
     const bool,
     const bool,
-    const unsigned int,
+    const int,
     const bool,
     const bool,
     const unsigned int);
@@ -132,7 +132,7 @@ MeshT makeSurfTMesh(
     const Rcpp::List&,
     const bool,
     const bool,
-    const unsigned int,
+    const int,
     const bool,
     const bool,
     const unsigned int);
@@ -144,13 +144,13 @@ template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List RSurfMesh1(const MeshT&, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfMesh2(const MeshT&, const bool, const int);
+Rcpp::List RSurfMesh2(const MeshT&, const bool, const std::size_t);
 
 template <typename KernelT, typename MeshT, typename PointT>
 void removeSelfIntersections(
     std::vector<PointT>&,
     std::vector<std::vector<std::size_t>>&,
-    const unsigned int);
+    const int);
 
 // -------------------------------------------------------------------------- //
 // TODO template

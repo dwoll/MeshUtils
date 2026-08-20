@@ -17,11 +17,11 @@
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
-                              const unsigned nNeighs,
+                              const int nNeighbors,
                               const bool repairSoup) {
   std::vector<Point3> points = matrix_to_points3<Point3>(pts);
-  if(nNeighs >= 2) {
-    CGAL::jet_smooth_point_set<CGAL::Sequential_tag>(points, nNeighs);
+  if(nNeighbors >= 2) {
+    CGAL::jet_smooth_point_set<CGAL::Sequential_tag>(points, nNeighbors);
   }
 
   AFS_triangulation3 dt(points.begin(), points.end());
@@ -30,7 +30,7 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
   const AFS_Tds2& tds = reconstruction.triangulation_data_structure_2();
   std::vector<Point3> vertices;
   vertices.reserve(pts.ncol());
-  size_t counter = 0;
+  std::size_t counter = 0;
   for(AFS_Tds2::Face_iterator fit = tds.faces_begin();
       fit != tds.faces_end(); ++fit) {
     if(reconstruction.has_on_surface(fit)) {
@@ -52,11 +52,11 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
       }
     }
   }
-  std::vector<std::vector<size_t>> triangles;
+  std::vector<std::vector<std::size_t>> triangles;
   triangles.reserve(counter);
-  for(size_t i = 0; i < counter; i++) {
-    const size_t k = 3*i;
-    const std::vector<size_t> triangle = {k, k+1, k+2};
+  for(std::size_t i = 0; i < counter; i++) {
+    const std::size_t k = 3*i;
+    const std::vector<std::size_t> triangle = { (k), (k+1), (k+2) };
     triangles.emplace_back(triangle);
   }
 
