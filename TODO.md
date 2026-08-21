@@ -3,12 +3,14 @@
   * `mesh.collect_garbage();` required in more places? (remeshing), `mesh.has_garbage()`
   * `soup_to_mesh()`
       * removing self-intersections and filling holes requires two passes 
-      * triangulate at polygon soup stage before calling `removeSelfInt()`, if necessary
-  * normals handling - get, calculate, and assign normals (`cgalMesh::get/compute/assignNormals()`)
-  * `fillBoundaryHole()`: pass parameters
+  * `removeSelfIntMesh()`, `removeSelfIntSoup()`
+      * template 
+  * `fillBoundaryHole()`
+      * template
+      * pass more parameters
   * `remeshIsotropic()` does not work well for pentagrammic prism
-      * `targetEdgeLen` param passed correctly?
       * `Uniform_sizing_field` vs. `Adaptive_sizing_field`
+  * normals handling - get, calculate, and assign normals (`cgalMesh::get/compute/assignNormals()`)
   * `readFile_cpp()` STL filename instead of `infile`?
   * configure script: gmp, mpfr necessary?
 

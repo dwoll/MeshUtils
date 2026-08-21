@@ -15,8 +15,10 @@
 #endif
 
 // ----------------------------------------------------------------------- //
+// initial mesh generation -> use EPEC kernel to enable
+// filling holes and removing self-intersections
 // [[Rcpp::export]]
-Rcpp::List SurfMesh_cpp(const Rcpp::List rmesh,
+Rcpp::List makeMesh_cpp(const Rcpp::List rmesh,
                         const bool triangulate,
                         const bool repairSoup,
                         const bool removeIntersections,
@@ -26,7 +28,7 @@ Rcpp::List SurfMesh_cpp(const Rcpp::List rmesh,
                         const unsigned int maxNumHoles,
                         const bool normals) {
   Message("Processing mesh...");
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
       rmesh,
       triangulate,         // triangulate
       repairSoup,          // repair_soup
@@ -35,13 +37,13 @@ Rcpp::List SurfMesh_cpp(const Rcpp::List rmesh,
       fillHoles,           // fill_holes
       fairHole,            // fair hole
       maxNumHoles);        // max_num_holes
-  return RSurfMesh1<K, Mesh3, Point3, Vector3>(mesh, normals);
+  return RSurfMesh1<EK, EMesh3, EPoint3, EVector3>(mesh, normals);
 }
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 bool isValid_cpp(const Rcpp::List rmesh) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       false,       // triangulate
       false,       // repair_soup
@@ -56,7 +58,7 @@ bool isValid_cpp(const Rcpp::List rmesh) {
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 bool hasGarbage_cpp(const Rcpp::List rmesh) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       false,       // triangulate
       false,       // repair_soup
@@ -72,7 +74,7 @@ bool hasGarbage_cpp(const Rcpp::List rmesh) {
 // [[Rcpp::export]]
 bool doesBoundVolume_cpp(
   const Rcpp::List rmesh, const bool triangulate = false) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       triangulate, // triangulate
       false,       // repair_soup
@@ -92,7 +94,7 @@ bool doesBoundVolume_cpp(
 // [[Rcpp::export]]
 bool doesSelfIntersect_cpp(
   const Rcpp::List rmesh, const bool triangulate = false) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       triangulate, // triangulate
       false,       // repair_soup
@@ -111,7 +113,7 @@ bool doesSelfIntersect_cpp(
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 bool isClosed_cpp(const Rcpp::List rmesh) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       false,       // triangulate
       false,       // repair_soup
@@ -127,7 +129,7 @@ bool isClosed_cpp(const Rcpp::List rmesh) {
 // [[Rcpp::export]]
 Rcpp::List orientToBoundVolume_cpp(
   const Rcpp::List rmesh, const bool triangulate = false) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       triangulate, // triangulate
       false,       // repair_soup
@@ -150,7 +152,7 @@ Rcpp::List removeSelfIntersections_cpp(
   const Rcpp::List rmesh,
   const bool triangulate,
   const int method) {
-  EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(
+  EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
       rmesh,
       triangulate, // triangulate
       true,        // repair_soup
@@ -169,7 +171,7 @@ Rcpp::List fillBoundaryHoles_cpp(
   const Rcpp::List rmesh,
   const bool fairHole,
   const unsigned int maxNumHoles) {
-  EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(
+  EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
       rmesh,
       true,         // triangulate
       true,         // repair_soup
@@ -184,7 +186,7 @@ Rcpp::List fillBoundaryHoles_cpp(
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 double getArea_cpp(const Rcpp::List rmesh, const bool triangulate = false) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       triangulate, // triangulate
       false,       // repair_soup
@@ -209,7 +211,7 @@ double getArea_cpp(const Rcpp::List rmesh, const bool triangulate = false) {
 // [[Rcpp::export]]
 double getVolume_cpp(
   const Rcpp::List rmesh, const bool triangulate = false) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       triangulate, // triangulate
       false,       // repair_soup
@@ -238,7 +240,7 @@ double getVolume_cpp(
 // [[Rcpp::export]]
 Rcpp::NumericVector getCentroid_cpp(
   const Rcpp::List rmesh, const bool triangulate = false) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       triangulate, // triangulate
       false,       // repair_soup
@@ -265,7 +267,7 @@ Rcpp::NumericVector getCentroid_cpp(
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmeshIn,
       false,       // triangulate
       false,       // repair_soup
@@ -301,7 +303,7 @@ Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn) {
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List boundingBox_cpp(const Rcpp::List rmesh) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       false,       // triangulate
       false,       // repair_soup
@@ -323,7 +325,7 @@ Rcpp::List boundingBox_cpp(const Rcpp::List rmesh) {
 // [[Rcpp::export]]
 Rcpp::NumericVector getDistance_cpp(
     const Rcpp::List rmesh, const Rcpp::NumericMatrix points, const bool triangulate = false) {
-  Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       triangulate, // triangulate
       false,       // repair_soup
@@ -357,7 +359,7 @@ double getHausdorffApprox_cpp(
     const bool symmetric,
     const bool triangulate1 = false,
     const bool triangulate2 = false) {
-  Mesh3 mesh1 = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh1 = makeSurfMesh<K, Mesh3, Point3>(
       rmesh1,
       triangulate1, // triangulate
       false,        // repair_soup
@@ -366,7 +368,7 @@ double getHausdorffApprox_cpp(
       false,        // fill_holes
       false,        // fair hole
       0);           // max_num_holes
-  Mesh3 mesh2 = makeSurfMesh<Mesh3, Point3>(
+  Mesh3 mesh2 = makeSurfMesh<K, Mesh3, Point3>(
       rmesh2,
       triangulate2, // triangulate
       false,        // repair_soup
@@ -409,7 +411,7 @@ double getHausdorffEst_cpp(
     const double errorBound,
     const bool triangulate1 = false,
     const bool triangulate2 = false) {
-    Mesh3 mesh1 = makeSurfMesh<Mesh3, Point3>(
+    Mesh3 mesh1 = makeSurfMesh<K, Mesh3, Point3>(
         rmesh1,
         triangulate1, // triangulate
         false,        // repair_soup
@@ -418,7 +420,7 @@ double getHausdorffEst_cpp(
         false,        // fill_holes
         false,        // fair hole
         0);           // max_num_holes
-    Mesh3 mesh2 = makeSurfMesh<Mesh3, Point3>(
+    Mesh3 mesh2 = makeSurfMesh<K, Mesh3, Point3>(
         rmesh2,
         triangulate2, // triangulate
         false,        // repair_soup
@@ -461,7 +463,7 @@ Rcpp::List remeshIsotropic_cpp(
     const double targetEdgeLen,
     const unsigned int nIter,
     const unsigned int nRelaxSteps) {
-    Mesh3 mesh = makeSurfMesh<Mesh3, Point3>(
+    Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
         rmesh,
         true,        // triangulate
         false,       // repair_soup
@@ -496,7 +498,7 @@ Rcpp::List remeshIsotropic_cpp(
 // [[Rcpp::export]]
 Rcpp::List subdivideCatmullClark_cpp(
   const Rcpp::List rmesh, const unsigned int nIter, const bool triangulate) {
-    EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(
+    EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
         rmesh,
         triangulate, // triangulate
         false,       // repair_soup
@@ -521,7 +523,7 @@ Rcpp::List subdivideCatmullClark_cpp(
 // [[Rcpp::export]]
 Rcpp::List subdivideDooSabin_cpp(
   const Rcpp::List rmesh, const unsigned int nIter, const bool triangulate) {
-    EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(
+    EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
         rmesh,
         triangulate, // triangulate
         false,       // repair_soup
@@ -546,7 +548,7 @@ Rcpp::List subdivideDooSabin_cpp(
 // [[Rcpp::export]]
 Rcpp::List subdivideSqrt3_cpp(
   const Rcpp::List rmesh, const unsigned int nIter, const bool triangulate) {
-    EMesh3 mesh = makeSurfMesh<EMesh3, EPoint3>(
+    EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
         rmesh,
         triangulate, // triangulate
         false,       // repair_soup

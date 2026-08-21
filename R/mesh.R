@@ -151,7 +151,7 @@ makeMesh <- function(vertices,
 	}
 
 	mesh_r   <- list("vertices"=vertices, "faces"=faces)
-	mesh_cpp <- SurfMesh_cpp(mesh_r,
+	mesh_cpp <- makeMesh_cpp(mesh_r,
                            triangulate,
 	                         repairSoup,
 	                         removeIntersections,

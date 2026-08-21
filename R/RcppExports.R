@@ -17,8 +17,8 @@ unionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
     .Call(`_MeshUtils_unionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
 }
 
-SurfMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals) {
-    .Call(`_MeshUtils_SurfMesh_cpp`, rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals)
+makeMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals) {
+    .Call(`_MeshUtils_makeMesh_cpp`, rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals)
 }
 
 isValid_cpp <- function(rmesh) {

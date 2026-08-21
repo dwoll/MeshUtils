@@ -69,9 +69,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// SurfMesh_cpp
-Rcpp::List SurfMesh_cpp(const Rcpp::List rmesh, const bool triangulate, const bool repairSoup, const bool removeIntersections, const int removeMethod, const bool fillHoles, const bool fairHole, const unsigned int maxNumHoles, const bool normals);
-RcppExport SEXP _MeshUtils_SurfMesh_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP removeIntersectionsSEXP, SEXP removeMethodSEXP, SEXP fillHolesSEXP, SEXP fairHoleSEXP, SEXP maxNumHolesSEXP, SEXP normalsSEXP) {
+// makeMesh_cpp
+Rcpp::List makeMesh_cpp(const Rcpp::List rmesh, const bool triangulate, const bool repairSoup, const bool removeIntersections, const int removeMethod, const bool fillHoles, const bool fairHole, const unsigned int maxNumHoles, const bool normals);
+RcppExport SEXP _MeshUtils_makeMesh_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP removeIntersectionsSEXP, SEXP removeMethodSEXP, SEXP fillHolesSEXP, SEXP fairHoleSEXP, SEXP maxNumHolesSEXP, SEXP normalsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -84,7 +84,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type fairHole(fairHoleSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type maxNumHoles(maxNumHolesSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(SurfMesh_cpp(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals));
+    rcpp_result_gen = Rcpp::wrap(makeMesh_cpp(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -351,13 +351,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // pca_normals_cpp
-Rcpp::NumericMatrix pca_normals_cpp(Rcpp::NumericMatrix pts, int nbNeighbors);
+Rcpp::NumericMatrix pca_normals_cpp(const Rcpp::NumericMatrix pts, const int nbNeighbors);
 RcppExport SEXP _MeshUtils_pca_normals_cpp(SEXP ptsSEXP, SEXP nbNeighborsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type pts(ptsSEXP);
-    Rcpp::traits::input_parameter< int >::type nbNeighbors(nbNeighborsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type pts(ptsSEXP);
+    Rcpp::traits::input_parameter< const int >::type nbNeighbors(nbNeighborsSEXP);
     rcpp_result_gen = Rcpp::wrap(pca_normals_cpp(pts, nbNeighbors));
     return rcpp_result_gen;
 END_RCPP
@@ -440,7 +440,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_intersectionEK_cpp", (DL_FUNC) &_MeshUtils_intersectionEK_cpp, 4},
     {"_MeshUtils_differenceEK_cpp", (DL_FUNC) &_MeshUtils_differenceEK_cpp, 6},
     {"_MeshUtils_unionEK_cpp", (DL_FUNC) &_MeshUtils_unionEK_cpp, 4},
-    {"_MeshUtils_SurfMesh_cpp", (DL_FUNC) &_MeshUtils_SurfMesh_cpp, 9},
+    {"_MeshUtils_makeMesh_cpp", (DL_FUNC) &_MeshUtils_makeMesh_cpp, 9},
     {"_MeshUtils_isValid_cpp", (DL_FUNC) &_MeshUtils_isValid_cpp, 1},
     {"_MeshUtils_hasGarbage_cpp", (DL_FUNC) &_MeshUtils_hasGarbage_cpp, 1},
     {"_MeshUtils_doesBoundVolume_cpp", (DL_FUNC) &_MeshUtils_doesBoundVolume_cpp, 2},

@@ -101,7 +101,7 @@ std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix&);
 template <typename KernelT, typename PointT>
 Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT>&);
 
-template <typename MeshT, typename PointT>
+template <typename KernelT, typename MeshT, typename PointT>
 MeshT soup_to_mesh(
     std::vector<PointT>,                    // points
     std::vector<std::vector<std::size_t>>,  // faces
@@ -116,7 +116,7 @@ MeshT soup_to_mesh(
 template <typename MeshT, typename PointT>
 MeshT csoup_to_mesh(std::vector<PointT>, std::vector<std::vector<std::size_t>>, const bool);
 
-template <typename MeshT, typename PointT>
+template <typename KernelT, typename MeshT, typename PointT>
 MeshT makeSurfMesh(
     const Rcpp::List&,
     const bool,
@@ -147,6 +147,9 @@ Rcpp::List RSurfMesh1(const MeshT&, const bool);
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List RSurfMesh2(const MeshT&, const bool, const std::size_t);
 
+template <typename KernelT, typename MeshT, typename PointT>
+MeshT removeSelfIntMesh(const MeshT, const int);
+
 // -------------------------------------------------------------------------- //
 // TODO template
 Rcpp::List getRmesh(Mesh3&,  const bool);
@@ -164,14 +167,19 @@ void Message(std::string);
 std::vector<std::vector<std::size_t>> list_to_faces(const Rcpp::List&);
 
 // use only EPEC kernel
+// TODO template
 void fillBoundaryHoles(EMesh3&, const bool, const double, const int, const unsigned int);
+// declare and define version for EPIC which does nothing
+void fillBoundaryHoles(Mesh3&,  const bool, const double, const int, const unsigned int);
 
 // use only EPEC kernel
+// TODO template
 void removeSelfIntSoup(
     std::vector<EPoint3>&, std::vector<std::vector<std::size_t>>&, const int);
 
-// use only EPEC kernel
-EMesh3 removeSelfIntMesh(const EMesh3&, const int);
+// declare and define version for EPIC which does nothing
+void removeSelfIntSoup(
+    std::vector<Point3>&, std::vector<std::vector<std::size_t>>&, const int);
 
 // currently only used with EPEC kernel
 void removeProperties(EMesh3&, const std::vector<std::string>);
