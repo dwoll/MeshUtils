@@ -599,5 +599,6 @@ Rcpp::List subdivideSqrt3_cpp(
     removeProperties(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::Sqrt3_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
+    mesh.collect_garbage();
     return getRmesh(mesh, triangulate);
 }
