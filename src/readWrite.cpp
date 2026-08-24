@@ -47,7 +47,7 @@ Rcpp::List readFileSoup_cpp(const std::string filename) {
     }
   } else if(ext == ".stl") {
     ok = CGAL::IO::read_STL(
-      filename, points, faces,
+      infile, points, faces,
       CGAL::parameters::use_binary_mode(binary));
   } else if(ext == ".obj") {
     ok = CGAL::IO::read_OBJ(infile, points, faces);
@@ -99,7 +99,7 @@ Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary) {
   } else if(ext == ".off") {
     ok = CGAL::IO::read_OFF(infile, mesh);
   } else {
-    ok = PMP::IO::read_polygon_mesh(filename, mesh);
+    ok = PMP::IO::read_polygon_mesh(infile, mesh);
   }
   infile.close();
   if(!ok) {
