@@ -99,7 +99,7 @@ Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary) {
   } else if(ext == ".off") {
     ok = CGAL::IO::read_OFF(infile, mesh);
   } else {
-    ok = PMP::IO::read_polygon_mesh(infile, mesh);
+    ok = PMP::IO::read_polygon_mesh(filename, mesh);
   }
   infile.close();
   if(!ok) {
