@@ -15,10 +15,16 @@
 #'
 #' @param x Path to the mesh file; supported formats are \code{stl},
 #'   \code{ply}, \code{obj} and \code{off}.
+#' @param soup Either \code{"soup"} when the file is a polygon soup, or \code{"mesh"} when
+#'   the file is a valid mesh.
 #'
-#' @returns A list with two components: \code{vertices}, a numeric matrix with three
+#' @returns For \code{method="soup"}: A list with two components: \code{vertices},
+#'   a numeric matrix with three
 #'   columns, and \code{faces}, either a list of integer vectors or, in the
 #'   case if all faces have the same number of sides, an integer matrix.
+#'   For \code{method="mesh"}: A list of class \code{CGALmesh} giving the vertices,
+#'   the edges, the faces of the mesh, the exterior edges, the exterior vertices and
+#'   optionally the normals.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -26,7 +32,7 @@
 #' library(MeshUtils)
 #' library(rgl)
 #' ply  <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
-#' vf   <- readMeshFile(ply)
+#' vf   <- readMeshFile(ply, method="soup")
 #' mesh <- makeMesh(mesh=vf, normals=TRUE)
 #'
 #' mesh_rgl <- toRGL(mesh)
@@ -35,18 +41,24 @@
 #' shade3d(mesh_rgl, color="palevioletred")
 #'
 #' @export
-readMeshFile <- function(x) {
+readMeshFile <- function(x, method=c("soup", "mesh")) {
   stopifnot(isString(x))
-  if(!file.exists(x)){
+  method <- match.arg(method)
+  if(!file.exists(x)) {
     stop("File not found.")
   }
-  mesh   <- readFile_cpp(x)
-  faces  <- mesh[["faces"]]
-  usizes <- length(unique(lengths(faces)))
-  if(usizes == 1L) {
-    mesh[["faces"]] <- do.call(rbind, faces)
+  if(method == "soup") {
+    mesh   <- readFileSoup_cpp(x)
+    faces  <- mesh[["faces"]]
+    usizes <- length(unique(lengths(faces)))
+    if(usizes == 1L) {
+      mesh[["faces"]] <- do.call(rbind, faces)
+    }
+    mesh
+  } else {
+    mesh_cpp <- readFileMesh(x)
+    fromCPP(mesh_cpp)
   }
-  mesh
 }
 
 #' @title Export mesh to a file

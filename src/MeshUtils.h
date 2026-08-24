@@ -88,9 +88,9 @@ typedef boost::graph_traits<EMesh3>::edge_descriptor        edge_descriptor;
 typedef boost::graph_traits<EMesh3>::halfedge_descriptor    halfedge_descriptor;
 typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector> normals_map;
 typedef EMesh3::Property_map<vertex_descriptor, std::string> vcolors_map;
-typedef EMesh3::Property_map<face_descriptor, std::string>   fcolors_map;
+typedef EMesh3::Property_map<face_descriptor,   std::string> fcolors_map;
 typedef EMesh3::Property_map<vertex_descriptor, double>      vscalars_map;
-typedef EMesh3::Property_map<face_descriptor, double>        fscalars_map;
+typedef EMesh3::Property_map<face_descriptor,   double>      fscalars_map;
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;
@@ -169,7 +169,8 @@ Rcpp::NumericMatrix getNormals(EMesh3);
 // no template
 void Message(std::string);
 
-std::vector<std::vector<std::size_t>> list_to_faces(const Rcpp::List&);
+          std::vector<std::vector<std::size_t>>        list_to_faces1(const Rcpp::List&);
+std::pair<std::vector<std::vector<std::size_t>>, bool> list_to_faces2(const Rcpp::List&)
 
 // use only EPEC kernel
 // TODO template

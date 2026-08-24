@@ -60,7 +60,9 @@ print.CGALmesh <- function(x, ...) {
 #' @param maxNumHoles \code{integer}: Maximum number of holes to be filled. May be 0.
 #' @param normals Boolean: Whether to compute the normals.
 #'
-#' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
+#' @returns A list with two components: \code{vertices}, a numeric matrix with three
+#'   columns, and \code{faces}, either a list of integer vectors or, in the
+#'   case if all faces have the same number of sides, an integer matrix.A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 #'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.
 #'
 #' @seealso See \code{\link[MeshUtils]{plotEdges}} for more details about the edges

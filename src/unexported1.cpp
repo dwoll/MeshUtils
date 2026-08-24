@@ -81,7 +81,7 @@ std::vector<std::vector<std::size_t>> matrix_to_Tfaces(
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // create faces - may not be triangle
-std::vector<std::vector<std::size_t>> list_to_faces(const Rcpp::List &L) {
+std::vector<std::vector<std::size_t>> list_to_faces1(const Rcpp::List &L) {
   const std::size_t nFaces = L.size();
   std::vector<std::vector<std::size_t>> faces;
   faces.reserve(nFaces);
@@ -91,6 +91,27 @@ std::vector<std::vector<std::size_t>> list_to_faces(const Rcpp::List &L) {
     faces.emplace_back(face);
   }
   return faces;
+}
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+std::pair<std::vector<std::vector<std::size_t>>, bool> list_to_faces2(
+    const Rcpp::List &L) {
+  const std::size_t nFaces = L.size();
+  std::vector<std::vector<std::size_t>> faces;
+  faces.reserve(nFaces);
+  bool triangle = true;
+  for(std::size_t i = 0; i < nFaces; i++) {
+    Rcpp::IntegerVector face_rcpp = Rcpp::as<Rcpp::IntegerVector>(L(i));
+    std::vector<std::size_t> face(face_rcpp.begin(), face_rcpp.end());
+//     std::transform(
+//       face.begin(), face.end(), face.begin(),
+// 	  std::bind(std::minus<int>(), std::placeholders::_1, 1)
+//     );
+    faces.emplace_back(face);
+    triangle = triangle && (face.size() == 3);
+  }
+  return std::make_pair(faces, triangle);
 }
 
 // ----------------------------------------------------------------------- //
@@ -305,14 +326,14 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
                 const Rcpp::Nullable<Rcpp::NumericMatrix> &normals_) {
   if(soup) {
     return csoup_to_mesh<EMesh3, EPoint3>(matrix_to_points3<EPoint3>(vertices),
-                                          list_to_faces(faces),
+                                          list_to_faces1(faces),
                                           true);
   }
 
   EMesh3 mesh = vf_to_mesh<EMesh3, EPoint3>(vertices, faces);
   if(normals_.isNotNull()) {
     Rcpp::NumericMatrix normals_mat(normals_);
-    unsigned int nNormals = static_cast<unsigned int>(normals_mat.ncol());
+    const unsigned int nNormals = static_cast<unsigned int>(normals_mat.ncol());
     if(mesh.number_of_vertices() != nNormals) {
       Rcpp::stop(
         "The number of normals does not match the number of vertices.");
@@ -349,7 +370,7 @@ MeshT makeSurfMesh(
       Rcpp::as<Rcpp::NumericMatrix>(rmesh["vertices"]);
   const Rcpp::List rfaces = Rcpp::as<Rcpp::List>(rmesh["faces"]);
   std::vector<PointT> points = matrix_to_points3<PointT>(vertices);
-  std::vector<std::vector<std::size_t>> faces = list_to_faces(rfaces);
+  std::vector<std::vector<std::size_t>> faces = list_to_faces1(rfaces);
   return soup_to_mesh<KernelT, MeshT, PointT>(
       points,
       faces,
