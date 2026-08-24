@@ -378,14 +378,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// readFile_cpp
-Rcpp::List readFile_cpp(const std::string filename);
-RcppExport SEXP _MeshUtils_readFile_cpp(SEXP filenameSEXP) {
+// readFileSoup_cpp
+Rcpp::List readFileSoup_cpp(const std::string filename);
+RcppExport SEXP _MeshUtils_readFileSoup_cpp(SEXP filenameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type filename(filenameSEXP);
-    rcpp_result_gen = Rcpp::wrap(readFile_cpp(filename));
+    rcpp_result_gen = Rcpp::wrap(readFileSoup_cpp(filename));
+    return rcpp_result_gen;
+END_RCPP
+}
+// readFileMesh_cpp
+Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary);
+RcppExport SEXP _MeshUtils_readFileMesh_cpp(SEXP filenameSEXP, SEXP binarySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< const bool >::type binary(binarySEXP);
+    rcpp_result_gen = Rcpp::wrap(readFileMesh_cpp(filename, binary));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -480,7 +492,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_subdivideSqrt3_cpp", (DL_FUNC) &_MeshUtils_subdivideSqrt3_cpp, 3},
     {"_MeshUtils_jet_normals_cpp", (DL_FUNC) &_MeshUtils_jet_normals_cpp, 2},
     {"_MeshUtils_pca_normals_cpp", (DL_FUNC) &_MeshUtils_pca_normals_cpp, 2},
-    {"_MeshUtils_readFile_cpp", (DL_FUNC) &_MeshUtils_readFile_cpp, 1},
+    {"_MeshUtils_readFileSoup_cpp", (DL_FUNC) &_MeshUtils_readFileSoup_cpp, 1},
+    {"_MeshUtils_readFileMesh_cpp", (DL_FUNC) &_MeshUtils_readFileMesh_cpp, 2},
     {"_MeshUtils_writeFile_cpp", (DL_FUNC) &_MeshUtils_writeFile_cpp, 5},
     {"_MeshUtils_reconstructAFS_cpp", (DL_FUNC) &_MeshUtils_reconstructAFS_cpp, 3},
     {"_MeshUtils_reconstructPoisson_cpp", (DL_FUNC) &_MeshUtils_reconstructPoisson_cpp, 6},

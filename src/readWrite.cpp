@@ -83,23 +83,23 @@ Rcpp::List readFileSoup_cpp(const std::string filename) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Mesh3 readFileMesh_cpp(const std::string filename) {
+Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary) {
   Mesh3 mesh;
   const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;
   std::ifstream infile;
-  infile.open(filename);
-  const bool binary = CGAL::IO::is_binary(infile);
+  if(binary) {
+    infile.open(filename, std::ios::binary);
+  } else {
+    infile.open(filename);
+  }
   std::string comments;
   if(ext == ".ply") {
-    ok = CGAL::IO::read_PLY(
-      infile, mesh, comments, CGAL::parameters::use_binary_mode(true));
+    ok = CGAL::IO::read_PLY(infile, mesh, comments);
   } else if(ext == ".off") {
-    ok = CGAL::IO::read_OFF(
-      infile, mesh, CGAL::parameters::use_binary_mode(true));
+    ok = CGAL::IO::read_OFF(infile, mesh);
   } else {
-    ok = PMP::IO::read_polygon_mesh(
-      filename, mesh, CGAL::parameters::use_binary_mode(true));
+    ok = PMP::IO::read_polygon_mesh(filename, mesh);
   }
   infile.close();
   if(!ok) {
@@ -113,7 +113,7 @@ Mesh3 readFileMesh_cpp(const std::string filename) {
   if(!valid) {
     Rcpp::warning("The mesh is not valid.");
   }
-  return mesh;
+  return getRmesh(mesh, false);
 }
 
 // ----------------------------------------------------------------------- //

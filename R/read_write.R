@@ -15,8 +15,9 @@
 #'
 #' @param x Path to the mesh file; supported formats are \code{stl},
 #'   \code{ply}, \code{obj} and \code{off}.
-#' @param soup Either \code{"soup"} when the file is a polygon soup, or \code{"mesh"} when
+#' @param method Either \code{"soup"} when the file is a polygon soup, or \code{"mesh"} when
 #'   the file is a valid mesh.
+#' @param binary Boolean: For \code{method="mesh"}: Whether input file is binary.
 #'
 #' @returns For \code{method="soup"}: A list with two components: \code{vertices},
 #'   a numeric matrix with three
@@ -41,7 +42,7 @@
 #' shade3d(mesh_rgl, color="palevioletred")
 #'
 #' @export
-readMeshFile <- function(x, method=c("soup", "mesh")) {
+readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE) {
   stopifnot(isString(x))
   method <- match.arg(method)
   if(!file.exists(x)) {
@@ -56,7 +57,8 @@ readMeshFile <- function(x, method=c("soup", "mesh")) {
     }
     mesh
   } else {
-    mesh_cpp <- readFileMesh(x)
+    stopifnot(isBoolean(binary))
+    mesh_cpp <- readFileMesh_cpp(x, binary)
     fromCPP(mesh_cpp)
   }
 }

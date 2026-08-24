@@ -4,11 +4,13 @@
 \alias{readMeshFile}
 \title{Read a mesh file}
 \usage{
-readMeshFile(x)
+readMeshFile(x, method = c("soup", "mesh"), binary = FALSE)
 }
 \arguments{
 \item{x}{Path to the mesh file; supported formats are \code{stl},
 \code{ply}, \code{obj} and \code{off}.}
+\item{method}{Either \code{"soup"} when the file is a polygon soup, or \code{"mesh"} when the file is a valid mesh.}
+\item{binary}{Boolean: For \code{method="mesh"}: Whether input file is binary.}
 }
 \value{
 A list with two components: \code{vertices}, a numeric matrix with three

@@ -37,6 +37,8 @@ The target edge length of the remeshed mesh.}
 \item{nIter}{Positive \code{integer}: Number of iterations.}
 
 \item{nRelaxSteps}{Positive \code{integer}: Number of relaxation steps.}
+
+\item{out}{\code{character}: Indicate output mesh format.}
 }
 \value{
 A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},

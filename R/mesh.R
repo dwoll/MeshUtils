@@ -53,7 +53,7 @@ print.CGALmesh <- function(x, ...) {
 #'   are already triangle.
 #' @param repairSoup Boolean: Whether to do some mesh cleaning.
 #' @param removeIntersections Boolean: Whether to attempt to remove self intersections.
-#' @param method One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).
+#' @param removeMethod One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).
 #' @param fillHoles Boolean: Whether to attempt to fill boundary holes.
 #' @param fairHole Boolean: Use CGAL `triangulate_refine_and_fair_hole()` (\code{TRUE})
 #'     or `triangulate_and_refine_hole()` (\code{FALSE})?
@@ -774,7 +774,7 @@ getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound,
 #'   Maximum edge length. See details.
 #' @param nIter Positive \code{integer}: Number of iterations.
 #' @param nRelaxSteps Positive \code{integer}: Number of relaxation steps.
-#' @param out \code{haracter: Indicate output mesh format.
+#' @param out \code{character}: Indicate output mesh format.
 #' @return A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
 #'   depending on option \code{out}.
 #' @details See \url{https://doc.cgal.org/latest/PMP_Remeshing/classCGAL_1_1Polygon__mesh__processing_1_1Adaptive__sizing__field.html},

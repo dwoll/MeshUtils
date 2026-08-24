@@ -170,12 +170,13 @@ Rcpp::NumericMatrix getNormals(EMesh3);
 void Message(std::string);
 
           std::vector<std::vector<std::size_t>>        list_to_faces1(const Rcpp::List&);
-std::pair<std::vector<std::vector<std::size_t>>, bool> list_to_faces2(const Rcpp::List&)
+std::pair<std::vector<std::vector<std::size_t>>, bool> list_to_faces2(const Rcpp::List&);
 
 // use only EPEC kernel
 // TODO template
 void fillBoundaryHoles(EMesh3&, const bool, const double, const int, const unsigned int);
-// declare and define version for EPIC which does nothing
+
+// declare and define version for EPIC kernel which does nothing
 void fillBoundaryHoles(Mesh3&,  const bool, const double, const int, const unsigned int);
 
 // currently only used with EPEC kernel

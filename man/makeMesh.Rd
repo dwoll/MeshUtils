@@ -46,7 +46,7 @@ or \code{triangulate_and_refine_hole()} (\code{FALSE})?}
 
 \item{normals}{Boolean: Whether to compute the normals.}
 
-\item{method}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
+\item{removeMethod}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
 }
 \value{
 A list of class \code{CGALmesh} giving the vertices, the edges, the faces

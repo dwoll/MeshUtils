@@ -113,8 +113,12 @@ pca_normals_cpp <- function(pts, nbNeighbors) {
     .Call(`_MeshUtils_pca_normals_cpp`, pts, nbNeighbors)
 }
 
-readFile_cpp <- function(filename) {
-    .Call(`_MeshUtils_readFile_cpp`, filename)
+readFileSoup_cpp <- function(filename) {
+    .Call(`_MeshUtils_readFileSoup_cpp`, filename)
+}
+
+readFileMesh_cpp <- function(filename, binary) {
+    .Call(`_MeshUtils_readFileMesh_cpp`, filename, binary)
 }
 
 writeFile_cpp <- function(filename, binary, precision, vertices, faceList) {
