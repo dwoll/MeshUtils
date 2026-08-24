@@ -11,7 +11,7 @@ makeMesh(
   triangulate = FALSE,
   repairSoup = TRUE,
   removeIntersections = FALSE,
-  removeMethod =c("auto", "auto_snap"),
+  removeMethod = c("auto", "auto_snap"),
   fillHoles = FALSE,
   fairHole = FALSE,
   maxNumHoles = 0L,
@@ -35,16 +35,18 @@ are already triangle.}
 
 \item{repairSoup}{Boolean: Whether to do some mesh cleaning.}
 
-\item{removeIntersections}{Boolean: Whether to try to remove self intersections.}
+\item{removeIntersections}{Boolean: Whether to attempt to remove self intersections.}
 
-\item{removeMethod}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
+\item{fillHoles}{Boolean: Whether to attempt to fill boundary holes.}
 
-\item{fillHoles}{Boolean: Whether to try to fill boundary holes.}
+\item{fairHole}{Boolean: Use CGAL \code{triangulate_refine_and_fair_hole()} (\code{TRUE})
+or \code{triangulate_and_refine_hole()} (\code{FALSE})?}
 
-\item{fairHole}{Boolean.}
-\item{maxNumHoles}{\code{integer}.}
+\item{maxNumHoles}{\code{integer}: Maximum number of holes to be filled. May be 0.}
 
-\item{normals}{Boolean, whether to compute the normals.}
+\item{normals}{Boolean: Whether to compute the normals.}
+
+\item{method}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
 }
 \value{
 A list of class \code{CGALmesh} giving the vertices, the edges, the faces
@@ -93,12 +95,7 @@ shade3d(mesh1_rgl_b, color="blue", back="cull")
 ## the faces of the truncated icosahedron are hexagonal or pentagonal:
 dataTruncIcosahedron[["faces"]]
 # so we triangulate them:
-mesh2 <- makeMesh(
-  mesh       =dataTruncIcosahedron,
-  triangulate=TRUE,
-  normals    =FALSE)
-
-## now we can plot the truncated icosahedron
+mesh2     <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
 mesh2_rgl <- toRGL(mesh2)
 open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
 shade3d(mesh2_rgl, color="orange")

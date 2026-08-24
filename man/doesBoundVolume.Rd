@@ -8,6 +8,7 @@ doesBoundVolume(x, triangulate = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+
 \item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
 are already triangle.}
 }

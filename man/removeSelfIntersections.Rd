@@ -4,7 +4,11 @@
 \alias{removeSelfIntersections}
 \title{Remove self intersections}
 \usage{
-removeSelfIntersections(x, triangulate = FALSE, method = c("auto", "auto_snap"))
+removeSelfIntersections(
+  x,
+  triangulate = FALSE,
+  method = c("auto", "auto_snap")
+)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
@@ -18,7 +22,7 @@ are already triangle.}
 \code{CGALmesh} object.
 }
 \description{
-Remove self intersections
+Remove self intersections.
 }
 \details{
 See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.

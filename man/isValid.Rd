@@ -2,7 +2,7 @@
 % Please edit documentation in R/mesh.R
 \name{isValid}
 \alias{isValid}
-\title{Is mesh valid?}
+\title{Is mesh a valid mesh?}
 \usage{
 isValid(x)
 }
@@ -13,7 +13,7 @@ isValid(x)
 TRUE or FALSE.
 }
 \description{
-Is mesh valid?
+Is the given mesh a valid surface mesh?
 }
 \examples{
 library(MeshUtils)

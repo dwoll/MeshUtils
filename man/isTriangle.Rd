@@ -2,18 +2,19 @@
 % Please edit documentation in R/mesh.R
 \name{isTriangle}
 \alias{isTriangle}
-\title{Is mesh triangle?}
+\title{Is mesh a triangle mesh?}
 \usage{
 isTriangle(x)
 }
 \arguments{
-\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+\item{x}{A \code{list} with components \code{vertices} and \code{faces},
+e.g., a \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
 TRUE or FALSE.
 }
 \description{
-Is mesh triangle?
+Is the given surface mesh a triangle mesh?
 }
 \examples{
 library(MeshUtils)

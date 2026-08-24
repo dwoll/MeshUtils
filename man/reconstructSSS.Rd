@@ -12,7 +12,7 @@ reconstructSSS(
   separateShells = FALSE,
   forceManifold = TRUE,
   borderAngle = 45,
-  repairSoup =TRUE
+  repairSoup = TRUE
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ reconstructSSS(
 
 \item{borderAngle}{Bound on the angle in degrees used to detect border edges.}
 
-\item{repairSoup}{Boolean: Repair polygon soup?}
+\item{repairSoup}{Boolean. Attempt to fix polygon soup?}
 }
 \value{
 A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.

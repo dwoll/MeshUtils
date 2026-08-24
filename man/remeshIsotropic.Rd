@@ -7,6 +7,9 @@
 remeshIsotropic(
   x,
   method = c("uniform", "adaptive"),
+  tol = 0.001,
+  edgeMin = 0.001,
+  edgeMax,
   targetEdgeLen,
   nIter = 1,
   nRelaxSteps = 1,
@@ -16,21 +19,24 @@ remeshIsotropic(
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{method}{Either code{"uniform"} or \code{"adaptive"}.}
+\item{method}{\code{character}: Either \code{"uniform"} for uniform sizing field
+or \code{"adaptive"} for adapative sizing field.}
 
-\item{targetEdgeLen}{Positive number, the target edge length of the
-remeshed mesh.}
+\item{tol}{Positive number for \code{method="adaptive"}:
+Error tolerance. See details}
 
-\item{tol}{Positive number.}
+\item{edgeMin}{Positive number for \code{method="adaptive"}:
+Minimum edge length. See details.}
 
-\item{edgeMin}{Positive number.}
+\item{edgeMax}{Positive number for \code{method="adaptive"}:
+Maximum edge length. See details.}
 
-\item{edgeMax}{Positive number.}
+\item{targetEdgeLen}{Positive number for \code{method="uniform"}:
+The target edge length of the remeshed mesh.}
 
 \item{nIter}{Positive \code{integer}: Number of iterations.}
 
 \item{nRelaxSteps}{Positive \code{integer}: Number of relaxation steps.}
-\item{out}{\code{character}: Indicate output mesh format.}
 }
 \value{
 A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
@@ -38,6 +44,10 @@ depending on option \code{out}.
 }
 \description{
 Isotropic remeshing.
+}
+\details{
+See \url{https://doc.cgal.org/latest/PMP_Remeshing/classCGAL_1_1Polygon__mesh__processing_1_1Adaptive__sizing__field.html},
+\url{https://doc.cgal.org/latest/PMP_Remeshing/group__PMP__local__remeshing__grp.html#ga412f696ec3009074bf957f1bba638248}.
 }
 \examples{
 library(MeshUtils)

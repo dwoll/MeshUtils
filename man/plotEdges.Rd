@@ -27,11 +27,11 @@ vertex indices.}
 
 \item{lwd}{Line width, a positive number, ignored if \code{edgesAsTubes=TRUE}.}
 
-\item{edgesAsTubes}{Boolean, whether to draw the edges as tubes.}
+\item{edgesAsTubes}{Boolean: Whether to draw the edges as tubes.}
 
 \item{tubesRadius}{The radius of the tubes when \code{edgesAsTubes=TRUE}.}
 
-\item{verticesAsSpheres}{Boolean, whether to draw the vertices as spheres.}
+\item{verticesAsSpheres}{Boolean: Whether to draw the vertices as spheres.}
 
 \item{only}{Integer vector made of the indices of the vertices you want
 to plot (as spheres), or \code{NULL} to plot all vertices.}

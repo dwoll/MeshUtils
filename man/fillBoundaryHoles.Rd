@@ -4,12 +4,15 @@
 \alias{fillBoundaryHoles}
 \title{Fill boundary holes}
 \usage{
-fillBoundaryHoles(x, fairHole = TRUE, maxNumHoles=10L)
+fillBoundaryHoles(x, fairHole = TRUE, maxNumHoles = 10L)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
-\item{fairHole}{Boolean.}
-\item{maxNumHoles}{\code{integer}.}
+
+\item{fairHole}{Boolean: Use CGAL \code{triangulate_refine_and_fair_hole()} (\code{TRUE})
+or \code{triangulate_and_refine_hole()} (\code{FALSE})?}
+
+\item{maxNumHoles}{\code{integer}: Maximum number of holes to be filled.}
 }
 \value{
 \code{CGALmesh} object.
@@ -17,10 +20,14 @@ fillBoundaryHoles(x, fairHole = TRUE, maxNumHoles=10L)
 \description{
 Fill boundary holes.
 }
+\details{
+See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.
+If faces are not triangle, the mesh is triangulated.
+}
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
-fillBoundaryHoles(mesh)
+mesh      <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh_fill <- fillBoundaryHoles(mesh)
 
 }
 \author{

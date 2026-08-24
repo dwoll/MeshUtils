@@ -13,7 +13,7 @@ hasGarbage(x)
 TRUE or FALSE.
 }
 \description{
-Does mesh have garbage?
+Does the given surface mesh have garbage?
 }
 \examples{
 library(MeshUtils)
