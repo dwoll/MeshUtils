@@ -754,16 +754,23 @@ MeshT removeSelfIntMesh(const MeshT &mesh, const int method) {
       Message("Autorefine not successful.");
   }
 
+  PMP::orient_polygon_soup(points, polygons);
   if(PMP::does_polygon_soup_self_intersect(points, polygons)) {
     Message("Polygon soup still self-intersects after autorefine");
   }
-  /*
+  
   CGAL::Conforming_constrained_Delaunay_triangulation_3<KernelT> ccdt;
   ccdt = CGAL::make_conforming_constrained_Delaunay_triangulation_3(points, polygons);
-  */
+  
   MeshT mesh_out;
-  Message("Before polygon_soup_to_polygon_mesh().");
-  PMP::polygon_soup_to_polygon_mesh(points, polygons, mesh_out);
+  Message("Before is_polygon_soup_a_polygon_mesh().");
+  if(PMP::is_polygon_soup_a_polygon_mesh(polygons)) {
+    Message("Before polygon_soup_to_polygon_mesh().");
+    PMP::polygon_soup_to_polygon_mesh(points, polygons, mesh_out);
+  } else {
+    Message("Polygon soup is not a polygon mesh\n after removing intersections. Nothing done.");
+    return mesh;
+  }
 
   Message("Before does_self_intersect().");
   if(PMP::does_self_intersect(mesh_out)) {
