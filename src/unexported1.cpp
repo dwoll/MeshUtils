@@ -146,9 +146,9 @@ MeshT soup_to_mesh(std::vector<PointT> points,
     is_triangle = PMP::triangulate_faces(mesh);
   }
   if(is_triangle) {
-    Message("The mesh is triangle.");
+    Message("Mesh is triangle.");
   } else {
-    Message("The mesh is not triangle; no way to ensure it bounds a volume.");
+    Message("Mesh is not triangle - cannot ensure it bounds a volume.");
   }
 
   // determine EPEC vs. EPIC kernel
@@ -167,9 +167,9 @@ MeshT soup_to_mesh(std::vector<PointT> points,
       fillBoundaryHoles(mesh, fair_hole, -1, -1, max_num_holes);
   }
   if(CGAL::is_closed(mesh)) {
-      Message("The mesh is closed.");
+      Message("Mesh is closed.");
   } else {
-      Message("The mesh is not closed.");
+      Message("Mesh is not closed.");
   }
   // check for self-intersections
   bool has_self_int = PMP::does_self_intersect(mesh);
@@ -180,13 +180,20 @@ MeshT soup_to_mesh(std::vector<PointT> points,
   // better with EPEC kernel but templated for EPICK and EPECK
   if(has_self_int && remove_intersections && is_triangle) {
      MeshT mesh_tmp = removeSelfIntMesh<KernelT, MeshT, PointT>(mesh, remove_method);
+     Message("Back in soup_to_mesh()");
+
      const std::size_t mt_nVerts = mesh_tmp.number_of_vertices();
      const std::size_t mt_nEdges = mesh_tmp.number_of_edges();
      const std::size_t mt_nFaces = mesh_tmp.number_of_faces();
      mesh.clear();
      mesh.collect_garbage();
      mesh.reserve(mt_nVerts, mt_nEdges, mt_nFaces);
+
+     Message("Before copy_face_graph()");
      CGAL::copy_face_graph(mesh_tmp, mesh);
+     Message("Before std::move()");
+     mesh = std::move(mesh_tmp);
+     Message("Before is_closed()");
 
      // removing self intersections may introduce holes
      // second pass if necessary
@@ -201,19 +208,19 @@ MeshT soup_to_mesh(std::vector<PointT> points,
       PMP::reverse_face_orientations(mesh);
     }
     if(PMP::does_bound_a_volume(mesh)) {
-      Message("The mesh bounds a volume.");
+      Message("Mesh bounds a volume.");
     } else {
-      Message("The mesh does not bound a volume - reorienting.");
+      Message("Mesh does not bound a volume - reorienting.");
       PMP::orient_to_bound_a_volume(mesh);
       if(!PMP::does_bound_a_volume(mesh)) {
-          Message("The mesh still does not bound a volume.");
+          Message("Mesh still does not bound a volume.");
       }
     }
   }
   if(mesh.is_valid(false)) {
-    Message("The mesh is valid.\n");
+    Message("Mesh is valid.\n");
   } else {
-    Message("The mesh is not valid.\n");
+    Message("Mesh is not valid.\n");
   }
   return mesh;
 }
@@ -260,7 +267,7 @@ MeshT csoup_to_mesh(std::vector<PointT> points,
   PMP::polygon_soup_to_polygon_mesh(points, faces, mesh);
   const bool valid = mesh.is_valid(false);
   if(!valid) {
-    Rcpp::warning("The mesh is not valid.");
+    Rcpp::warning("Mesh is not valid.");
   }
   return mesh;
 }
@@ -630,7 +637,7 @@ void fillBoundaryHoles(
     const int max_num_hole_edges,
     const unsigned int max_num_holes) {
 
-    Message("`fillBoundaryHoles() for EPICK mesh - this should never be called");
+    Message("`fillBoundaryHoles()` for EPICK mesh - does nothing, should never be called");
 }
 
 // ----------------------------------------------------------------------- //
@@ -685,6 +692,7 @@ void removeProperties(EMesh3 &mesh, const std::vector<std::string> props) {
 // CAVE: points, polygons are passed by reference, and are modified in place
 // uses a polygon soup as container as the output will most likely be non-manifold
 // best uesd with EPEC kernel
+/*
 template <typename KernelT, typename PointT>
 void removeSelfIntSoup(std::vector<PointT> &points,
                        std::vector<std::vector<std::size_t>> &polygons,
@@ -706,13 +714,7 @@ void removeSelfIntSoup(std::vector<PointT> &points,
 
   CGAL::Conforming_constrained_Delaunay_triangulation_3<KernelT> ccdt;
   ccdt = CGAL::make_conforming_constrained_Delaunay_triangulation_3(points, polygons);
-  /*
-  if(PMP::does_polygon_soup_self_intersect(points, polygons)) {
-    Message("Polygon soup self-intersections could not be removed.");
-  } else {
-    Message("Polygon soup self-intersections removed.");
-  }
-  */
+  // PMP::does_polygon_soup_self_intersect(points, polygons)
 }
 
 template void removeSelfIntSoup<K, Point3>(
@@ -720,11 +722,11 @@ template void removeSelfIntSoup<K, Point3>(
 
 template void removeSelfIntSoup<EK, EPoint3>(
     std::vector<EPoint3>&, std::vector<std::vector<std::size_t>> &, const int);
-
+*/
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// mesh passed by const reference, then
-// uses a polygon soup as container as the output will most likely be non-manifold
+// mesh passed by const reference, then uses a polygon soup
+// as container as the output will most likely be non-manifold
 // best uesd with EPEC kernel
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT removeSelfIntMesh(const MeshT &mesh, const int method) {
@@ -732,16 +734,46 @@ MeshT removeSelfIntMesh(const MeshT &mesh, const int method) {
   std::vector<PointT> points;
   std::vector<std::vector<std::size_t>> polygons;
   PMP::polygon_mesh_to_polygon_soup(mesh, points, polygons);
-  removeSelfIntSoup<KernelT, PointT>(points, polygons, method);
+  // removeSelfIntSoup<KernelT, PointT>(points, polygons, method);
+
+  bool success;
+  if(method == 1) {
+      success = PMP::autorefine_triangle_soup(points, polygons,
+          CGAL::parameters::concurrency_tag(CGAL::Parallel_if_available_tag()));
+  } else if(method == 2) {
+      // TODO .snap_grid_size(grid_size).number_of_iterations(15));
+      success = PMP::autorefine_triangle_soup(points, polygons,
+          CGAL::parameters::apply_iterative_snap_rounding(true)
+              .concurrency_tag(CGAL::Parallel_if_available_tag()));
+  } else {
+      Rcpp::stop("Wrong method");
+  }
+  if(success) {
+      Message("Autorefine successful.");
+  } else {
+      Message("Autorefine not successful.");
+  }
+
+  if(PMP::does_polygon_soup_self_intersect(points, polygons)) {
+    Message("Polygon soup still self-intersects after autorefine");
+  }
+  /*
+  CGAL::Conforming_constrained_Delaunay_triangulation_3<KernelT> ccdt;
+  ccdt = CGAL::make_conforming_constrained_Delaunay_triangulation_3(points, polygons);
+  */
   MeshT mesh_out;
+  Message("Before polygon_soup_to_polygon_mesh().");
   PMP::polygon_soup_to_polygon_mesh(points, polygons, mesh_out);
+
+  Message("Before does_self_intersect().");
   if(PMP::does_self_intersect(mesh_out)) {
     Message("Mesh self-intersections could not be removed.");
   } else {
     Message("Mesh self-intersections removed.");
   }
+  Message("Before return mesh_out.");
   return mesh_out;
 }
 
-template Mesh3  removeSelfIntMesh<K,  Mesh3,  Point3>(const  Mesh3&,  const int);
+template Mesh3  removeSelfIntMesh<K,  Mesh3,  Point3>(const Mesh3&,   const int);
 template EMesh3 removeSelfIntMesh<EK, EMesh3, EPoint3>(const EMesh3&, const int);
