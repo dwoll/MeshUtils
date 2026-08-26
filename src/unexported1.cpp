@@ -181,14 +181,11 @@ MeshT soup_to_mesh(std::vector<PointT> points,
   if(has_self_int && remove_intersections && is_triangle) {
      MeshT mesh_tmp = removeSelfIntMesh<KernelT, MeshT, PointT>(mesh, remove_method);
      Message("Back in soup_to_mesh()");
-
      const std::size_t mt_nVerts = mesh_tmp.number_of_vertices();
      const std::size_t mt_nEdges = mesh_tmp.number_of_edges();
      const std::size_t mt_nFaces = mesh_tmp.number_of_faces();
      mesh.clear();
-     mesh.collect_garbage();
      mesh.reserve(mt_nVerts, mt_nEdges, mt_nFaces);
-
      Message("Before copy_face_graph()");
      CGAL::copy_face_graph(mesh_tmp, mesh);
      Message("Before std::move()");
@@ -203,7 +200,7 @@ MeshT soup_to_mesh(std::vector<PointT> points,
          fillBoundaryHoles(mesh, fair_hole, -1, -1, max_num_holes);
      }
   }
-  if(is_triangle) {
+  if(is_triangle && CGAL::is_closed(mesh)) {
     if(!PMP::is_outward_oriented(mesh)) {
       PMP::reverse_face_orientations(mesh);
     }
@@ -265,8 +262,7 @@ MeshT csoup_to_mesh(std::vector<PointT> points,
   }
   MeshT mesh;
   PMP::polygon_soup_to_polygon_mesh(points, faces, mesh);
-  const bool valid = mesh.is_valid(false);
-  if(!valid) {
+  if(!mesh.is_valid(false)) {
     Rcpp::warning("Mesh is not valid.");
   }
   return mesh;
@@ -758,27 +754,35 @@ MeshT removeSelfIntMesh(const MeshT &mesh, const int method) {
   if(PMP::does_polygon_soup_self_intersect(points, polygons)) {
     Message("Polygon soup still self-intersects after autorefine");
   }
-  
+
   CGAL::Conforming_constrained_Delaunay_triangulation_3<KernelT> ccdt;
   ccdt = CGAL::make_conforming_constrained_Delaunay_triangulation_3(points, polygons);
-  
+
   MeshT mesh_out;
-  Message("Before is_polygon_soup_a_polygon_mesh().");
   if(PMP::is_polygon_soup_a_polygon_mesh(polygons)) {
-    Message("Before polygon_soup_to_polygon_mesh().");
+    Message("Polygon soup is a polygon mesh.");
     PMP::polygon_soup_to_polygon_mesh(points, polygons, mesh_out);
+    if(mesh_out.has_garbage()) {
+        Message("Mesh after removing intersections has garbage");
+        mesh_out.collect_garbage();
+    }
+    if(!mesh_out.is_valid(false)) {
+      Rcpp::warning("Mesh after removing intersections is not valid. Nothing done.");
+      return mesh;
+    }
   } else {
     Message("Polygon soup is not a polygon mesh\n after removing intersections. Nothing done.");
     return mesh;
   }
-
-  Message("Before does_self_intersect().");
+  /*
   if(PMP::does_self_intersect(mesh_out)) {
     Message("Mesh self-intersections could not be removed.");
   } else {
     Message("Mesh self-intersections removed.");
   }
   Message("Before return mesh_out.");
+  */
+  // return mesh;
   return mesh_out;
 }
 
