@@ -25,6 +25,10 @@
 
 For an application, see package [MeshAgreement](https://github.com/dwoll/MeshAgreement) that calculates various distance and similarity metrics for two given 3D meshes.
 
+## CAVE
+
+Note that this package requires CGAL headers version 6.2. As of August 2026, `RcppCGAL` provides CGAL version 6.1, but it is possible to update as explained in the [`RcppCGAL::set_cgal()` documentation](https://cloud.r-project.org/web/packages/RcppCGAL/refman/RcppCGAL.html#set_cgal).
+
 ## Development
 
 This package includes code adapted from packages [`Boov`](https://github.com/stla/Boov/), [`PolygonSoup`](https://github.com/stla/PolygonSoup/), and [`cgalMeshes`](https://github.com/stla/cgalMeshes/) developed and copyright by [Stéphane Laurent](https://laustep.github.io/stlahblog/).  Currently, only a subset of the functionality of these packages is provided in `MeshUtils`.

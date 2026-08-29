@@ -26,7 +26,6 @@
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polyhedron_items_with_id_3.h>
 #include <CGAL/property_map.h>
-// #include <CGAL/number_utils.h>
 #include <CGAL/jet_smooth_point_set.h>
 #include <CGAL/jet_estimate_normals.h>
 #include <CGAL/Advancing_front_surface_reconstruction.h>
