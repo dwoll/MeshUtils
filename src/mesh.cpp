@@ -15,8 +15,7 @@
 #endif
 
 // ----------------------------------------------------------------------- //
-// initial mesh generation -> use EPEC kernel to enable
-// filling holes and removing self-intersections
+// initial mesh generation - EPIC kernel - TODO make parameter
 // [[Rcpp::export]]
 Rcpp::List makeMesh_cpp(const Rcpp::List rmesh,
                         const bool triangulate,
@@ -28,7 +27,7 @@ Rcpp::List makeMesh_cpp(const Rcpp::List rmesh,
                         const unsigned int maxNumHoles,
                         const bool normals) {
   Message("Processing mesh...");
-  EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
       triangulate,         // triangulate
       repairSoup,          // repair_soup
@@ -37,7 +36,7 @@ Rcpp::List makeMesh_cpp(const Rcpp::List rmesh,
       fillHoles,           // fill_holes
       fairHole,            // fair hole
       maxNumHoles);        // max_num_holes
-  return RSurfMesh1<EK, EMesh3, EPoint3, EVector3>(mesh, normals);
+  return RSurfMesh1<K, Mesh3, Point3, Vector3>(mesh, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -249,19 +248,19 @@ Rcpp::NumericVector getCentroid_cpp(
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
-  Rcpp::NumericVector out(3);
+  Rcpp::NumericVector ctr(3);
   if(!CGAL::is_triangle_mesh(mesh)) {
       Message("The mesh is not triangle.");
-      out(0) = Rcpp::NumericVector::get_na();
-      out(1) = Rcpp::NumericVector::get_na();
-      out(2) = Rcpp::NumericVector::get_na();
+      ctr(0) = Rcpp::NumericVector::get_na();
+      ctr(1) = Rcpp::NumericVector::get_na();
+      ctr(2) = Rcpp::NumericVector::get_na();
   } else {
       const Point3 centroid = PMP::centroid(mesh);
-      out(0) = CGAL::to_double<K::FT>(centroid.x());
-      out(1) = CGAL::to_double<K::FT>(centroid.y());
-      out(2) = CGAL::to_double<K::FT>(centroid.z());
+      ctr(0) = CGAL::to_double<K::FT>(centroid.x());
+      ctr(1) = CGAL::to_double<K::FT>(centroid.y());
+      ctr(2) = CGAL::to_double<K::FT>(centroid.z());
   }
-  return out;
+  return ctr;
 }
 
 // ----------------------------------------------------------------------- //
@@ -276,27 +275,27 @@ Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn) {
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
-  std::array<Point3, 8> obbPoints;
-  CGAL::oriented_bounding_box(mesh, obbPoints,
+  std::array<Point3, 8> obb_pts;
+  CGAL::oriented_bounding_box(mesh, obb_pts,
                               CGAL::parameters::use_convex_hull(true));
-  // Make a mesh out of the oriented bounding box
-  Mesh3 obbMesh;
+  // make mesh out of oriented bounding box
+  Mesh3 obb_mesh;
   CGAL::make_hexahedron(
-    obbPoints[0], obbPoints[1], obbPoints[2], obbPoints[3],
-    obbPoints[4], obbPoints[5], obbPoints[6], obbPoints[7],
-    obbMesh
+    obb_pts[0], obb_pts[1], obb_pts[2], obb_pts[3],
+    obb_pts[4], obb_pts[5], obb_pts[6], obb_pts[7],
+    obb_mesh
   );
-  Rcpp::List rmeshOut = RSurfMesh2<K, Mesh3, Point3, Vector3>(obbMesh, false, 4);
-  Rcpp::NumericMatrix hxVertices(3, 8);
+  Rcpp::List rmesh_obb = RSurfMesh2<K, Mesh3, Point3, Vector3>(obb_mesh, false, 4);
+  Rcpp::NumericMatrix hex_verts(3, 8);
   for(int i = 0; i < 8; i++) {
-    Point3 pt = obbPoints[i];
+    Point3 pt = obb_pts[i];
     Rcpp::NumericVector v =
       Rcpp::NumericVector::create(pt.x(), pt.y(), pt.z());
-    hxVertices(Rcpp::_, i) = v;
+    hex_verts(Rcpp::_, i) = v;
   }
   return Rcpp::List::create(
-    Rcpp::Named("mesh") = rmeshOut,
-    Rcpp::Named("hxVertices") = hxVertices
+    Rcpp::Named("mesh") = rmesh_obb,
+    Rcpp::Named("hxVertices") = hex_verts
   );
 }
 
@@ -337,15 +336,15 @@ Rcpp::NumericVector getDistance_cpp(
   const std::size_t nPts = points.ncol();
   Rcpp::NumericVector distances(nPts);
   if(!CGAL::is_triangle_mesh(mesh)) {
-    Message("The mesh is not triangle.");
-    for(std::size_t i = 0; i < nPts; i++){
-      distances(i) = Rcpp::NumericVector::get_na();
-    }
+      Message("The mesh is not triangle.");
+      for(std::size_t i = 0; i < nPts; i++) {
+          distances(i) = Rcpp::NumericVector::get_na();
+      }
   } else {
-      for(std::size_t i = 0; i < nPts; i++){
-        Rcpp::NumericVector point_i = points(Rcpp::_, i);
-        std::vector<Point3> pt = { Point3(point_i(0), point_i(1), point_i(2)) };
-        distances(i) = PMP::max_distance_to_triangle_mesh<CGAL::Sequential_tag>(pt, mesh);
+      for(std::size_t i = 0; i < nPts; i++) {
+          Rcpp::NumericVector point_i = points(Rcpp::_, i);
+          std::vector<Point3> pt = { Point3(point_i(0), point_i(1), point_i(2)) };
+          distances(i) = PMP::max_distance_to_triangle_mesh<CGAL::Sequential_tag>(pt, mesh);
       }
   }
   return distances;
@@ -408,7 +407,7 @@ double getHausdorffEst_cpp(
     const Rcpp::List rmesh1,
     const Rcpp::List rmesh2,
     const bool symmetric,
-    const double errorBound,
+    const double error_bound,
     const bool triangulate1 = false,
     const bool triangulate2 = false) {
     Mesh3 mesh1 = makeSurfMesh<K, Mesh3, Point3>(
@@ -448,10 +447,10 @@ double getHausdorffEst_cpp(
     double d;
     if(symmetric) {
         d = CGAL::to_double<K::FT>(PMP::bounded_error_symmetric_Hausdorff_distance<PIA_TAG>(
-            mesh1, mesh2, errorBound));
+            mesh1, mesh2, error_bound));
     } else {
         d = CGAL::to_double<K::FT>(PMP::bounded_error_Hausdorff_distance<PIA_TAG>(
-            mesh1, mesh2, errorBound));
+            mesh1, mesh2, error_bound));
     }
     return d;
 }
@@ -473,7 +472,8 @@ Rcpp::List remeshIsotropicUniform_cpp(
         false,       // fair hole
         0);          // max_num_holes
     std::vector<hedgdescr> borderHalfEdges;
-    PMP::border_halfedges(faces(mesh), mesh, std::back_inserter(borderHalfEdges));
+    // PMP::border_halfedges(faces(mesh), mesh, std::back_inserter(borderHalfEdges));
+    CGAL::border_halfedges(faces(mesh), mesh, std::back_inserter(borderHalfEdges));  // requires CGAL 6.2
     std::vector<edgdescr> border;
     std::size_t nheBorder = borderHalfEdges.size();
     border.reserve(nheBorder);

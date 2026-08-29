@@ -1,5 +1,6 @@
 # TODO
 
+  * Boolean XOR (symmetric difference)
   * `fillBoundaryHole()`
       * template
       * pass more parameters
@@ -28,3 +29,4 @@
   * bounding meshes
       * approximate bounding ellipsoid
       * bounding spheres
+  * polygonal surface reconstruction
