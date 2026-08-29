@@ -26,7 +26,7 @@
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polyhedron_items_with_id_3.h>
 #include <CGAL/property_map.h>
-#include <CGAL/number_utils.h>
+// #include <CGAL/number_utils.h>
 #include <CGAL/jet_smooth_point_set.h>
 #include <CGAL/jet_estimate_normals.h>
 #include <CGAL/Advancing_front_surface_reconstruction.h>
@@ -55,7 +55,6 @@
 #include <CGAL/Polygon_mesh_processing/corefinement.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
 
-// TODO CatmullClark, DooSabin, Sqrt3 subdivision
 #include <CGAL/Subdivision_method_3/subdivision_methods_3.h>
 
 // -------------------------------------------------------------------------- //
@@ -115,7 +114,8 @@ MeshT soup_to_mesh(
     const unsigned int);                    // max_num_holes
 
 template <typename MeshT, typename PointT>
-MeshT csoup_to_mesh(std::vector<PointT>, std::vector<std::vector<std::size_t>>, const bool);
+MeshT csoup_to_mesh(
+    std::vector<PointT>, std::vector<std::vector<std::size_t>>, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT makeSurfMesh(

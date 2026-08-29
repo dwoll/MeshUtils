@@ -14,7 +14,7 @@ makeMesh(
   removeMethod = c("auto", "auto_snap"),
   fillHoles = FALSE,
   fairHole = FALSE,
-  maxNumHoles = 0L,
+  maxNumHoles = 5L,
   normals = FALSE
 )
 }
