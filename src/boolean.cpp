@@ -40,6 +40,9 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
                        const Rcpp::LogicalVector triangulate,
                        const bool repairSoup) {
   const std::size_t nMeshes = rmeshes.size();
+  if(nMeshes < 2) {
+    Rcpp::stop("Need at least 2 meshes for intersection.");
+  }
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh_0 = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
@@ -53,7 +56,7 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
       false,          // fair hole
       0);             // max_num_holes
 
-  meshes[0] = mesh_0;
+  meshes[0] = std::move(mesh_0);
   for(std::size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
       checkMesh1<MeshT>(meshes[0], 1);
@@ -73,13 +76,10 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
         false,          // fair hole
         0);             // max_num_holes
     checkMesh1<MeshT>(mesh_i, i + 1);
-    Message("Before corefine_and_compute_intersection().");
     const bool ok = PMP::corefine_and_compute_intersection(
       meshes[i - 1], mesh_i, meshes[i]);
     if(!ok) {
       Rcpp::stop("Intersection computation has failed.");
-    } else {
-      Message("Intersection computation succeeded.");
     }
   }
   Message("Before return.");
@@ -174,6 +174,9 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
                 const Rcpp::LogicalVector triangulate,
                 const bool repairSoup) {
   const std::size_t nMeshes = rmeshes.size();
+  if(nMeshes < 2) {
+    Rcpp::stop("Need at least 2 meshes for union.");
+  }
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
@@ -186,7 +189,7 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
       false,          // fill_holes
       false,          // fair hole
       0);             // max_num_holes
-  meshes[0] = mesh_0;
+  meshes[0] = std::move(mesh_0);
   for(std::size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
       checkMesh1<MeshT>(meshes[0], 1);
