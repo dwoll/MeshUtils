@@ -37,6 +37,8 @@ are already triangle.}
 
 \item{removeIntersections}{Boolean: Whether to attempt to remove self intersections.}
 
+\item{removeMethod}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
+
 \item{fillHoles}{Boolean: Whether to attempt to fill boundary holes.}
 
 \item{fairHole}{Boolean: Use CGAL \code{triangulate_refine_and_fair_hole()} (\code{TRUE})
@@ -45,11 +47,11 @@ or \code{triangulate_and_refine_hole()} (\code{FALSE})?}
 \item{maxNumHoles}{\code{integer}: Maximum number of holes to be filled. May be 0.}
 
 \item{normals}{Boolean: Whether to compute the normals.}
-
-\item{removeMethod}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
 }
 \value{
-A list of class \code{CGALmesh} giving the vertices, the edges, the faces
+A list with two components: \code{vertices}, a numeric matrix with three
+columns, and \code{faces}, either a list of integer vectors or, in the
+case if all faces have the same number of sides, an integer matrix.A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 of the mesh, the exterior edges, the exterior vertices and optionally the normals.
 }
 \description{

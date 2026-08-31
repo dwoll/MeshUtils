@@ -11,11 +11,13 @@ alphaWrap(x, alphaRel, offsetRel, out = c("CGALmesh", "rgl"))
 
 \item{alphaRel}{Relative alpha parameter. The actual alpha parameter (see
 details) is defined as the length of the diagonal of the bounding box of
-the point cloud divided by the relative alpha parameter.}
+the point cloud divided by the relative alpha parameter. Increase for
+more detailed mesh.}
 
 \item{offsetRel}{Relative offset. The actual offset parameter (see details)
 is defined as the length of the diagonal of the bounding box of the
-point cloud divided by the relative offset parameter.}
+point cloud divided by the relative offset parameter. Increase for
+output that is closer to input mesh.}
 
 \item{out}{Character to indicate output mesh format.}
 }
@@ -29,9 +31,7 @@ alpha wrapping.
 }
 \details{
 See \href{https://doc.cgal.org/latest/Alpha_wrap_3/index.html}{3D Alpha Wrapping}
-for details. The smallest alpha parameter, the smallest triangles in the
-output mesh. The offset is the distance from the input points to the output
-mesh.
+for details.
 }
 \examples{
 library(MeshUtils)

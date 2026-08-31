@@ -7,7 +7,7 @@
 boolUnion(x, repairSoup = TRUE, normals = FALSE)
 }
 \arguments{
-\item{x}{A list of meshes, each being either a \code{mesh3d} object
+\item{x}{A list of meshes, each being either a \code{\link[rgl]{mesh3d}} object
 from package \strong{rgl}, or as a list with (at least) two fields:
 \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.}
 

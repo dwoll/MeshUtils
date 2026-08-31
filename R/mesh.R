@@ -244,13 +244,8 @@ toRGL <- function(x, ...) {
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' # triangulate the pentagrammic prism mesh
-#' mesh <- makeMesh(
-#'   mesh       =dataPentaPrism,
-#'   triangulate=TRUE,
-#'   normals    =FALSE)
-#'
-#' # plot the pentagrammic prism
+#' # triangulate and plot the pentagrammic prism mesh
+#' mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
 #' shade3d(mesh_rgl, color="navy")

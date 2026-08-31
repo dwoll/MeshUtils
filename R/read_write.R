@@ -68,7 +68,7 @@ readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE) {
 #'
 #' @param x A mesh given either as a list containing (at least) the fields
 #'   \code{vertices} and \code{faces}, otherwise a \strong{rgl} mesh
-#'   (i.e. a \code\link[rgl]{mesh3d}} object).
+#'   (i.e. a \code{\link[rgl]{mesh3d}} object).
 #' @param filename Name of the file to be written, with extension \code{stl},
 #'   \code{ply}, \code{obj} or \code{off}
 #' @param precision Positive integer, number of decimal digits for the vertices.

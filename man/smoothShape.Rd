@@ -4,18 +4,20 @@
 \alias{smoothShape}
 \title{Smooth shape}
 \usage{
-smoothShape(x, indices, nIter = 1, time = 0.0001, triangulate = FALSE)
+smoothShape(x, indices, nIter = 1, time = 1e-04, triangulate = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 The mesh must be triangle or be able to be made triangle.}
 
-\item{indices}{The indices of the faces to be smoothed. If missing, the whole mesh is smoothed.}
+\item{indices}{The indices of the faces to be smoothed. If missing, the whole mesh
+is smoothed.}
 
 \item{nIter}{Positive \code{integer}: Number of iterations.}
 
-\item{time}{Positive number: A time step that corresponds to the speed by which the surface is smoothed
-  (the larger the faster); typical values lie between \code{1e-6} and \code{1}.}
+\item{time}{Positive number: A time step that corresponds to the speed by
+which the surface is smoothed (the larger the faster); typical values
+lie between \code{1e-6} and \code{1}.}
 
 \item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
 are already triangle.}
@@ -24,7 +26,8 @@ are already triangle.}
 A \code{CGALmesh} object.
 }
 \description{
-Smooths the overall shape of the mesh by using the mean curvature flow. The mesh must be triangle.
+Smooths the overall shape of the mesh by using the mean
+curvature flow. The mesh must be triangle.
 }
 \examples{
 library(MeshUtils)
@@ -32,7 +35,7 @@ library(rgl)
 
 mesh       <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
 mesh_rgl   <- toRGL(mesh)
-mesh_s     <- smoothShape(mesh, nIter=2, time=0.01, triangulate=TRUE)
+mesh_s     <- smoothShape(mesh, nIter=2, time=0.01)
 mesh_s_rgl <- toRGL(mesh_s)
 
 open3d(windowRect=50 + c(0, 0, 800, 400))

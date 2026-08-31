@@ -7,11 +7,11 @@
 boolDifference(mesh1, mesh2, repairSoup = TRUE, normals = FALSE)
 }
 \arguments{
-\item{mesh1}{A mesh, either being given a \code{mesh3d} object
+\item{mesh1}{A mesh, either being given a \code{\link[rgl]{mesh3d}} object
 from package \strong{rgl}, or by a list with (at least) two fields:
 \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.}
 
-\item{mesh2}{A mesh, either being given a \code{mesh3d} object
+\item{mesh2}{A mesh, either being given a \code{\link[rgl]{mesh3d}} object
 from package \strong{rgl}, or by a list with (at least) two fields:
 \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.}
 

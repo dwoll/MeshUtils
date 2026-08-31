@@ -94,6 +94,17 @@ std::pair<std::vector<std::vector<std::size_t>>, bool> list_to_faces2(
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+bool is_triangle_soup(const std::vector<std::vector<std::size_t>>& polygons) {
+    for (const auto& poly : polygons) {
+        if (poly.size() != 3) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
 // PMP::polygon_soup_to_polygon_mesh() with a lot of checks
 // hole filling, removing self-intersections
 // points and faces are changed -> no const, no reference
@@ -283,10 +294,10 @@ Rcpp::NumericVector defaultNormal() {
 // ----------------------------------------------------------------------- //
 // currently unused
 template <typename MeshT, typename PointT>
-EMesh3 makeMesh(const Rcpp::NumericMatrix &vertices,
-                const Rcpp::List &faces,
-                const bool soup,
-                const Rcpp::Nullable<Rcpp::NumericMatrix> &normals_) {
+MeshT makeMesh(const Rcpp::NumericMatrix &vertices,
+               const Rcpp::List &faces,
+               const bool soup,
+               const Rcpp::Nullable<Rcpp::NumericMatrix> &normals_) {
   using v_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
   using norm_map_r   = typename MeshT::template Property_map<v_descriptor, Rcpp::NumericVector>;
   if(soup) {
@@ -306,7 +317,7 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix &vertices,
     }
     Rcpp::NumericVector def = defaultNormal();
     norm_map_r normalsmap =
-      mesh.add_property_map<v_descriptor, Rcpp::NumericVector>(
+      mesh.template add_property_map<v_descriptor, Rcpp::NumericVector>(
         "v:normal", def).first;
     for(std::size_t j = 0; j < nNormals; j++) {
       Rcpp::NumericVector normal = normals_mat(Rcpp::_, j);
@@ -505,7 +516,7 @@ MeshT fillBoundaryHoles(
     if(success) {
         nb_holes_ok++;
     } else {
-        nb_holes_fail++
+        nb_holes_fail++;
     }
   }
 

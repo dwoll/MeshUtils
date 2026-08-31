@@ -9,13 +9,20 @@ readMeshFile(x, method = c("soup", "mesh"), binary = FALSE)
 \arguments{
 \item{x}{Path to the mesh file; supported formats are \code{stl},
 \code{ply}, \code{obj} and \code{off}.}
-\item{method}{Either \code{"soup"} when the file is a polygon soup, or \code{"mesh"} when the file is a valid mesh.}
+
+\item{method}{Either \code{"soup"} when the file is a polygon soup, or \code{"mesh"} when
+the file is a valid mesh.}
+
 \item{binary}{Boolean: For \code{method="mesh"}: Whether input file is binary.}
 }
 \value{
-A list with two components: \code{vertices}, a numeric matrix with three
+For \code{method="soup"}: A list with two components: \code{vertices},
+a numeric matrix with three
 columns, and \code{faces}, either a list of integer vectors or, in the
 case if all faces have the same number of sides, an integer matrix.
+For \code{method="mesh"}: A list of class \code{CGALmesh} giving the vertices,
+the edges, the faces of the mesh, the exterior edges, the exterior vertices and
+optionally the normals.
 }
 \description{
 Read mesh vertices and faces from a file.
@@ -24,7 +31,7 @@ Read mesh vertices and faces from a file.
 library(MeshUtils)
 library(rgl)
 ply  <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
-vf   <- readMeshFile(ply)
+vf   <- readMeshFile(ply, method="soup")
 mesh <- makeMesh(mesh=vf, normals=TRUE)
 
 mesh_rgl <- toRGL(mesh)
