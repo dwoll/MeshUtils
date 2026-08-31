@@ -28,7 +28,7 @@ std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix &M) {
   const size_t nPts = M.ncol();
   std::vector<PointT> points;
   points.reserve(nPts);
-  for(size_t i = 0; i < nPts; i++) {
+  for(std::size_t i = 0; i < nPts; i++) {
     const Rcpp::NumericVector pt = M(Rcpp::_, i);
     points.emplace_back(PointT(pt(0), pt(1), pt(2)));
   }
@@ -40,35 +40,14 @@ template std::vector<EPoint3> matrix_to_points3<EPoint3>(const Rcpp::NumericMatr
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// currently unused
-template <typename KernelT, typename PointT>
-Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT> &points) {
-  const std::size_t nPts = points.size();
-  Rcpp::NumericMatrix M(3, nPts);
-  for(std::size_t i = 0; i != nPts; i++) {
-    Rcpp::NumericVector col_i(3);
-    const PointT point = points[i];
-    col_i(0) = CGAL::to_double<typename KernelT::FT>(point.x());
-    col_i(1) = CGAL::to_double<typename KernelT::FT>(point.y());
-    col_i(2) = CGAL::to_double<typename KernelT::FT>(point.z());
-    M(Rcpp::_, i) = col_i;
-  }
-  return M;
-}
-
-template Rcpp::NumericMatrix points3_to_matrix<K,  Point3>(const std::vector<Point3>&);
-template Rcpp::NumericMatrix points3_to_matrix<EK, EPoint3>(const std::vector<EPoint3>&);
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
 // create triangle faces
 std::vector<std::vector<std::size_t>> matrix_to_Tfaces(
-  const Rcpp::IntegerMatrix &faceMat) {
-  const std::size_t nFaces = faceMat.ncol();
+  const Rcpp::IntegerMatrix &face_mat) {
+  const std::size_t nFaces = face_mat.ncol();
   std::vector<std::vector<std::size_t>> faces;
   faces.reserve(nFaces);
   for(std::size_t i = 0; i < nFaces; i++) {
-    const Rcpp::IntegerVector face_rcpp = faceMat(Rcpp::_, i);
+    const Rcpp::IntegerVector face_rcpp = face_mat(Rcpp::_, i);
     // need static_cast here because initializing with {} instead of ()
     std::vector<std::size_t> face = { static_cast<std::size_t>(face_rcpp(0)),
                                       static_cast<std::size_t>(face_rcpp(1)),
@@ -104,10 +83,9 @@ std::pair<std::vector<std::vector<std::size_t>>, bool> list_to_faces2(
   for(std::size_t i = 0; i < nFaces; i++) {
     Rcpp::IntegerVector face_rcpp = Rcpp::as<Rcpp::IntegerVector>(L(i));
     std::vector<std::size_t> face(face_rcpp.begin(), face_rcpp.end());
-//     std::transform(
-//       face.begin(), face.end(), face.begin(),
-// 	  std::bind(std::minus<int>(), std::placeholders::_1, 1)
-//     );
+    // std::transform(
+    //     face.begin(), face.end(), face.begin(),
+    // 	   std::bind(std::minus<int>(), std::placeholders::_1, 1));
     faces.emplace_back(face);
     triangle = triangle && (face.size() == 3);
   }
@@ -116,18 +94,8 @@ std::pair<std::vector<std::vector<std::size_t>>, bool> list_to_faces2(
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-bool is_triangle_soup(const std::vector<std::vector<std::size_t>>& polygons) {
-    for (const auto& poly : polygons) {
-        if (poly.size() != 3) {
-            return false;
-        }
-    }
-    return true;
-}
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
 // PMP::polygon_soup_to_polygon_mesh() with a lot of checks
+// hole filling, removing self-intersections
 // points and faces are changed -> no const, no reference
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT soup_to_mesh(std::vector<PointT> points,
@@ -271,6 +239,8 @@ template <typename MeshT, typename PointT>
 MeshT vf_to_mesh(const Rcpp::NumericMatrix &vertices,
                  const Rcpp::List &faces) {
   MeshT mesh;
+  using face_descriptor = typename boost::graph_traits<MeshT>::face_descriptor;
+
   const std::size_t nVerts = vertices.ncol();
   for(std::size_t j = 0; j < nVerts; j++) {
     Rcpp::NumericVector vertex = vertices(Rcpp::_, j);
@@ -286,7 +256,7 @@ MeshT vf_to_mesh(const Rcpp::NumericMatrix &vertices,
     for(std::size_t k = 0; k < sf; k++) {
       face.emplace_back(CGAL::SM_Vertex_index(intface(k)));
     }
-    typename boost::graph_traits<MeshT>::face_descriptor fd = mesh.add_face(face);
+    face_descriptor fd = mesh.add_face(face);
     if(fd == mesh.null_face()) {
       Rcpp::stop("Cannot add face " + std::to_string(i+1) + ".");
     }
@@ -311,20 +281,22 @@ Rcpp::NumericVector defaultNormal() {
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// TODO template, decide whether vertices and faces can be reference
-// challenge: normals_map, vertex_descriptor vs. nrmlsmap, vxdescr
 // currently unused
-EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
-                const Rcpp::List faces,
-                bool soup,
+template <typename MeshT, typename PointT>
+EMesh3 makeMesh(const Rcpp::NumericMatrix &vertices,
+                const Rcpp::List &faces,
+                const bool soup,
                 const Rcpp::Nullable<Rcpp::NumericMatrix> &normals_) {
+  using v_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
+  using norm_map_r   = typename MeshT::template Property_map<v_descriptor, Rcpp::NumericVector>;
   if(soup) {
-    return csoup_to_mesh<EMesh3, EPoint3>(matrix_to_points3<EPoint3>(vertices),
-                                          list_to_faces1(faces),
-                                          true);
+    return csoup_to_mesh<MeshT, PointT>(
+        matrix_to_points3<PointT>(vertices),
+        list_to_faces1(faces),
+        true);
   }
 
-  EMesh3 mesh = vf_to_mesh<EMesh3, EPoint3>(vertices, faces);
+  MeshT mesh = vf_to_mesh<MeshT, PointT>(vertices, faces);
   if(normals_.isNotNull()) {
     Rcpp::NumericMatrix normals_mat(normals_);
     const unsigned int nNormals = static_cast<unsigned int>(normals_mat.ncol());
@@ -333,8 +305,8 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
         "The number of normals does not match the number of vertices.");
     }
     Rcpp::NumericVector def = defaultNormal();
-    normals_map normalsmap =
-      mesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+    norm_map_r normalsmap =
+      mesh.add_property_map<v_descriptor, Rcpp::NumericVector>(
         "v:normal", def).first;
     for(std::size_t j = 0; j < nNormals; j++) {
       Rcpp::NumericVector normal = normals_mat(Rcpp::_, j);
@@ -343,6 +315,14 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
   }
   return mesh;
 }
+
+template Mesh3  makeMesh<Mesh3,  Point3>(
+    const Rcpp::NumericMatrix&,
+    const Rcpp::List&, const bool, const Rcpp::Nullable<Rcpp::NumericMatrix> &);
+
+template EMesh3 makeMesh<EMesh3, EPoint3>(
+    const Rcpp::NumericMatrix&,
+    const Rcpp::List&, const bool, const Rcpp::Nullable<Rcpp::NumericMatrix> &);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -448,97 +428,15 @@ template EMesh3 makeSurfTMesh<EK, EMesh3, EPoint3>(
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// compatibility wrapper for CGAL property_map(std::string) API changes:
-// older returned std::pair<Property_map, bool>
-// newer returns  std::optional<Property_map>
-// property_map_pair returns a std::pair<Property_map, bool> in both cases
-template <typename KeyT, typename T, typename MeshT>
-std::pair<typename MeshT::template Property_map<KeyT,T>, bool>
-property_map_pair(MeshT mesh, const std::string name) {
-  using RetType = decltype(mesh.template property_map<KeyT,T>(name));
-  using Pmap = typename MeshT::template Property_map<KeyT,T>;
-  if constexpr (std::is_same_v<RetType, std::pair<Pmap, bool>>) {
-    return mesh.template property_map<KeyT,T>(name);
-  } else {
-    auto opt = mesh.template property_map<KeyT,T>(name);
-    if(opt) {
-        return std::make_pair(*opt, true);
-    }
-    return std::make_pair(Pmap(), false);
-  }
-}
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-// PMP::triangulate_faces() modifies -> mesh not const
-Rcpp::List getRmesh(Mesh3 &mesh, const bool triangulate) {
-  std::pair<nrmlsmap, bool> normalsmap_ =
-      property_map_pair<vxdescr, Rcpp::NumericVector, Mesh3>(mesh, "v:normal");
-  const bool has_normals = normalsmap_.second;
-  bool is_triangle = CGAL::is_triangle_mesh(mesh);
-  if(triangulate && !is_triangle) {
-    is_triangle = PMP::triangulate_faces(mesh);
-  }
-  Rcpp::List rmesh;
-  if(is_triangle) {
-    rmesh = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, false, 3);
-  } else if(CGAL::is_quad_mesh(mesh)) {
-    rmesh = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, false, 4);
-  } else {
-    rmesh = RSurfMesh1<K, Mesh3, Point3, Vector3>(mesh, false);
-  }
-  if(has_normals) {
-    nrmlsmap normalsmap = normalsmap_.first;
-    Rcpp::NumericMatrix normals_mat(3, mesh.number_of_vertices());
-    for(std::size_t i = 0; i < mesh.number_of_vertices(); i++) {
-      normals_mat(Rcpp::_, i) = normalsmap[CGAL::SM_Vertex_index(i)];
-    }
-    rmesh["normals"] = normals_mat;
-  }
-
-  return rmesh;
-}
-
-// PMP::triangulate_faces() modifies -> mesh not const
-Rcpp::List getRmesh(EMesh3 &mesh, const bool triangulate) {
-  std::pair<normals_map, bool> normalsmap_ =
-      property_map_pair<vertex_descriptor, Rcpp::NumericVector, EMesh3>(mesh, "v:normal");
-  const bool has_normals = normalsmap_.second;
-  bool is_triangle = CGAL::is_triangle_mesh(mesh);
-  if(triangulate && !is_triangle) {
-    is_triangle = PMP::triangulate_faces(mesh);
-  }
-  Rcpp::List rmesh;
-  if(is_triangle) {
-    rmesh = RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, false, 3);
-  } else if(CGAL::is_quad_mesh(mesh)) {
-    rmesh = RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, false, 4);
-  } else {
-    rmesh = RSurfMesh1<EK, EMesh3, EPoint3, EVector3>(mesh, false);
-  }
-  if(has_normals) {
-    normals_map normalsmap = normalsmap_.first;
-    Rcpp::NumericMatrix normals_mat(3, mesh.number_of_vertices());
-    for(std::size_t i = 0; i < mesh.number_of_vertices(); i++) {
-      normals_mat(Rcpp::_, i) = normalsmap[CGAL::SM_Vertex_index(i)];
-    }
-    rmesh["normals"] = normals_mat;
-  }
-
-  return rmesh;
-}
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
 // EPEC kernel only
 // TODO template
-bool is_small_hole(halfedge_descriptor h,
+bool is_small_hole(hlfdg_descriptor h,
                    const EMesh3 &mesh,
                    const double max_hole_diam,
                    const int max_num_hole_edges) {
   int num_hole_edges = 0;
   CGAL::Bbox_3 hole_bbox;
-  for (halfedge_descriptor hc : CGAL::halfedges_around_face(h, mesh)) {
+  for (hlfdg_descriptor hc : CGAL::halfedges_around_face(h, mesh)) {
     const EPoint3& p = mesh.point(target(hc, mesh));
 
     hole_bbox += p.bbox();
@@ -565,14 +463,18 @@ MeshT fillBoundaryHoles(
     const double max_hole_diam,
     const int max_num_hole_edges,
     const unsigned int max_num_holes) {
+  using face_descriptor     = typename boost::graph_traits<MeshT>::face_descriptor;
+  using vertex_descriptor   = typename boost::graph_traits<MeshT>::vertex_descriptor;
+  using halfedge_descriptor = typename boost::graph_traits<MeshT>::halfedge_descriptor;
   Message("Attempting to fill hole(s).");
   if(max_num_holes == 0) {
     Message("'max_num_holes' is 0. Nothing done.");
     return mesh;
   }
   PMP::remove_almost_degenerate_faces(mesh);
-  std::vector<typename boost::graph_traits<MeshT>::halfedge_descriptor> border_cycles;
-  unsigned int nb_holes = 0;
+  std::vector<halfedge_descriptor> border_cycles;
+  unsigned int nb_holes_ok   = 0;
+  unsigned int nb_holes_fail = 0;
   CGAL::extract_boundary_cycles(mesh, std::back_inserter(border_cycles)); // requires CGAL 6.2
   // PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
   size_t n_border = border_cycles.size();
@@ -582,8 +484,8 @@ MeshT fillBoundaryHoles(
   }
 
   // collect one halfedge per boundary cycle
-  for(typename boost::graph_traits<MeshT>::halfedge_descriptor h : border_cycles) {
-    if(nb_holes >= max_num_holes) {
+  for(halfedge_descriptor h : border_cycles) {
+    if((nb_holes_ok + nb_holes_fail) >= max_num_holes) {
         break;
     }
     /*
@@ -594,17 +496,27 @@ MeshT fillBoundaryHoles(
     }
     */
 
-    std::vector<typename boost::graph_traits<MeshT>::face_descriptor>   patch_facets;
-    std::vector<typename boost::graph_traits<MeshT>::vertex_descriptor> patch_vertices;
-    bool success = std::get<0>(PMP::triangulate_refine_and_fair_hole(mesh, h,
-                                                                     CGAL::parameters::face_output_iterator(std::back_inserter(patch_facets))
-                                                                                    .vertex_output_iterator(std::back_inserter(patch_vertices))));
-    nb_holes++;
+    std::vector<face_descriptor>   patch_facets;
+    std::vector<vertex_descriptor> patch_vertices;
+    bool success = std::get<0>(PMP::triangulate_refine_and_fair_hole(
+        mesh, h,
+        CGAL::parameters::face_output_iterator(std::back_inserter(patch_facets))
+                       .vertex_output_iterator(std::back_inserter(patch_vertices))));
+    if(success) {
+        nb_holes_ok++;
+    } else {
+        nb_holes_fail++
+    }
   }
 
-  std::string msg;
-  msg = "Filled " + std::to_string(nb_holes) + " boundary hole(s).";
-  Message(msg);
+  std::string msg1;
+  msg1 = "Filled " + std::to_string(nb_holes_ok) + " boundary hole(s).";
+  Message(msg1);
+  if(nb_holes_fail > 0) {
+      std::string msg2;
+      msg2 = "Failed to fill " + std::to_string(nb_holes_fail) + " boundary hole(s).";
+      Message(msg2);
+  }
 
   std::vector<PointT> points;
   std::vector<std::vector<std::size_t>> polygons;
@@ -625,53 +537,6 @@ MeshT fillBoundaryHoles(
 
 template Mesh3  fillBoundaryHoles<Mesh3,  Point3>(Mesh3&,   const bool, const double, const int, const unsigned int);
 template EMesh3 fillBoundaryHoles<EMesh3, EPoint3>(EMesh3&, const bool, const double, const int, const unsigned int);
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-// TODO template
-// use property_map_pair() as defined above
-// CAVE: pass by reference, modifies mesh
-void removeProperties(EMesh3 &mesh, const std::vector<std::string> props) {
-  for(std::size_t i = 0; i < props.size(); i++) {
-    std::string prop = props[i];
-    if(prop == "v:color") {
-      std::pair<vcolors_map, bool> pmap_ =
-         property_map_pair<vertex_descriptor, std::string, EMesh3>(mesh, "v:color");
-        // mesh.property_map<vertex_descriptor, std::string>("v:color");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
-      }
-    } else if(prop == "f:color") {
-      std::pair<fcolors_map, bool> pmap_ =
-        property_map_pair<face_descriptor, std::string, EMesh3>(mesh, "f:color");
-        // mesh.property_map<face_descriptor, std::string>("f:color");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
-      }
-    } else if(prop == "v:normal") {
-      std::pair<normals_map, bool> pmap_ =
-        property_map_pair<vertex_descriptor, Rcpp::NumericVector, EMesh3>(mesh, "v:normal");
-        // mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
-      }
-    } else if(prop == "v:scalar") {
-      std::pair<vscalars_map, bool> pmap_ =
-        property_map_pair<vertex_descriptor, double, EMesh3>(mesh, "v:scalar");
-        // mesh.property_map<vertex_descriptor, double>("v:scalar");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
-      }
-    } else if(prop == "f:scalar") {
-      std::pair<fscalars_map, bool> pmap_ =
-        property_map_pair<face_descriptor, double, EMesh3>(mesh, "f:scalar");
-        // mesh.property_map<face_descriptor, double>("f:scalar");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
-      }
-    }
-  }
-}
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //

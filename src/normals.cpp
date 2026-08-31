@@ -15,6 +15,7 @@
 #endif
 
 // ----------------------------------------------------------------------- //
+// EPIC kernel only
 // [[Rcpp::export]]
 Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
                                     const int nbNeighbors) {
@@ -50,6 +51,7 @@ Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts,
 }
 
 // ----------------------------------------------------------------------- //
+// EPIC kernel only
 // [[Rcpp::export]]
 Rcpp::NumericMatrix pca_normals_cpp(const Rcpp::NumericMatrix pts,
                                     const int nbNeighbors) {

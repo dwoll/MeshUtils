@@ -44,12 +44,13 @@
 #' @export
 readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE) {
   stopifnot(isString(x))
+  stopifnot(isBoolean(binary))
   method <- match.arg(method)
   if(!file.exists(x)) {
     stop("File not found.")
   }
   if(method == "soup") {
-    mesh   <- readFileSoup_cpp(x)
+    mesh   <- readFileSoup_cpp(x, binary)
     faces  <- mesh[["faces"]]
     usizes <- length(unique(lengths(faces)))
     if(usizes == 1L) {
@@ -57,7 +58,6 @@ readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE) {
     }
     mesh
   } else {
-    stopifnot(isBoolean(binary))
     mesh_cpp <- readFileMesh_cpp(x, binary)
     fromCPP(mesh_cpp)
   }
@@ -68,7 +68,7 @@ readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE) {
 #'
 #' @param x A mesh given either as a list containing (at least) the fields
 #'   \code{vertices} and \code{faces}, otherwise a \strong{rgl} mesh
-#'   (i.e. a \code{mesh3d} object).
+#'   (i.e. a \code\link[rgl]{mesh3d}} object).
 #' @param filename Name of the file to be written, with extension \code{stl},
 #'   \code{ply}, \code{obj} or \code{off}
 #' @param precision Positive integer, number of decimal digits for the vertices.

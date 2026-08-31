@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.git$
+^src/\.claude$
 ^data-raw$
 ^cran-comments\.md$
 ^TODO\.md$

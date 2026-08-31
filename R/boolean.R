@@ -13,7 +13,7 @@
 #' @title Meshes intersection
 #' @description Computes the intersection of the given meshes.
 #'
-#' @param x A list of meshes, each being either a \code{mesh3d} object
+#' @param x A list of meshes, each being either a \code{\link[rgl]{mesh3d}} object
 #'   from package \strong{rgl}, or as a list with (at least) two fields:
 #'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
 #' @param repairSoup Boolean, whether to clean the meshes (merging
@@ -74,17 +74,17 @@ boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE) {
   areTriangle <- vapply(checkMeshes, `[[`, logical(1L), "isTriangle")
   triangulate <- !areTriangle
   meshes      <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  inter       <- intersectionEK_cpp(meshes, triangulate, repairSoup, normals)
+  inter       <- boolIntersectionEK_cpp(meshes, triangulate, repairSoup, normals)
   fromCPP(inter)
 }
 
 #' @title Mesh difference
 #' @description Computes the difference between two meshes.
 #'
-#' @param mesh1 A mesh, either being given a \code{mesh3d} object
+#' @param mesh1 A mesh, either being given a \code{\link[rgl]{mesh3d}} object
 #'   from package \strong{rgl}, or by a list with (at least) two fields:
 #'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
-#' @param mesh2 A mesh, either being given a \code{mesh3d} object
+#' @param mesh2 A mesh, either being given a \code{\link[rgl]{mesh3d}} object
 #'   from package \strong{rgl}, or by a list with (at least) two fields:
 #'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
 #' @param repairSoup Boolean, whether to clean the meshes (merging duplicated
@@ -143,14 +143,15 @@ boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE) {
 
   mesh1  <- checkMesh1[c("vertices", "faces")]
   mesh2  <- checkMesh2[c("vertices", "faces")]
-  differ <- differenceEK_cpp(mesh1, mesh2, triangulate1, triangulate2, repairSoup, normals)
+  differ <- boolDifferenceEK_cpp(
+    mesh1, mesh2, triangulate1, triangulate2, repairSoup, normals)
   fromCPP(differ)
 }
 
 #' @title Meshes union
 #' @description Computes the union of the given meshes.
 #'
-#' @param x A list of meshes, each being either a \code{mesh3d} object
+#' @param x A list of meshes, each being either a \code{\link[rgl]{mesh3d}} object
 #'   from package \strong{rgl}, or as a list with (at least) two fields:
 #'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
 #' @param repairSoup Boolean, whether to clean the meshes (merging
@@ -204,6 +205,6 @@ boolUnion <- function(x, repairSoup = TRUE, normals = FALSE) {
   areTriangle <- vapply(checkMeshes, `[[`, logical(1L), "isTriangle")
   triangulate <- !areTriangle
   meshes      <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  umesh       <- unionEK_cpp(meshes, triangulate, repairSoup, normals)
+  umesh       <- boolUnionEK_cpp(meshes, triangulate, repairSoup, normals)
   fromCPP(umesh)
 }

@@ -141,7 +141,7 @@ Rcpp::List orientToBoundVolume_cpp(
     Rcpp::stop("The mesh is not triangle.");
   }
   PMP::orient_to_bound_a_volume(mesh);
-  return getRmesh(mesh, false);
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
 }
 
 // ----------------------------------------------------------------------- //
@@ -160,7 +160,7 @@ Rcpp::List removeSelfIntersections_cpp(
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
-  return getRmesh(mesh, false);
+  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false);
 }
 
 // ----------------------------------------------------------------------- //
@@ -179,7 +179,7 @@ Rcpp::List fillBoundaryHoles_cpp(
       true,         // fill_holes
       fairHole,     // fair hole
       maxNumHoles); // max_num_holes
-  return getRmesh(mesh, false);
+  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false);
 }
 
 // ----------------------------------------------------------------------- //
@@ -471,13 +471,14 @@ Rcpp::List remeshIsotropicUniform_cpp(
         false,       // fill_holes
         false,       // fair hole
         0);          // max_num_holes
-    std::vector<hedgdescr> borderHalfEdges;
+    std::vector<hlfdg_dscrptr> borderHalfEdges;
     // PMP::border_halfedges(faces(mesh), mesh, std::back_inserter(borderHalfEdges));
     CGAL::border_halfedges(faces(mesh), mesh, std::back_inserter(borderHalfEdges));  // requires CGAL 6.2
-    std::vector<edgdescr> border;
+    std::vector<dg_dscrptr> border;
     std::size_t nheBorder = borderHalfEdges.size();
     border.reserve(nheBorder);
-    for(std::size_t i = 0; i < nheBorder; i++) {
+    // for(std::size_t i = 0; i < nheBorder; i++) {
+    for(std::size_t i : borderHalfEdges) {
       border.emplace_back(mesh.edge(borderHalfEdges[i]));
     }
     PMP::split_long_edges(border, targetEdgeLen, mesh);
@@ -490,7 +491,7 @@ Rcpp::List remeshIsotropicUniform_cpp(
                       .number_of_relaxation_steps(nRelaxSteps)
                       .protect_constraints(true));
     mesh.collect_garbage();
-    return getRmesh(mesh, false);
+    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
 }
 
 // ----------------------------------------------------------------------- //
@@ -525,7 +526,7 @@ Rcpp::List remeshIsotropicAdapt_cpp(
                       .number_of_relaxation_steps(nRelaxSteps)
                       .protect_constraints(true));
     mesh.collect_garbage();
-    return getRmesh(mesh, false);
+    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
 }
 
 // ----------------------------------------------------------------------- //
@@ -546,11 +547,11 @@ Rcpp::List subdivideCatmullClark_cpp(
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    removeProperties(mesh, {"v:normal"});
+    removeProperties<EMesh3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::CatmullClark_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
-    return getRmesh(mesh, triangulate);
+    return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, triangulate);
 }
 
 // ----------------------------------------------------------------------- //
@@ -571,11 +572,11 @@ Rcpp::List subdivideDooSabin_cpp(
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    removeProperties(mesh, {"v:normal"});
+    removeProperties<EMesh3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::DooSabin_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
-    return getRmesh(mesh, triangulate);
+    return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, triangulate);
 }
 
 // ----------------------------------------------------------------------- //
@@ -596,9 +597,98 @@ Rcpp::List subdivideSqrt3_cpp(
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    removeProperties(mesh, {"v:normal"});
+    removeProperties<EMesh3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::Sqrt3_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
-    return getRmesh(mesh, triangulate);
+    return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, triangulate);
 }
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
+Rcpp::List smoothShape_cpp(
+  const Rcpp::List rmesh,
+  const Rcpp::IntegerVector indices,
+  const unsigned int nIter,
+  const double time,
+  const bool triangulate) {
+    Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
+        rmesh,
+        triangulate, // triangulate
+        false,       // repair_soup
+        false,       // remove_intersections
+        1,           // remove_method
+        false,       // fill_holes
+        false,       // fair hole
+        0);          // max_num_holes
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    std::set<Mesh3::Vertex_index> constrained_vertices;
+    for(Mesh3::Vertex_index v : vertices(mesh)) {
+      if(is_border(v, mesh)) {
+          constrained_vertices.insert(v);
+      }
+    }
+    CGAL::Boolean_property_map<std::set<Mesh3::Vertex_index>> vcmap(constrained_vertices);
+    const size_t nIdx = indices.size();
+    if(nIdx == 0) {
+        PMP::smooth_shape(mesh, time,
+                          CGAL::parameters::number_of_iterations(nIter)
+                          .vertex_is_constrained_map(vcmap));
+    } else {
+        std::list<fc_dscrptr> selectedFaces;
+        const size_t nFaces = mesh.number_of_faces();
+        for(std::size_t i = 0; i < nIdx; i++) {
+          const size_t idx = indices(i);
+          if(idx >= nFaces) {
+            Rcpp::stop("Face index too large.");
+          }
+          // TODO use `CGAL::SM_Face_index(idx)`
+          selectedFaces.push_back(*(mesh.faces().begin() + idx));
+        }
+        PMP::smooth_shape<Mesh3>(selectedFaces, mesh, time,
+                                 PMP::parameters::number_of_iterations(nIter)
+                                 .vertex_is_constrained_map(vcmap));
+    }
+    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, triangulate);
+}
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+/*
+Rcpp::List computeVxNormals_cpp(const Rcpp::List rmesh) {
+    Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
+        rmesh,
+        triangulate, // triangulate
+        false,       // repair_soup
+        false,       // remove_intersections
+        1,           // remove_method
+        false,       // fill_holes
+        false,       // fair hole
+        0);          // max_num_holes
+    std::pair<nrmls_map_cpp, bool> vnormals_ =
+        mesh.property_map<vrtx_dscrptr, Vector3>("v:normal"); // TODO property_map_pair()?
+  if(vnormals_.second) {
+    mesh.remove_property_map(vnormals_.first);
+  }
+  nrmls_map_cpp vnormals =
+    mesh.add_property_map<vrtx_dscrptr, Vector3>(
+                        "v:normal", CGAL::NULL_VECTOR).first;
+  PMP::compute_vertex_normals(mesh, vnormals);
+  removeProperties<EMesh3>(mesh, {"v:normal"});
+  nrmls_map_r vnormal_map =
+    mesh.add_property_map<vrtx_descriptor, Rcpp::NumericVector>(
+                        "v:normal", defaultNormal()).first;
+  for(Mesh3::Vertex_index vi : mesh.vertices()) {
+    Rcpp::NumericVector rcppnormal(3);
+    const Vector3 normal = vnormals[vi];
+    rcppnormal(0) = CGAL::to_double<K::FT>(normal.x());
+    rcppnormal(1) = CGAL::to_double<K::FT>(normal.y());
+    rcppnormal(2) = CGAL::to_double<K::FT>(normal.z());
+    vnormal_map[vi] = rcppnormal;
+  }
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
+}
+*/

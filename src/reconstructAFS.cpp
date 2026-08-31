@@ -27,11 +27,11 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
   AFS_triangulation3 dt(points.begin(), points.end());
   AFS_reconstruction reconstruction(dt);
   reconstruction.run();
-  const AFS_Tds2& tds = reconstruction.triangulation_data_structure_2();
+  const AFS_tds2& tds = reconstruction.triangulation_data_structure_2();
   std::vector<Point3> vertices;
   vertices.reserve(pts.ncol());
   std::size_t counter = 0;
-  for(AFS_Tds2::Face_iterator fit = tds.faces_begin();
+  for(AFS_tds2::Face_iterator fit = tds.faces_begin();
       fit != tds.faces_end(); ++fit) {
     if(reconstruction.has_on_surface(fit)) {
       counter++;
@@ -72,5 +72,5 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
       false,      // fill_holes
       false,      // fair hole
       0);         // max_num_holes
-  return getRmesh(mesh, false);
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
 }

@@ -5,16 +5,16 @@ alphaWrap_cpp <- function(pts, alphaRel, offsetRel) {
     .Call(`_MeshUtils_alphaWrap_cpp`, pts, alphaRel, offsetRel)
 }
 
-intersectionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
-    .Call(`_MeshUtils_intersectionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
+boolIntersectionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
+    .Call(`_MeshUtils_boolIntersectionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
 }
 
-differenceEK_cpp <- function(rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals) {
-    .Call(`_MeshUtils_differenceEK_cpp`, rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals)
+boolDifferenceEK_cpp <- function(rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals) {
+    .Call(`_MeshUtils_boolDifferenceEK_cpp`, rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals)
 }
 
-unionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
-    .Call(`_MeshUtils_unionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
+boolUnionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
+    .Call(`_MeshUtils_boolUnionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
 }
 
 makeMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals) {
@@ -81,8 +81,8 @@ getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric, triangulate1 = FAL
     .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric, triangulate1, triangulate2)
 }
 
-getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, errorBound, triangulate1 = FALSE, triangulate2 = FALSE) {
-    .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, errorBound, triangulate1, triangulate2)
+getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, error_bound, triangulate1 = FALSE, triangulate2 = FALSE) {
+    .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, error_bound, triangulate1, triangulate2)
 }
 
 remeshIsotropicUniform_cpp <- function(rmesh, targetEdgeLen, nIter, nRelaxSteps) {
@@ -105,6 +105,10 @@ subdivideSqrt3_cpp <- function(rmesh, nIter, triangulate) {
     .Call(`_MeshUtils_subdivideSqrt3_cpp`, rmesh, nIter, triangulate)
 }
 
+smoothShape_cpp <- function(rmesh, indices, nIter, time, triangulate) {
+    .Call(`_MeshUtils_smoothShape_cpp`, rmesh, indices, nIter, time, triangulate)
+}
+
 jet_normals_cpp <- function(pts, nbNeighbors) {
     .Call(`_MeshUtils_jet_normals_cpp`, pts, nbNeighbors)
 }
@@ -113,8 +117,8 @@ pca_normals_cpp <- function(pts, nbNeighbors) {
     .Call(`_MeshUtils_pca_normals_cpp`, pts, nbNeighbors)
 }
 
-readFileSoup_cpp <- function(filename) {
-    .Call(`_MeshUtils_readFileSoup_cpp`, filename)
+readFileSoup_cpp <- function(filename, binary) {
+    .Call(`_MeshUtils_readFileSoup_cpp`, filename, binary)
 }
 
 readFileMesh_cpp <- function(filename, binary) {

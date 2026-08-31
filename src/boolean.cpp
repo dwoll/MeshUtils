@@ -40,7 +40,8 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
                        const Rcpp::LogicalVector triangulate,
                        const bool repairSoup) {
   const std::size_t nMeshes = rmeshes.size();
-  std::vector<MeshT> meshes(nMeshes);
+  std::vector<MeshT> meshes;
+  meshes.reserve(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   Message("Processing mesh1");
   MeshT mesh_0 = makeSurfMesh<KernelT, MeshT, PointT>(
@@ -53,7 +54,7 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
       false,          // fair hole
       0);             // max_num_holes
 
-  meshes[0] = mesh_0;
+  meshes[0] = std::move(mesh_0);
   for(std::size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
       checkMesh1<MeshT>(meshes[0], 1);
@@ -74,20 +75,20 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
         0);             // max_num_holes
     checkMesh1<MeshT>(mesh_i, i + 1);
     const bool ok = PMP::corefine_and_compute_intersection(
-      meshes[i - 1], mesh_i, meshes[i]
-    );
+      meshes[i - 1], mesh_i, meshes[i]);
     if(!ok) {
       Rcpp::stop("Intersection computation has failed.");
     }
   }
+
   return meshes[nMeshes - 1];
 }
 
 // [[Rcpp::export]]
-Rcpp::List intersectionEK_cpp(const Rcpp::List rmeshes,
-                              const Rcpp::LogicalVector triangulate,
-                              const bool repairSoup,
-                              const bool normals) {
+Rcpp::List boolIntersectionEK_cpp(const Rcpp::List rmeshes,
+                                  const Rcpp::LogicalVector triangulate,
+                                  const bool repairSoup,
+                                  const bool normals) {
   EMesh3 mesh = boolIntersection<EK, EMesh3, EPoint3>(
       rmeshes,
       triangulate,
@@ -95,6 +96,23 @@ Rcpp::List intersectionEK_cpp(const Rcpp::List rmeshes,
   // PMP::corefine_and_compute_intersection() requires triangle mesh
   // -> output is triangle
   return RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, normals, 3);
+}
+
+// ----------------------------------------------------------------------- //
+template <typename KernelT, typename MeshT, typename PointT>
+MeshT boolDifferenceSM(MeshT &mesh1,
+                       MeshT &mesh2,
+                       const bool triangulate1,
+                       const bool triangulate2,
+                       const bool repairSoup) {
+  checkMesh1<MeshT>(mesh1, 1);
+  checkMesh1<MeshT>(mesh2, 2);
+  MeshT mesh_d;
+  bool ok = PMP::corefine_and_compute_difference(mesh1, mesh2, mesh_d);
+  if(!ok) {
+    Rcpp::stop("Difference computation has failed.");
+  }
+  return mesh_d;
 }
 
 // ----------------------------------------------------------------------- //
@@ -126,21 +144,21 @@ MeshT boolDifference(const Rcpp::List &rmesh1,
       false,          // fair hole
       0);             // max_num_holes
   checkMesh1<MeshT>(smesh2, 2);
-  MeshT meshOut;
-  bool ok = PMP::corefine_and_compute_difference(smesh1, smesh2, meshOut);
+  MeshT mesh_d;
+  bool ok = PMP::corefine_and_compute_difference(smesh1, smesh2, mesh_d);
   if(!ok) {
     Rcpp::stop("Difference computation has failed.");
   }
-  return meshOut;
+  return mesh_d;
 }
 
 // [[Rcpp::export]]
-Rcpp::List differenceEK_cpp(const Rcpp::List rmesh1,
-                            const Rcpp::List rmesh2,
-                            const bool triangulate1,
-                            const bool triangulate2,
-                            const bool repairSoup,
-                            const bool normals) {
+Rcpp::List boolDifferenceEK_cpp(const Rcpp::List rmesh1,
+                                const Rcpp::List rmesh2,
+                                const bool triangulate1,
+                                const bool triangulate2,
+                                const bool repairSoup,
+                                const bool normals) {
   EMesh3 mesh = boolDifference<EK, EMesh3, EPoint3>(
     rmesh1, rmesh2, triangulate1, triangulate2, repairSoup);
   // PMP::corefine_and_compute_difference() requires triangle mesh
@@ -166,7 +184,7 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
       false,          // fill_holes
       false,          // fair hole
       0);             // max_num_holes
-  meshes[0] = mesh_0;
+  meshes[0] = std::move(mesh_0);
   for(std::size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
       checkMesh1<MeshT>(meshes[0], 1);
@@ -192,14 +210,15 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
       Rcpp::stop("Union computation has failed.");
     }
   }
+
   return meshes[nMeshes - 1];
 }
 
 // [[Rcpp::export]]
-Rcpp::List unionEK_cpp(const Rcpp::List rmeshes,
-                       const Rcpp::LogicalVector triangulate,
-                       const bool repairSoup,
-                       const bool normals) {
+Rcpp::List boolUnionEK_cpp(const Rcpp::List rmeshes,
+                           const Rcpp::LogicalVector triangulate,
+                           const bool repairSoup,
+                           const bool normals) {
   EMesh3 mesh = boolUnion<EK, EMesh3, EPoint3>(
       rmeshes,
       triangulate,

@@ -27,5 +27,5 @@ Rcpp::List alphaWrap_cpp(
   const double offset = diag_len / offsetRel;
   Mesh3 meshWrap;
   CGAL::alpha_wrap_3(points, alpha, offset, meshWrap);
-  return getRmesh(meshWrap, false);
+  return getRmesh<K, Mesh3, Point3, Vector3>(meshWrap, false);
 }

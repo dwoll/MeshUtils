@@ -51,5 +51,5 @@ Rcpp::List reconstructSSS_cpp(
           PMP::orient_to_bound_a_volume(mesh);
       }
   }
-  return getRmesh(mesh, false);
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
 }

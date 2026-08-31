@@ -28,11 +28,14 @@ std::string toLower(std::string s) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List readFileSoup_cpp(const std::string filename) {
-  const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
+Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary) {
+  const std::string ext = toLower(std::filesystem::path(filename).extension());
   std::ifstream infile;
-  infile.open(filename);
-  const bool binary = CGAL::IO::is_binary(infile);
+  if(binary) {
+    infile.open(filename, std::ios::binary);
+  } else {
+    infile.open(filename);
+  }
   std::vector<Point3> points;
   std::vector<std::vector<std::size_t>> faces;
   bool ok = false;
@@ -85,7 +88,7 @@ Rcpp::List readFileSoup_cpp(const std::string filename) {
 // [[Rcpp::export]]
 Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary) {
   Mesh3 mesh;
-  const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
+  const std::string ext = toLower(std::filesystem::path(filename).extension());
   bool ok = false;
   std::ifstream infile;
   if(binary) {
@@ -113,7 +116,7 @@ Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary) {
   if(!valid) {
     Rcpp::warning("The mesh is not valid.");
   }
-  return getRmesh(mesh, false);
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
 }
 
 // ----------------------------------------------------------------------- //

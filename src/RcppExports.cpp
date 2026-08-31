@@ -25,9 +25,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// intersectionEK_cpp
-Rcpp::List intersectionEK_cpp(const Rcpp::List rmeshes, const Rcpp::LogicalVector triangulate, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_intersectionEK_cpp(SEXP rmeshesSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+// boolIntersectionEK_cpp
+Rcpp::List boolIntersectionEK_cpp(const Rcpp::List rmeshes, const Rcpp::LogicalVector triangulate, const bool repairSoup, const bool normals);
+RcppExport SEXP _MeshUtils_boolIntersectionEK_cpp(SEXP rmeshesSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -35,13 +35,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::LogicalVector >::type triangulate(triangulateSEXP);
     Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(intersectionEK_cpp(rmeshes, triangulate, repairSoup, normals));
+    rcpp_result_gen = Rcpp::wrap(boolIntersectionEK_cpp(rmeshes, triangulate, repairSoup, normals));
     return rcpp_result_gen;
 END_RCPP
 }
-// differenceEK_cpp
-Rcpp::List differenceEK_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool triangulate1, const bool triangulate2, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_differenceEK_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP triangulate1SEXP, SEXP triangulate2SEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+// boolDifferenceEK_cpp
+Rcpp::List boolDifferenceEK_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool triangulate1, const bool triangulate2, const bool repairSoup, const bool normals);
+RcppExport SEXP _MeshUtils_boolDifferenceEK_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP triangulate1SEXP, SEXP triangulate2SEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -51,13 +51,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type triangulate2(triangulate2SEXP);
     Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(differenceEK_cpp(rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals));
+    rcpp_result_gen = Rcpp::wrap(boolDifferenceEK_cpp(rmesh1, rmesh2, triangulate1, triangulate2, repairSoup, normals));
     return rcpp_result_gen;
 END_RCPP
 }
-// unionEK_cpp
-Rcpp::List unionEK_cpp(const Rcpp::List rmeshes, const Rcpp::LogicalVector triangulate, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_unionEK_cpp(SEXP rmeshesSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+// boolUnionEK_cpp
+Rcpp::List boolUnionEK_cpp(const Rcpp::List rmeshes, const Rcpp::LogicalVector triangulate, const bool repairSoup, const bool normals);
+RcppExport SEXP _MeshUtils_boolUnionEK_cpp(SEXP rmeshesSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -65,7 +65,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::LogicalVector >::type triangulate(triangulateSEXP);
     Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(unionEK_cpp(rmeshes, triangulate, repairSoup, normals));
+    rcpp_result_gen = Rcpp::wrap(boolUnionEK_cpp(rmeshes, triangulate, repairSoup, normals));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -270,18 +270,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // getHausdorffEst_cpp
-double getHausdorffEst_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const double errorBound, const bool triangulate1, const bool triangulate2);
-RcppExport SEXP _MeshUtils_getHausdorffEst_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP errorBoundSEXP, SEXP triangulate1SEXP, SEXP triangulate2SEXP) {
+double getHausdorffEst_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const double error_bound, const bool triangulate1, const bool triangulate2);
+RcppExport SEXP _MeshUtils_getHausdorffEst_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP error_boundSEXP, SEXP triangulate1SEXP, SEXP triangulate2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh1(rmesh1SEXP);
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
     Rcpp::traits::input_parameter< const bool >::type symmetric(symmetricSEXP);
-    Rcpp::traits::input_parameter< const double >::type errorBound(errorBoundSEXP);
+    Rcpp::traits::input_parameter< const double >::type error_bound(error_boundSEXP);
     Rcpp::traits::input_parameter< const bool >::type triangulate1(triangulate1SEXP);
     Rcpp::traits::input_parameter< const bool >::type triangulate2(triangulate2SEXP);
-    rcpp_result_gen = Rcpp::wrap(getHausdorffEst_cpp(rmesh1, rmesh2, symmetric, errorBound, triangulate1, triangulate2));
+    rcpp_result_gen = Rcpp::wrap(getHausdorffEst_cpp(rmesh1, rmesh2, symmetric, error_bound, triangulate1, triangulate2));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -354,6 +354,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// smoothShape_cpp
+Rcpp::List smoothShape_cpp(const Rcpp::List rmesh, const Rcpp::IntegerVector indices, const unsigned int nIter, const double time, const bool triangulate);
+RcppExport SEXP _MeshUtils_smoothShape_cpp(SEXP rmeshSEXP, SEXP indicesSEXP, SEXP nIterSEXP, SEXP timeSEXP, SEXP triangulateSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector >::type indices(indicesSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type nIter(nIterSEXP);
+    Rcpp::traits::input_parameter< const double >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    rcpp_result_gen = Rcpp::wrap(smoothShape_cpp(rmesh, indices, nIter, time, triangulate));
+    return rcpp_result_gen;
+END_RCPP
+}
 // jet_normals_cpp
 Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts, const int nbNeighbors);
 RcppExport SEXP _MeshUtils_jet_normals_cpp(SEXP ptsSEXP, SEXP nbNeighborsSEXP) {
@@ -379,13 +394,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // readFileSoup_cpp
-Rcpp::List readFileSoup_cpp(const std::string filename);
-RcppExport SEXP _MeshUtils_readFileSoup_cpp(SEXP filenameSEXP) {
+Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary);
+RcppExport SEXP _MeshUtils_readFileSoup_cpp(SEXP filenameSEXP, SEXP binarySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type filename(filenameSEXP);
-    rcpp_result_gen = Rcpp::wrap(readFileSoup_cpp(filename));
+    Rcpp::traits::input_parameter< const bool >::type binary(binarySEXP);
+    rcpp_result_gen = Rcpp::wrap(readFileSoup_cpp(filename, binary));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -465,9 +481,9 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_alphaWrap_cpp", (DL_FUNC) &_MeshUtils_alphaWrap_cpp, 3},
-    {"_MeshUtils_intersectionEK_cpp", (DL_FUNC) &_MeshUtils_intersectionEK_cpp, 4},
-    {"_MeshUtils_differenceEK_cpp", (DL_FUNC) &_MeshUtils_differenceEK_cpp, 6},
-    {"_MeshUtils_unionEK_cpp", (DL_FUNC) &_MeshUtils_unionEK_cpp, 4},
+    {"_MeshUtils_boolIntersectionEK_cpp", (DL_FUNC) &_MeshUtils_boolIntersectionEK_cpp, 4},
+    {"_MeshUtils_boolDifferenceEK_cpp", (DL_FUNC) &_MeshUtils_boolDifferenceEK_cpp, 6},
+    {"_MeshUtils_boolUnionEK_cpp", (DL_FUNC) &_MeshUtils_boolUnionEK_cpp, 4},
     {"_MeshUtils_makeMesh_cpp", (DL_FUNC) &_MeshUtils_makeMesh_cpp, 9},
     {"_MeshUtils_isValid_cpp", (DL_FUNC) &_MeshUtils_isValid_cpp, 1},
     {"_MeshUtils_hasGarbage_cpp", (DL_FUNC) &_MeshUtils_hasGarbage_cpp, 1},
@@ -490,9 +506,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_subdivideCatmullClark_cpp", (DL_FUNC) &_MeshUtils_subdivideCatmullClark_cpp, 3},
     {"_MeshUtils_subdivideDooSabin_cpp", (DL_FUNC) &_MeshUtils_subdivideDooSabin_cpp, 3},
     {"_MeshUtils_subdivideSqrt3_cpp", (DL_FUNC) &_MeshUtils_subdivideSqrt3_cpp, 3},
+    {"_MeshUtils_smoothShape_cpp", (DL_FUNC) &_MeshUtils_smoothShape_cpp, 5},
     {"_MeshUtils_jet_normals_cpp", (DL_FUNC) &_MeshUtils_jet_normals_cpp, 2},
     {"_MeshUtils_pca_normals_cpp", (DL_FUNC) &_MeshUtils_pca_normals_cpp, 2},
-    {"_MeshUtils_readFileSoup_cpp", (DL_FUNC) &_MeshUtils_readFileSoup_cpp, 1},
+    {"_MeshUtils_readFileSoup_cpp", (DL_FUNC) &_MeshUtils_readFileSoup_cpp, 2},
     {"_MeshUtils_readFileMesh_cpp", (DL_FUNC) &_MeshUtils_readFileMesh_cpp, 2},
     {"_MeshUtils_writeFile_cpp", (DL_FUNC) &_MeshUtils_writeFile_cpp, 5},
     {"_MeshUtils_reconstructAFS_cpp", (DL_FUNC) &_MeshUtils_reconstructAFS_cpp, 3},

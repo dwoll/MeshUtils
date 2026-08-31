@@ -1,16 +1,18 @@
 # TODO
 
-  * Boolean XOR (symmetric difference)
+  * Range-based for instead of index bookkeeping
+  * `jet_normals_cpp` / `pca_normals_cpp` (normals.cpp) are near-identical except for the estimator call — good candidate for one templated helper.
+  * usage of `getRmesh()` vs. `RSurfMesh()`
+  * `getVxNormals()`
+      * remove old maps first?
+      * also assign on C++ side? (`cgalMesh::get/compute/assignNormals()`)
+  * `smoothShape()`
+      * check
   * `fillBoundaryHole()`
-      * template
-      * pass more parameters
-  * `remeshIsotropic()` does not work well for pentagrammic prism
-   * normals handling
-      * get
-      * calculate
-      * assign (`cgalMesh::get/compute/assignNormals()`)
+      * pass more parameters (small holes)
+  * `remeshIsotropic()`
+      * does not work well for pentagrammic prism - why? (`Rvcg::vcgIsotropicRemeshing()` works)
   * `readFile_cpp()` STL filename instead of `infile`?
-  * configure script: gmp, mpfr necessary?
 
   # Wishlist
 
@@ -23,10 +25,9 @@
       * https://www.cgal.org/2025/05/22/Surface_remeshing/
       * https://doc.cgal.org/6.1/Polygon_mesh_processing/index.html#mesh3rem
   * smoothing
-      * `cgalMeshes`
-      * `PMP::angle_and_area_smoothing()`, `PMP::smooth_shape()`, `PMP::tangential_relaxation()`
+      * `PMP::angle_and_area_smoothing()`
+      * `PMP::tangential_relaxation()`
   * triangulated surface mesh simplification
   * bounding meshes
       * approximate bounding ellipsoid
       * bounding spheres
-  * polygonal surface reconstruction
