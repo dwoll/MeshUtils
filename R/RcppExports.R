@@ -109,12 +109,8 @@ smoothShape_cpp <- function(rmesh, indices, nIter, time, triangulate) {
     .Call(`_MeshUtils_smoothShape_cpp`, rmesh, indices, nIter, time, triangulate)
 }
 
-jet_normals_cpp <- function(pts, nbNeighbors) {
-    .Call(`_MeshUtils_jet_normals_cpp`, pts, nbNeighbors)
-}
-
-pca_normals_cpp <- function(pts, nbNeighbors) {
-    .Call(`_MeshUtils_pca_normals_cpp`, pts, nbNeighbors)
+jet_pca_normals_cpp <- function(pts, nbNeighbors, method) {
+    .Call(`_MeshUtils_jet_pca_normals_cpp`, pts, nbNeighbors, method)
 }
 
 readFileSoup_cpp <- function(filename, binary) {

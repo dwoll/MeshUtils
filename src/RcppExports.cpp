@@ -369,27 +369,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// jet_normals_cpp
-Rcpp::NumericMatrix jet_normals_cpp(const Rcpp::NumericMatrix pts, const int nbNeighbors);
-RcppExport SEXP _MeshUtils_jet_normals_cpp(SEXP ptsSEXP, SEXP nbNeighborsSEXP) {
+// jet_pca_normals_cpp
+Rcpp::NumericMatrix jet_pca_normals_cpp(const Rcpp::NumericMatrix pts, const unsigned int nbNeighbors, const unsigned int method);
+RcppExport SEXP _MeshUtils_jet_pca_normals_cpp(SEXP ptsSEXP, SEXP nbNeighborsSEXP, SEXP methodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type pts(ptsSEXP);
-    Rcpp::traits::input_parameter< const int >::type nbNeighbors(nbNeighborsSEXP);
-    rcpp_result_gen = Rcpp::wrap(jet_normals_cpp(pts, nbNeighbors));
-    return rcpp_result_gen;
-END_RCPP
-}
-// pca_normals_cpp
-Rcpp::NumericMatrix pca_normals_cpp(const Rcpp::NumericMatrix pts, const int nbNeighbors);
-RcppExport SEXP _MeshUtils_pca_normals_cpp(SEXP ptsSEXP, SEXP nbNeighborsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type pts(ptsSEXP);
-    Rcpp::traits::input_parameter< const int >::type nbNeighbors(nbNeighborsSEXP);
-    rcpp_result_gen = Rcpp::wrap(pca_normals_cpp(pts, nbNeighbors));
+    Rcpp::traits::input_parameter< const unsigned int >::type nbNeighbors(nbNeighborsSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type method(methodSEXP);
+    rcpp_result_gen = Rcpp::wrap(jet_pca_normals_cpp(pts, nbNeighbors, method));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -507,8 +496,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_subdivideDooSabin_cpp", (DL_FUNC) &_MeshUtils_subdivideDooSabin_cpp, 3},
     {"_MeshUtils_subdivideSqrt3_cpp", (DL_FUNC) &_MeshUtils_subdivideSqrt3_cpp, 3},
     {"_MeshUtils_smoothShape_cpp", (DL_FUNC) &_MeshUtils_smoothShape_cpp, 5},
-    {"_MeshUtils_jet_normals_cpp", (DL_FUNC) &_MeshUtils_jet_normals_cpp, 2},
-    {"_MeshUtils_pca_normals_cpp", (DL_FUNC) &_MeshUtils_pca_normals_cpp, 2},
+    {"_MeshUtils_jet_pca_normals_cpp", (DL_FUNC) &_MeshUtils_jet_pca_normals_cpp, 3},
     {"_MeshUtils_readFileSoup_cpp", (DL_FUNC) &_MeshUtils_readFileSoup_cpp, 2},
     {"_MeshUtils_readFileMesh_cpp", (DL_FUNC) &_MeshUtils_readFileMesh_cpp, 2},
     {"_MeshUtils_writeFile_cpp", (DL_FUNC) &_MeshUtils_writeFile_cpp, 5},
