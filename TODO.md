@@ -1,7 +1,6 @@
 # TODO
 
   * Range-based for instead of index bookkeeping
-  * `jet_normals_cpp` / `pca_normals_cpp` (normals.cpp) are near-identical except for the estimator call — good candidate for one templated helper.
   * usage of `getRmesh()` vs. `RSurfMesh()`
   * `getVxNormals()`
       * remove old maps first?

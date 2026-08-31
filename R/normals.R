@@ -51,39 +51,25 @@
 #'
 #' @export
 getSomeNormals <- function(x, method = c("PCA", "Jet")) {
-  method <- match.arg(tolower(method), choices=c("pca", "jet"))
+  method_choices <- c("pca", "jet")
+  method         <- match.arg(tolower(method), choices=method_choices)
+  methodInt      <- match(method, method_choices)
   x <- as.integer(x)
   if(x < 2L) {
     stop("There must be at least two neighbors.", call. = TRUE)
   }
-  fun <- if(method == "pca") {
-    function(points) {
-      if(!is.matrix(points) || !is.numeric(points)) {
-        stop("The `points` argument must be a numeric matrix.", call. = TRUE)
-      }
-      if(ncol(points) != 3L) {
-        stop("The `points` matrix must have three columns.", call. = TRUE)
-      }
-      if(nrow(points) <= 3L) {
-        stop("Insufficient number of points.", call. = TRUE)
-      }
-      storage.mode(points) <- "double"
-      pca_normals_cpp(t(points), x)
+  fun <- function(points) {
+    if(!is.matrix(points) || !is.numeric(points)) {
+      stop("The `points` argument must be a numeric matrix.", call. = TRUE)
     }
-  } else{
-    function(points) {
-      if(!is.matrix(points) || !is.numeric(points)) {
-        stop("The `points` argument must be a numeric matrix.", call. = TRUE)
-      }
-      if(ncol(points) != 3L) {
-        stop("The `points` matrix must have three columns.", call. = TRUE)
-      }
-      if(nrow(points) <= 3L) {
-        stop("Insufficient number of points.", call. = TRUE)
-      }
-      storage.mode(points) <- "double"
-      jet_normals_cpp(t(points), x)
+    if(ncol(points) != 3L) {
+      stop("The `points` matrix must have three columns.", call. = TRUE)
     }
+    if(nrow(points) <= 3L) {
+      stop("Insufficient number of points.", call. = TRUE)
+    }
+    storage.mode(points) <- "double"
+    jet_pca_normals_cpp(t(points), x, methodInt)
   }
   class(fun) <- "CGALnormalsFunc"
   fun
