@@ -82,7 +82,6 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
       Rcpp::stop("Intersection computation has failed.");
     }
   }
-  Message("Before return.");
   return meshes[nMeshes - 1];
 }
 

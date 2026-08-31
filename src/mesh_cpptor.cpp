@@ -294,65 +294,6 @@ Rcpp::List getRmesh(MeshT &mesh, const bool triangulate) {
 template Rcpp::List getRmesh<K,  Mesh3,  Point3,  Vector3>(Mesh3&,   const bool);
 template Rcpp::List getRmesh<EK, EMesh3, EPoint3, EVector3>(EMesh3&, const bool);
 
-/*
-Rcpp::List getRmesh(Mesh3 &mesh, const bool triangulate) {
-  std::pair<nrmls_map_r, bool> normalsmap_ =
-      property_map_pair<vrtx_dscrptr, Rcpp::NumericVector, Mesh3>(mesh, "v:normal");
-  const bool has_normals = normalsmap_.second;
-  bool is_triangle = CGAL::is_triangle_mesh(mesh);
-  if(triangulate && !is_triangle) {
-    is_triangle = PMP::triangulate_faces(mesh);
-  }
-  Rcpp::List rmesh;
-  if(is_triangle) {
-    rmesh = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, false, 3);
-  } else if(CGAL::is_quad_mesh(mesh)) {
-    rmesh = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, false, 4);
-  } else {
-    rmesh = RSurfMesh1<K, Mesh3, Point3, Vector3>(mesh, false);
-  }
-  if(has_normals) {
-    nrmls_map_r normalsmap = normalsmap_.first;
-    Rcpp::NumericMatrix normals_mat(3, mesh.number_of_vertices());
-    for(std::size_t i = 0; i < mesh.number_of_vertices(); i++) {
-      normals_mat(Rcpp::_, i) = normalsmap[CGAL::SM_Vertex_index(i)];
-    }
-    rmesh["normals"] = normals_mat;
-  }
-
-  return rmesh;
-}
-
-// PMP::triangulate_faces() modifies -> mesh not const
-Rcpp::List getRmesh(EMesh3 &mesh, const bool triangulate) {
-  std::pair<normals_map_r, bool> normalsmap_ =
-      property_map_pair<vrtx_descriptor, Rcpp::NumericVector, EMesh3>(mesh, "v:normal");
-  const bool has_normals = normalsmap_.second;
-  bool is_triangle = CGAL::is_triangle_mesh(mesh);
-  if(triangulate && !is_triangle) {
-    is_triangle = PMP::triangulate_faces(mesh);
-  }
-  Rcpp::List rmesh;
-  if(is_triangle) {
-    rmesh = RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, false, 3);
-  } else if(CGAL::is_quad_mesh(mesh)) {
-    rmesh = RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, false, 4);
-  } else {
-    rmesh = RSurfMesh1<EK, EMesh3, EPoint3, EVector3>(mesh, false);
-  }
-  if(has_normals) {
-    normals_map_r normalsmap = normalsmap_.first;
-    Rcpp::NumericMatrix normals_mat(3, mesh.number_of_vertices());
-    for(std::size_t i = 0; i < mesh.number_of_vertices(); i++) {
-      normals_mat(Rcpp::_, i) = normalsmap[CGAL::SM_Vertex_index(i)];
-    }
-    rmesh["normals"] = normals_mat;
-  }
-
-  return rmesh;
-}
-*/
-
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // CAVE: pass by reference, modifies mesh

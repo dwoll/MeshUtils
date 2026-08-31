@@ -1,7 +1,15 @@
 # TODO
 
-  * Range-based for instead of index bookkeeping
+  * normals
+      * R to C++: Normals are lost
+      * C++ to R: Vertex normals via `RSurfMesh1/2()` -> `getVxNormals()`
   * usage of `getRmesh()` vs. `RSurfMesh()`
+      * Call `RsurfMesh()`: `makeMesh()`, `boolInt/Union/Diff()`, `optimalBoundingBox_cpp()`, `getRmesh()`
+          * Computes normals via `getVxNormals()`
+      * Everything else: call `getRmesh()`
+          * Takes normals that are already present in CGAL mesh
+          * Triangulates if required
+          * Calls `RSurfMesh1/2()`
   * `getVxNormals()`
       * remove old maps first?
       * also assign on C++ side? (`cgalMesh::get/compute/assignNormals()`)
