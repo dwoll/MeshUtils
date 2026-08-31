@@ -159,7 +159,7 @@ template <typename MeshT>
 void removeProperties(MeshT&, const std::vector<std::string>&);
 
 template <typename KernelT, typename MeshT, typename VectorT>
-Rcpp::NumericMatrix getVxNormals(MeshT);
+Rcpp::NumericMatrix getNormals(MeshT, const bool vertex);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List getRmesh(MeshT&, const bool);

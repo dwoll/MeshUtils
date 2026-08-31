@@ -17,6 +17,14 @@ boolUnionEK_cpp <- function(rmeshes, triangulate, repairSoup, normals) {
     .Call(`_MeshUtils_boolUnionEK_cpp`, rmeshes, triangulate, repairSoup, normals)
 }
 
+getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric, triangulate1 = FALSE, triangulate2 = FALSE) {
+    .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric, triangulate1, triangulate2)
+}
+
+getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, error_bound, triangulate1 = FALSE, triangulate2 = FALSE) {
+    .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, error_bound, triangulate1, triangulate2)
+}
+
 makeMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals) {
     .Call(`_MeshUtils_makeMesh_cpp`, rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals)
 }
@@ -77,36 +85,8 @@ getDistance_cpp <- function(rmesh, points, triangulate = FALSE) {
     .Call(`_MeshUtils_getDistance_cpp`, rmesh, points, triangulate)
 }
 
-getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric, triangulate1 = FALSE, triangulate2 = FALSE) {
-    .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric, triangulate1, triangulate2)
-}
-
-getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, error_bound, triangulate1 = FALSE, triangulate2 = FALSE) {
-    .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, error_bound, triangulate1, triangulate2)
-}
-
-remeshIsotropicUniform_cpp <- function(rmesh, targetEdgeLen, nIter, nRelaxSteps) {
-    .Call(`_MeshUtils_remeshIsotropicUniform_cpp`, rmesh, targetEdgeLen, nIter, nRelaxSteps)
-}
-
-remeshIsotropicAdapt_cpp <- function(rmesh, tol, edgeMin, edgeMax, nIter, nRelaxSteps) {
-    .Call(`_MeshUtils_remeshIsotropicAdapt_cpp`, rmesh, tol, edgeMin, edgeMax, nIter, nRelaxSteps)
-}
-
-subdivideCatmullClark_cpp <- function(rmesh, nIter, triangulate) {
-    .Call(`_MeshUtils_subdivideCatmullClark_cpp`, rmesh, nIter, triangulate)
-}
-
-subdivideDooSabin_cpp <- function(rmesh, nIter, triangulate) {
-    .Call(`_MeshUtils_subdivideDooSabin_cpp`, rmesh, nIter, triangulate)
-}
-
-subdivideSqrt3_cpp <- function(rmesh, nIter, triangulate) {
-    .Call(`_MeshUtils_subdivideSqrt3_cpp`, rmesh, nIter, triangulate)
-}
-
-smoothShape_cpp <- function(rmesh, indices, nIter, time, triangulate) {
-    .Call(`_MeshUtils_smoothShape_cpp`, rmesh, indices, nIter, time, triangulate)
+addVnormals_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_addVnormals_cpp`, rmesh)
 }
 
 jet_pca_normals_cpp <- function(pts, nbNeighbors, method) {
@@ -135,5 +115,29 @@ reconstructPoisson_cpp <- function(pts, normals, spacing, smAngle, smRadius, smD
 
 reconstructSSS_cpp <- function(pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle, repairSoup) {
     .Call(`_MeshUtils_reconstructSSS_cpp`, pts, scaleIterations, nNeighbors, nSamples, separateShells, forceManifold, borderAngle, repairSoup)
+}
+
+remeshIsotropicUniform_cpp <- function(rmesh, targetEdgeLen, nIter, nRelaxSteps) {
+    .Call(`_MeshUtils_remeshIsotropicUniform_cpp`, rmesh, targetEdgeLen, nIter, nRelaxSteps)
+}
+
+remeshIsotropicAdapt_cpp <- function(rmesh, tol, edgeMin, edgeMax, nIter, nRelaxSteps) {
+    .Call(`_MeshUtils_remeshIsotropicAdapt_cpp`, rmesh, tol, edgeMin, edgeMax, nIter, nRelaxSteps)
+}
+
+smoothShape_cpp <- function(rmesh, indices, nIter, time, triangulate) {
+    .Call(`_MeshUtils_smoothShape_cpp`, rmesh, indices, nIter, time, triangulate)
+}
+
+subdivideCatmullClark_cpp <- function(rmesh, nIter, triangulate) {
+    .Call(`_MeshUtils_subdivideCatmullClark_cpp`, rmesh, nIter, triangulate)
+}
+
+subdivideDooSabin_cpp <- function(rmesh, nIter, triangulate) {
+    .Call(`_MeshUtils_subdivideDooSabin_cpp`, rmesh, nIter, triangulate)
+}
+
+subdivideSqrt3_cpp <- function(rmesh, nIter, triangulate) {
+    .Call(`_MeshUtils_subdivideSqrt3_cpp`, rmesh, nIter, triangulate)
 }
 

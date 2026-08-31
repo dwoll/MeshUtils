@@ -351,39 +351,24 @@ Rcpp::NumericVector getDistance_cpp(
 }
 
 // ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-/*
-Rcpp::List computeVxNormals_cpp(const Rcpp::List rmesh) {
-    Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
-        rmesh,
-        triangulate, // triangulate
-        false,       // repair_soup
-        false,       // remove_intersections
-        1,           // remove_method
-        false,       // fill_holes
-        false,       // fair hole
-        0);          // max_num_holes
-    std::pair<nrmls_map_cpp, bool> vnormals_ =
-        mesh.property_map<vrtx_dscrptr, Vector3>("v:normal"); // TODO property_map_pair()?
-  if(vnormals_.second) {
-    mesh.remove_property_map(vnormals_.first);
+// [[Rcpp::export]]
+Rcpp::List addVnormals_cpp(const Rcpp::List rmesh) {
+  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
+    rmesh,
+    false,       // triangulate
+    false,       // repair_soup
+    false,       // remove_intersections
+    1,           // remove_method
+    false,       // fill_holes
+    false,       // fair hole
+    0);          // max_num_holes
+  Rcpp::List mesh_out;
+  if(CGAL::is_triangle_mesh(mesh)) {
+    mesh_out = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, true, 3);
+  } else if(CGAL::is_quad_mesh(mesh)) {
+    mesh_out = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, true, 4);
+  } else {
+    mesh_out = RSurfMesh1<K, Mesh3, Point3, Vector3>(mesh, true);
   }
-  nrmls_map_cpp vnormals =
-    mesh.add_property_map<vrtx_dscrptr, Vector3>(
-                        "v:normal", CGAL::NULL_VECTOR).first;
-  PMP::compute_vertex_normals(mesh, vnormals);
-  removeProperties<EMesh3>(mesh, {"v:normal"});
-  nrmls_map_r vnormal_map =
-    mesh.add_property_map<vrtx_descriptor, Rcpp::NumericVector>(
-                        "v:normal", defaultNormal()).first;
-  for(Mesh3::Vertex_index vi : mesh.vertices()) {
-    Rcpp::NumericVector rcppnormal(3);
-    const Vector3 normal = vnormals[vi];
-    rcppnormal(0) = CGAL::to_double<K::FT>(normal.x());
-    rcppnormal(1) = CGAL::to_double<K::FT>(normal.y());
-    rcppnormal(2) = CGAL::to_double<K::FT>(normal.z());
-    vnormal_map[vi] = rcppnormal;
-  }
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
+  return mesh_out;
 }
-*/

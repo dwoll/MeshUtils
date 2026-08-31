@@ -525,6 +525,8 @@ fillBoundaryHoles <- function(x, fairHole = TRUE, maxNumHoles=10L) {
 #' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
 #' @returns \code{numeric}: The mesh area.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
 #' @examples
 #' library(MeshUtils)
 #' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
@@ -548,6 +550,8 @@ getArea <- function(x, triangulate = FALSE) {
 #' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
 #' @returns \code{numeric}: The mesh volume - if mesh bounds a volume.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
 #' @examples
 #' library(MeshUtils)
 #' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
@@ -595,6 +599,7 @@ getCentroid <- function(x, triangulate = FALSE) {
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @returns A \code{CGALmesh} object.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
 #' library(MeshUtils)
@@ -676,6 +681,8 @@ getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
 #'   are already triangle.
 #' @returns \code{numeric} vector: The distance of each point in \code{points}
 #'     to the mesh \code{x}.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
 #' @examples
 #' library(MeshUtils)
 #' mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
@@ -708,323 +715,29 @@ getDistance <- function(x, points, triangulate = FALSE) {
   dst
 }
 
-#' @title Hausdorff distance between two meshes
-#' @description Hausdorff distance between two meshes. Either
-#'   approximate distance, or distance estimate with a given error bound.
-#' @param mesh1 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param mesh2 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param triangulate1 Boolean: Whether to triangulate the faces of \code{mesh1}.
-#'   Ignored if faces are already triangle.
-#' @param triangulate2 Boolean: Whether to triangulate the faces of \code{mesh2}.
-#'   Ignored if faces are already triangle.
-#' @param symmetric Boolean: Whether to consider the symmetric Hausdorff
-#'   distance.
-#' @param errorBound A positive number, a bound on the error of the
-#'   estimate. If missing, the approximate distance is returned.
-#' @returns A number. For the apprixmate distance, the algorithm uses
-#'   some simulations and thus the result can vary.
+#' @title Add normals to a mesh
+#' @description Add normal vectors to a mesh. Currently, only vertex normals are supported.
 #'
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#' @examples
-#' library(MeshUtils)
-#' ## approximate symmetric Hausdorff distance
-#' getHausdorffDistance(dataHeart1, dataHeart2, symmetric=TRUE)
-#'
-#' ## estimate with error bound
-#' getHausdorffDistance(dataHeart1, dataHeart2, symmetric=TRUE,
-#'                      errorBound=0.001)
-#'
-#' @export
-getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound,
-	triangulate1 = FALSE, triangulate2 = FALSE) {
-  stopifnot(inherits(mesh1, "CGALmesh"))
-  stopifnot(inherits(mesh2, "CGALmesh"))
-  stopifnot(isBoolean(symmetric))
-  stopifnot(isBoolean(triangulate1))
-  stopifnot(isBoolean(triangulate1))
-  meshCPP1 <- fromR(mesh1)
-  meshCPP2 <- fromR(mesh2)
-  if(!missing(errorBound)) {
-    stopifnot(isPositiveNumber(errorBound))
-    getHausdorffEst_cpp(meshCPP1, meshCPP2, symmetric, errorBound,
-                        triangulate1, triangulate2)
-  } else {
-    getHausdorffApprox_cpp(meshCPP1, meshCPP2, symmetric,
-    	                     triangulate1, triangulate2)
-  }
-}
-
-#' @title Isotropic remeshing
-#' @description Isotropic remeshing.
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param method \code{character}: Either \code{"uniform"} for uniform sizing field
-#'    or \code{"adaptive"} for adapative sizing field.
-#' @param targetEdgeLen Positive number for \code{method="uniform"}:
-#'   The target edge length of the remeshed mesh.
-#' @param tol Positive number for \code{method="adaptive"}:
-#'   Error tolerance. See details
-#' @param edgeMin Positive number for \code{method="adaptive"}:
-#'   Minimum edge length. See details.
-#' @param edgeMax Positive number for \code{method="adaptive"}:
-#'   Maximum edge length. See details.
-#' @param nIter Positive \code{integer}: Number of iterations.
-#' @param nRelaxSteps Positive \code{integer}: Number of relaxation steps.
-#' @param out \code{character}: Indicate output mesh format.
-#' @return A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
-#'   depending on option \code{out}.
-#' @details See \url{https://doc.cgal.org/latest/PMP_Remeshing/classCGAL_1_1Polygon__mesh__processing_1_1Adaptive__sizing__field.html},
-#'   \url{https://doc.cgal.org/latest/PMP_Remeshing/group__PMP__local__remeshing__grp.html#ga412f696ec3009074bf957f1bba638248}.
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' library(rgl)
-#'
-#' mesh         <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
-#' mesh_rgl     <- toRGL(mesh)
-#' mesh_rem_rgl <- remeshIsotropic(mesh, targetEdgeLen=1, out="rgl")
-#'
-#' open3d(windowRect=50 + c(0, 0, 800, 400))
-#' mfrow3d(1, 2)
-#' wire3d(mesh_rgl)
-#' next3d()
-#' wire3d(mesh_rem_rgl)
-#'
-#' @export
-remeshIsotropic <- function(
-        x,
-        method = c("uniform", "adaptive"),
-        tol = 0.001,
-        edgeMin = 0.001,
-        edgeMax,
-        targetEdgeLen,
-        nIter = 1,
-        nRelaxSteps = 1,
-        out = c("CGALmesh", "rgl")) {
-    method <- match.arg(method)
-    if(!inherits(x, "CGALmesh")) {
-        stop("The `x` argument must be of class 'CGALmesh'",
-			       " (i.e., the output of the `makeMesh()` function).")
-    }
-    out <- match.arg(out)
-    stopifnot(isStrictPositiveInteger(nIter))
-    stopifnot(isStrictPositiveInteger(nRelaxSteps))
-    meshCPP <- fromR(x)
-    if(method == "uniform") {
-      stopifnot(isPositiveNumber(targetEdgeLen))
-      meshRe <- remeshIsotropicUniform_cpp(
-          meshCPP,
-          targetEdgeLen,
-          as.integer(nIter),
-          as.integer(nRelaxSteps))
-    } else if(method == "adaptive") {
-      stopifnot(isPositiveNumber(tol))
-      stopifnot(isPositiveNumber(edgeMin))
-      stopifnot(isPositiveNumber(edgeMax))
-
-      meshRe <- remeshIsotropicAdapt_cpp(
-          meshCPP,
-          tol,
-          edgeMin,
-          edgeMax,
-          as.integer(nIter),
-          as.integer(nRelaxSteps))
-    }
-
-    meshReWN <- vcgUpdateNormals(
-        tmesh3d(meshRe[["vertices"]],
-                meshRe[["faces"]],
-                normals=NULL))
-    meshOut <- if(out == "rgl") {
-        meshReWN
-    } else {
-        makeMesh(mesh=meshReWN)
-    }
-    meshOut
-}
-
-#' @title Catmull-Clark subdivision and deformation
-#' @description Performs the Catmull-Clark subdivision and deformation.
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#'   The mesh must be triangle or be able to be made triangle.
-#' @param nIter Positive \code{integer}: Number of iterations.
-#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
-#'   are already triangle.
 #' @returns A \code{CGALmesh} object.
-#'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#'
-#' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
-#' mesh_rgl    <- toRGL(mesh)
-#' mesh_sd     <- subdivideCatmullClark(mesh, nIter=2)
-#' mesh_sd_rgl <- toRGL(mesh_sd)
-#'
-#' open3d(windowRect=50 + c(0, 0, 800, 400))
-#' mfrow3d(1, 2)
-#' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_rgl)
-#' next3d()
-#' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_sd_rgl)
+#' mesh    <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh_vn <- assignNormals(mesh)
+#' mesh_vn_rgl <- toRGL(mesh_vn)
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' wire3d(mesh_vn_rgl)
 #'
 #' @export
-subdivideCatmullClark <- function(x, nIter = 1, triangulate = FALSE) {
-  if(!inherits(x, "CGALmesh")) {
-      stop("The `x` argument must be of class 'CGALmesh'",
-			     " (i.e., the output of the `makeMesh()` function).")
-  }
-  stopifnot(isStrictPositiveInteger(nIter))
-  stopifnot(isBoolean(triangulate))
-  meshCPP <- fromR(x)
-  meshOut <- subdivideCatmullClark_cpp(meshCPP, as.integer(nIter), triangulate)
-  fromCPP(meshOut)
-}
-
-#' @title Doo-Sabin subdivision and deformation
-#' @description Performs the Doo-Sabin subdivision and deformation.
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#'   The mesh must be triangle or be able to be made triangle.
-#' @param nIter Positive \code{integer}: Number of iterations.
-#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
-#'   are already triangle.
-#' @returns A \code{CGALmesh} object.
-#'
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' library(rgl)
-#'
-#' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
-#' mesh_rgl    <- toRGL(mesh)
-#' mesh_ds     <- subdivideDooSabin(mesh, nIter=2, triangulate=TRUE)
-#' mesh_ds_rgl <- toRGL(mesh_ds)
-#'
-#' open3d(windowRect=50 + c(0, 0, 800, 400))
-#' mfrow3d(1, 2)
-#' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_rgl)
-#' next3d()
-#' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_ds_rgl)
-#'
-#' @export
-subdivideDooSabin <- function(x, nIter = 1, triangulate = FALSE) {
-  if(!inherits(x, "CGALmesh")) {
-      stop("The `x` argument must be of class 'CGALmesh'",
-			     " (i.e., the output of the `makeMesh()` function).")
-  }
-  stopifnot(isStrictPositiveInteger(nIter))
-  stopifnot(isBoolean(triangulate))
-  meshCPP <- fromR(x)
-  meshOut <- subdivideDooSabin_cpp(meshCPP, as.integer(nIter), triangulate)
-  fromCPP(meshOut)
-}
-
-#' @title Sqrt3 subdivision and deformation
-#' @description Performs the 'Sqrt3' subdivision and deformation.
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#'   The mesh must be triangle or be able to be made triangle.
-#' @param nIter Positive \code{integer}: Number of iterations.
-#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
-#'   are already triangle.
-#' @returns A \code{CGALmesh} object.
-#'
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' library(rgl)
-#'
-#' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
-#' mesh_rgl    <- toRGL(mesh)
-#' mesh_s3     <- subdivideSqrt3(mesh, nIter=2)
-#' mesh_s3_rgl <- toRGL(mesh_s3)
-#'
-#' open3d(windowRect=50 + c(0, 0, 800, 400))
-#' mfrow3d(1, 2)
-#' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_rgl)
-#' next3d()
-#' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_s3_rgl)
-#'
-#' @export
-subdivideSqrt3 <- function(x, nIter = 1, triangulate = FALSE) {
+assignNormals <- function(x) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
-  stopifnot(isStrictPositiveInteger(nIter))
-  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  meshOut <- subdivideSqrt3_cpp(meshCPP, as.integer(nIter), triangulate)
-  fromCPP(meshOut)
-}
-
-#' @title Smooth shape
-#' @description Smooths the overall shape of the mesh by using the mean
-#'   curvature flow. The mesh must be triangle.
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#'   The mesh must be triangle or be able to be made triangle.
-#' @param indices The indices of the faces to be smoothed. If missing, the whole mesh
-#'   is smoothed.
-#' @param nIter Positive \code{integer}: Number of iterations.
-#' @param time Positive number: A time step that corresponds to the speed by
-#'   which the surface is smoothed (the larger the faster); typical values
-#'   lie between \code{1e-6} and \code{1}.
-#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
-#'   are already triangle.
-#' @returns A \code{CGALmesh} object.
-#'
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' library(rgl)
-#'
-#' mesh       <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
-#' mesh_rgl   <- toRGL(mesh)
-#' mesh_s     <- smoothShape(mesh, nIter=2, time=0.01)
-#' mesh_s_rgl <- toRGL(mesh_s)
-#'
-#' open3d(windowRect=50 + c(0, 0, 800, 400))
-#' mfrow3d(1, 2)
-#' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_rgl)
-#' next3d()
-#' view3d(0, 0, zoom=0.9)
-#' wire3d(mesh_s_rgl)
-#'
-#' @export
-smoothShape <- function(x, indices, nIter = 1, time = 0.0001, triangulate = FALSE) {
-  if(!inherits(x, "CGALmesh")) {
-      stop("The `x` argument must be of class 'CGALmesh'",
-			       " (i.e., the output of the `makeMesh()` function).")
-  }
-  stopifnot(isStrictPositiveInteger(nIter))
-  stopifnot(isPositiveNumber(time))
-  stopifnot(isBoolean(triangulate))
-  if(missing(indices)) {
-    indices <- integer(0L)
-  } else {
-    stopifnot(isAtomicVector(indices))
-    stopifnot(is.numeric(indices))
-    integers <- isTRUE(all.equal(indices, floor(indices)))
-    if(!integers) {
-      stop("The indices must be positive integers.")
-    }
-    positive <- all(indices >= 1L)
-    if(!positive) {
-      stop("The indices must be positive integers.")
-    }
-    indices <- unique(as.integer(indices)) - 1L
-  }
-  meshCPP <- fromR(x)
-  meshOut <- smoothShape_cpp(meshCPP, indices, as.integer(nIter), time, triangulate)
-  fromCPP(meshOut)
+  mesh    <- addVnormals_cpp(meshCPP)
+  fromCPP(mesh)
 }
