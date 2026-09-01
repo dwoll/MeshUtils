@@ -34,7 +34,7 @@ Rcpp::List subdivideCatmullClark_cpp(
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    removeProperties<EMesh3, EPoint3>(mesh, {"v:normal"});
+    removeProperties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::CatmullClark_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
@@ -59,7 +59,7 @@ Rcpp::List subdivideDooSabin_cpp(
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    removeProperties<EMesh3, EPoint3>(mesh, {"v:normal"});
+    removeProperties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::DooSabin_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
@@ -84,7 +84,7 @@ Rcpp::List subdivideSqrt3_cpp(
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    removeProperties<EMesh3, EPoint3>(mesh, {"v:normal"});
+    removeProperties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::Sqrt3_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();

@@ -15,9 +15,6 @@
 
 #include <Rcpp.h>
 
-#define CGAL_EIGEN3_ENABLED 1
-#define PIA_TAG CGAL::Parallel_if_available_tag
-
 // ----------------------------------------------------------------------- //
 #include "MeshUtils_types.h"
 
@@ -39,6 +36,9 @@
 namespace PMP = CGAL::Polygon_mesh_processing;
 
 // -------------------------------------------------------------------------- //
+#define CGAL_EIGEN3_ENABLED 1
+#define PIA_TAG CGAL::Parallel_if_available_tag
+
 typedef std::pair<Point3, Vector3>                      P3V3;  // Point3 with normal Vector3
 typedef boost::graph_traits<Mesh3>::face_descriptor     fc_dscrptr;
 typedef boost::graph_traits<Mesh3>::edge_descriptor     dg_dscrptr;
