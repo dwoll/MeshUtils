@@ -1,9 +1,9 @@
 # TODO
 
   * normals
-      * consistent handling in `alphaWrap()`, `getBoundingBox()`, `remeshIsotropic()` - really use `Rvcg::vcgUpdateNormals()`
-      * R to C++: Normals are lost
-      * C++ to R: Vertex normals via `RSurfMesh1/2()` -> `getNormals()`
+      * consistent handling in `alphaWrap()`, `getBoundingBox()`, `remeshIsotropic()` - really use `Rvcg::vcgUpdateNormals()`?
+      * R to C++: normals are lost
+      * C++ to R: vertex normals via `RSurfMesh1/2()` -> `getNormals()`
   * `smoothShape()`
       * check
   * `fillBoundaryHole()`
@@ -11,6 +11,7 @@
   * `remeshIsotropic()`
       * does not work well for pentagrammic prism - why? (`Rvcg::vcgIsotropicRemeshing()` works)
   * `readFile_cpp()` STL filename instead of `infile`?
+  * use of `MeshT::Vertex_index` vs. `vertex_descriptor`? (and face)
 
   # Wishlist
 
