@@ -1,18 +1,9 @@
 # TODO
 
   * normals
+      * consistent handling in `alphaWrap()`, `getBoundingBox()`, `remeshIsotropic()` - really use `Rvcg::vcgUpdateNormals()`
       * R to C++: Normals are lost
-      * C++ to R: Vertex normals via `RSurfMesh1/2()` -> `getVxNormals()`
-  * usage of `getRmesh()` vs. `RSurfMesh()`
-      * Call `RsurfMesh()`: `makeMesh()`, `boolInt/Union/Diff()`, `optimalBoundingBox_cpp()`, `getRmesh()`
-          * Computes normals via `getVxNormals()`
-      * Everything else: call `getRmesh()`
-          * Takes normals that are already present in CGAL mesh
-          * Triangulates if required
-          * Calls `RSurfMesh1/2()`
-  * `getVxNormals()`
-      * remove old maps first?
-      * also assign on C++ side? (`cgalMesh::get/compute/assignNormals()`)
+      * C++ to R: Vertex normals via `RSurfMesh1/2()` -> `getNormals()`
   * `smoothShape()`
       * check
   * `fillBoundaryHole()`
@@ -23,7 +14,6 @@
 
   # Wishlist
 
-  * add CGAL documentation links to help pages for details
   * silent option to remove output during processing
   * fewer checks than in `soup_to_mesh()` when not required
       * use `vf_to_mesh()`, `csoup_to_mesh()`?

@@ -25,8 +25,9 @@
 #'   estimate. If missing, the approximate distance is returned.
 #' @returns A number. For the apprixmate distance, the algorithm uses
 #'   some simulations and thus the result can vary.
-#'
+#' @details See \url{https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#PMPDistance} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
 #' @examples
 #' library(MeshUtils)
 #' ## approximate symmetric Hausdorff distance

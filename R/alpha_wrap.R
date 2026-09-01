@@ -28,8 +28,7 @@
 #' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package
 #'   \strong{rgl}.
 #'
-#' @details See \href{https://doc.cgal.org/latest/Alpha_wrap_3/index.html}{3D Alpha Wrapping}
-#'   for details.
+#' @details See \url{https://doc.cgal.org/latest/Alpha_wrap_3/} for details.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'

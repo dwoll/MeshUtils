@@ -265,7 +265,7 @@ Rcpp::NumericVector getCentroid_cpp(
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn) {
+Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn, const bool normals) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmeshIn,
       false,       // triangulate
@@ -285,7 +285,7 @@ Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn) {
     obb_pts[4], obb_pts[5], obb_pts[6], obb_pts[7],
     obb_mesh
   );
-  Rcpp::List rmesh_obb = RSurfMesh2<K, Mesh3, Point3, Vector3>(obb_mesh, false, 4);
+  Rcpp::List rmesh_obb = RSurfMesh2<K, Mesh3, Point3, Vector3>(obb_mesh, normals, 4);
   Rcpp::NumericMatrix hex_verts(3, 8);
   for(int i = 0; i < 8; i++) {
     Point3 pt = obb_pts[i];

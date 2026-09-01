@@ -4,12 +4,13 @@
 \alias{getBoundingBox}
 \title{Get axis-parallel bounding box}
 \usage{
-getBoundingBox(x, out = c("CGALmesh", "rgl"))
+getBoundingBox(x, out = c("CGALmesh", "rgl"), normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
 \item{out}{Character to indicate output mesh format.}
+\item{normals}{Boolean: Whether to return normals.}
 }
 \value{
 A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.

@@ -30,7 +30,7 @@ std::string toLower(std::string s) {
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary) {
-  const std::string ext = toLower(std::filesystem::path(filename).extension());
+  const std::string ext = toLower(std::filesystem::path(filename).extension().string());
   std::ifstream infile;
   if(binary) {
     infile.open(filename, std::ios::binary);
@@ -81,7 +81,7 @@ Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary) {
     face_list(i) = col_i + 1;
   }
   out["vertices"] = Rcpp::transpose(vertex_mat);
-  out["faces"] = face_list;
+  out["faces"]    = face_list;
   return out;
 }
 
@@ -89,7 +89,7 @@ Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary) {
 // [[Rcpp::export]]
 Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary) {
   Mesh3 mesh;
-  const std::string ext = toLower(std::filesystem::path(filename).extension());
+  const std::string ext = toLower(std::filesystem::path(filename).extension().string());
   bool ok = false;
   std::ifstream infile;
   if(binary) {
@@ -130,24 +130,27 @@ void writeFile_cpp(const std::string filename,
   const std::vector<Point3> points = matrix_to_points3<Point3>(vertices);
   const std::pair<std::vector<std::vector<std::size_t>>, bool> faces =
       list_to_faces2(faceList);
-  const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
+  if(filename.length() < 5) {
+      Rcpp::stop("`filename` needs at least 5 characters, including dot file extension.");
+  }
+  const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;
-  if(ext == "ply") {
+  if(ext == ".ply") {
     ok = CGAL::IO::write_PLY(
       filename, points, faces.first,
       CGAL::parameters::use_binary_mode(binary).stream_precision(precision));
-  } else if(ext == "stl") {
+  } else if(ext == ".stl") {
     if(!faces.second) {
       Rcpp::stop("STL files only accept triangular faces.");
     }
     ok = CGAL::IO::write_STL(
       filename, points, faces.first,
       CGAL::parameters::use_binary_mode(binary).stream_precision(precision));
-  } else if(ext == "obj") {
+  } else if(ext == ".obj") {
     ok = CGAL::IO::write_OBJ(
       filename, points, faces.first,
       CGAL::parameters::stream_precision(precision));
-  } else if(ext == "off") {
+  } else if(ext == ".off") {
     ok = CGAL::IO::write_OFF(
       filename, points, faces.first,
       CGAL::parameters::stream_precision(precision));

@@ -28,8 +28,7 @@
 #' @param out \code{character}: Indicate output mesh format.
 #' @return A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
 #'   depending on option \code{out}.
-#' @details See \url{https://doc.cgal.org/latest/PMP_Remeshing/classCGAL_1_1Polygon__mesh__processing_1_1Adaptive__sizing__field.html},
-#'   \url{https://doc.cgal.org/latest/PMP_Remeshing/group__PMP__local__remeshing__grp.html#ga412f696ec3009074bf957f1bba638248}.
+#' @details See \url{https://doc.cgal.org/latest/PMP_Remeshing/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples

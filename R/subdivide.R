@@ -19,6 +19,7 @@
 #'   are already triangle.
 #' @returns A \code{CGALmesh} object.
 #'
+#' @details See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
@@ -59,7 +60,7 @@ subdivideCatmullClark <- function(x, nIter = 1, triangulate = FALSE) {
 #' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
 #' @returns A \code{CGALmesh} object.
-#'
+#' @details See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
@@ -100,7 +101,7 @@ subdivideDooSabin <- function(x, nIter = 1, triangulate = FALSE) {
 #' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
 #' @returns A \code{CGALmesh} object.
-#'
+#' @details See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples

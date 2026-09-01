@@ -251,13 +251,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // optimalBoundingBox_cpp
-Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn);
-RcppExport SEXP _MeshUtils_optimalBoundingBox_cpp(SEXP rmeshInSEXP) {
+Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn, const bool normals);
+RcppExport SEXP _MeshUtils_optimalBoundingBox_cpp(SEXP rmeshInSEXP, SEXP normalsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimalBoundingBox_cpp(rmeshIn));
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    rcpp_result_gen = Rcpp::wrap(optimalBoundingBox_cpp(rmeshIn, normals));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -498,7 +499,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_getArea_cpp", (DL_FUNC) &_MeshUtils_getArea_cpp, 2},
     {"_MeshUtils_getVolume_cpp", (DL_FUNC) &_MeshUtils_getVolume_cpp, 2},
     {"_MeshUtils_getCentroid_cpp", (DL_FUNC) &_MeshUtils_getCentroid_cpp, 2},
-    {"_MeshUtils_optimalBoundingBox_cpp", (DL_FUNC) &_MeshUtils_optimalBoundingBox_cpp, 1},
+    {"_MeshUtils_optimalBoundingBox_cpp", (DL_FUNC) &_MeshUtils_optimalBoundingBox_cpp, 2},
     {"_MeshUtils_boundingBox_cpp", (DL_FUNC) &_MeshUtils_boundingBox_cpp, 1},
     {"_MeshUtils_getDistance_cpp", (DL_FUNC) &_MeshUtils_getDistance_cpp, 3},
     {"_MeshUtils_addVnormals_cpp", (DL_FUNC) &_MeshUtils_addVnormals_cpp, 1},

@@ -4,10 +4,12 @@
 \alias{getOptimalBoundingBox}
 \title{Get optimal bounding box}
 \usage{
-getOptimalBoundingBox(x)
+getOptimalBoundingBox(x, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+\item{normals}{Boolean: Whether to return normals.}
+
 }
 \value{
 A \code{CGALmesh} object.

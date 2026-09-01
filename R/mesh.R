@@ -598,8 +598,10 @@ getCentroid <- function(x, triangulate = FALSE) {
 #' @description Get oriented bounding box
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param normals Boolean: Whether to return normals.
 #' @returns A \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#' @details See \url{https://doc.cgal.org/latest/Optimal_bounding_box/} for details.
 #'
 #' @examples
 #' library(MeshUtils)
@@ -613,13 +615,14 @@ getCentroid <- function(x, triangulate = FALSE) {
 #' wire3d(obb_rgl)
 #'
 #' @export
-getOptimalBoundingBox <- function(x) {
+getOptimalBoundingBox <- function(x, normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
+  stopifnot(isBoolean(normals))
   meshCPP <- fromR(x)
-  outL    <- optimalBoundingBox_cpp(meshCPP)
+  outL    <- optimalBoundingBox_cpp(meshCPP, normals)
   outL[["mesh"]] <- fromCPP(outL[["mesh"]])
   outL
 }
@@ -629,6 +632,7 @@ getOptimalBoundingBox <- function(x) {
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param out Character to indicate output mesh format.
+#' @param normals Boolean: Whether to return normals.
 #'
 #' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
@@ -647,11 +651,13 @@ getOptimalBoundingBox <- function(x) {
 #'
 #' @export
 #' @importFrom rgl translate3d scale3d cube3d
-getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
+#' @importFrom Rvcg vcgUpdateNormals
+getBoundingBox <- function(x, out=c("CGALmesh", "rgl"), normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
+  stopifnot(isBoolean(normals))
   out     <- match.arg(out)
   meshCPP <- fromR(x)
   outL    <- boundingBox_cpp(meshCPP)
@@ -665,9 +671,13 @@ getBoundingBox <- function(x, out=c("CGALmesh", "rgl")) {
                        center[1L], center[2L], center[3L])
 
   if(out == "rgl") {
-    m_rgl
+    if(normals) {
+      vcgUpdateNormals(m_rgl)
+    } else {
+      m_rgl
+    }
   } else {
-    makeMesh(mesh=m_rgl, repairSoup=FALSE)
+    makeMesh(mesh=m_rgl, repairSoup=FALSE, normals=normals)
   }
 }
 

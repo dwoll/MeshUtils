@@ -25,6 +25,7 @@
 #'
 #' @returns A \code{CGALmesh} object.
 #'
+#' @details See \url{https://doc.cgal.org/latest/PMP_Boolean_operations/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
@@ -95,6 +96,7 @@ boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE) {
 #'
 #' @returns A \code{CGALmesh} object.
 #'
+#' @details See \url{https://doc.cgal.org/latest/PMP_Boolean_operations/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
@@ -163,6 +165,7 @@ boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE) {
 #'
 #' @returns A \code{CGALmesh} object.
 #'
+#' @details See \url{https://doc.cgal.org/latest/PMP_Boolean_operations/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples

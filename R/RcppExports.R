@@ -73,8 +73,8 @@ getCentroid_cpp <- function(rmesh, triangulate = FALSE) {
     .Call(`_MeshUtils_getCentroid_cpp`, rmesh, triangulate)
 }
 
-optimalBoundingBox_cpp <- function(rmeshIn) {
-    .Call(`_MeshUtils_optimalBoundingBox_cpp`, rmeshIn)
+optimalBoundingBox_cpp <- function(rmeshIn, normals) {
+    .Call(`_MeshUtils_optimalBoundingBox_cpp`, rmeshIn, normals)
 }
 
 boundingBox_cpp <- function(rmesh) {
