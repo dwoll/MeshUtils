@@ -3,7 +3,7 @@
   * normals
       * consistent handling in `alphaWrap()`, `getBoundingBox()`, `remeshIsotropic()` - really use `Rvcg::vcgUpdateNormals()`?
       * R to C++: normals are lost
-      * C++ to R: vertex normals via `RSurfMesh1/2()` -> `getNormals()`
+      * C++ to R: vertex normals via `RSurfMesh1/2()` -> `computeVNormals()`, `getRmesh()` -> `getVNormals()`
   * `smoothShape()`
       * check
   * `fillBoundaryHole()`

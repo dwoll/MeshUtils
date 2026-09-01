@@ -14,6 +14,27 @@
 #include "MeshUtils.h"
 #endif
 
+#include <CGAL/Polyhedron_3.h>
+#include <CGAL/Polyhedron_items_with_id_3.h>
+#include <CGAL/Advancing_front_surface_reconstruction.h>
+#include <CGAL/Scale_space_surface_reconstruction_3.h>
+#include <CGAL/poisson_surface_reconstruction.h>
+#include <CGAL/jet_smooth_point_set.h>
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+typedef CGAL::Polyhedron_3<K, CGAL::Polyhedron_items_with_id_3>      Polyhedron;
+
+typedef CGAL::Advancing_front_surface_reconstruction<>               AFS_reconstruction;
+typedef AFS_reconstruction::Triangulation_3                          AFS_triangulation3;
+typedef AFS_reconstruction::Triangulation_data_structure_2           AFS_tds2;
+
+typedef CGAL::Scale_space_surface_reconstruction_3<K>                SSS_reconstruction;
+typedef CGAL::Scale_space_reconstruction_3::Weighted_PCA_smoother<K> SSS_smoother;
+typedef CGAL::Scale_space_reconstruction_3::Alpha_shape_mesher<K>    SSS_mesher;
+typedef SSS_reconstruction::Facet_const_iterator                     SSS_facet_iterator;
+typedef SSS_reconstruction::Point_const_iterator                     SSS_point_iterator;
+
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
@@ -84,7 +105,7 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
                                   const double smRadius,
                                   const double smDistance) {
   const std::size_t nPts = pts.ncol();
-  std::vector<P3wn> points(nPts);
+  std::vector<P3V3> points(nPts);   // normals
   for(std::size_t i = 0; i < nPts; i++) {
     const Rcpp::NumericVector pt_i = pts(Rcpp::_, i);
     const Rcpp::NumericVector nrml_i = normals(Rcpp::_, i);
@@ -97,7 +118,7 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
   if(spacing == -1.0) {
     spacingUse = CGAL::compute_average_spacing<CGAL::Sequential_tag>(
       points, 6, /* knn = 1 ring */
-      CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>()));
+      CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3V3>()));
   } else {
       spacingUse = spacing;
   }
@@ -105,8 +126,8 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
   Polyhedron poly;
   const bool success = CGAL::poisson_surface_reconstruction_delaunay(
     points.begin(), points.end(),
-    CGAL::First_of_pair_property_map<P3wn>(),
-    CGAL::Second_of_pair_property_map<P3wn>(),
+    CGAL::First_of_pair_property_map<P3V3>(),
+    CGAL::Second_of_pair_property_map<P3V3>(),
     poly,
     spacingUse, smAngle, smRadius, smDistance);
 

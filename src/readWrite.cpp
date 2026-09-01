@@ -15,6 +15,8 @@
 #endif
 
 #include <CGAL/IO/io.h>
+#include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
+
 #include <locale>     // tolower()
 #include <filesystem> // path()
 

@@ -14,26 +14,7 @@
 #include "MeshUtils.h"
 #endif
 
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-// currently unused
-template <typename KernelT, typename PointT>
-Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT> &points) {
-  const std::size_t nPts = points.size();
-  Rcpp::NumericMatrix M(3, nPts);
-  for(std::size_t i = 0; i < nPts; i++) {
-    Rcpp::NumericVector col_i(3);
-    const PointT point = points[i];
-    col_i(0) = CGAL::to_double<typename KernelT::FT>(point.x());
-    col_i(1) = CGAL::to_double<typename KernelT::FT>(point.y());
-    col_i(2) = CGAL::to_double<typename KernelT::FT>(point.z());
-    M(Rcpp::_, i) = col_i;
-  }
-  return M;
-}
-
-template Rcpp::NumericMatrix points3_to_matrix<K,  Point3>(const  std::vector<Point3>&);
-template Rcpp::NumericMatrix points3_to_matrix<EK, EPoint3>(const std::vector<EPoint3>&);
+#include <CGAL/Polygon_mesh_processing/compute_normal.h>
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -164,16 +145,15 @@ template <typename KernelT, typename MeshT, typename VectorT>
 Rcpp::NumericMatrix getVNormals(const MeshT &mesh) {
     using vertex_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
     using vnormals_map      = typename MeshT::template Property_map<vertex_descriptor, VectorT>;
-    std::pair<vnormals_map, bool> vnormalsmap_ =
-        property_map_pair<vertex_descriptor, VectorT, MeshT>(mesh, "v:normal");
-    const bool has_vnormals = vnormalsmap_.second;
-    if(vertex && has_vnormals) {
+
+    std::optional<vnormals_map> vnormals =
+        mesh.template property_map<vertex_descriptor, VectorT>("v:normal");
+    if(vnormals.has_value()) {
         Rcpp::NumericMatrix normals_mat(3, mesh.number_of_vertices());
-        vnormals_map vnormals = vnormalsmap_.first;
         std::size_t i = 0;
         for(vertex_descriptor vd : vertices(mesh)) {
           Rcpp::NumericVector col_i(3);
-          const VectorT normal = vnormals[vd];
+          const VectorT normal = vnormals.value()[vd];
           col_i(0) = CGAL::to_double<typename KernelT::FT>(normal.x());
           col_i(1) = CGAL::to_double<typename KernelT::FT>(normal.y());
           col_i(2) = CGAL::to_double<typename KernelT::FT>(normal.z());
@@ -186,17 +166,18 @@ Rcpp::NumericMatrix getVNormals(const MeshT &mesh) {
     }
 }
 
-template Rcpp::IntegerMatrix getVNormals<K,  Mesh3,  Vector3>(const Mesh3&);
-template Rcpp::IntegerMatrix getVNormals<EK, EMesh3, EVector3>(const EMesh3&);
+template Rcpp::NumericMatrix getVNormals<K,  Mesh3,  Vector3>(const  Mesh3&);
+template Rcpp::NumericMatrix getVNormals<EK, EMesh3, EVector3>(const EMesh3&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// mesh is changed (normals map added) -> no const
+// mesh is changed (normals map added)
+// -> no const, no ref (as const in calling function)
 template <typename KernelT, typename MeshT, typename VectorT>
-Rcpp::NumericMatrix computeVNormals(MeshT &mesh) {
+Rcpp::NumericMatrix computeVNormals(MeshT mesh) {
     using vertex_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
     Rcpp::NumericMatrix normals_mat(3, mesh.number_of_vertices());
-    removeProperties<MeshT>(mesh, {"v:normal"});
+    removeProperties<MeshT, VectorT>(mesh, {"v:normal"});
     auto vnormals = mesh.template add_property_map<vertex_descriptor, VectorT>(
                             "v:normal", CGAL::NULL_VECTOR).first;
     // PMP::compute_normals(mesh, vnormals, fnormals);
@@ -214,8 +195,8 @@ Rcpp::NumericMatrix computeVNormals(MeshT &mesh) {
     return normals_mat;
 }
 
-template Rcpp::NumericMatrix computeVNormals<K,  Mesh3,  Vector3>(Mesh3&);
-template Rcpp::NumericMatrix computeVNormals<EK, EMesh3, EVector3>(EMesh3&);
+template Rcpp::NumericMatrix computeVNormals<K,  Mesh3,  Vector3>(Mesh3);
+template Rcpp::NumericMatrix computeVNormals<EK, EMesh3, EVector3>(EMesh3);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -261,28 +242,6 @@ template Rcpp::List RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, con
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// compatibility wrapper for CGAL property_map(std::string) API changes:
-// older returned std::pair<Property_map, bool>
-// newer returns  std::optional<Property_map>
-// property_map_pair returns a std::pair<Property_map, bool> in both cases
-template <typename KeyT, typename T, typename MeshT>
-std::pair<typename MeshT::template Property_map<KeyT,T>, bool>
-property_map_pair(MeshT &mesh, const std::string name) {
-  using RetType = decltype(mesh.template property_map<KeyT,T>(name));
-  using Pmap = typename MeshT::template Property_map<KeyT,T>;
-  if constexpr (std::is_same_v<RetType, std::pair<Pmap, bool>>) {
-    return mesh.template property_map<KeyT,T>(name);
-  } else {
-    auto opt = mesh.template property_map<KeyT,T>(name);
-    if(opt) {
-        return std::make_pair(*opt, true);
-    }
-    return std::make_pair(Pmap(), false);
-  }
-}
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
 // PMP::triangulate_faces() modifies -> mesh not const
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List getRmesh(MeshT &mesh, const bool triangulate) {
@@ -300,7 +259,7 @@ Rcpp::List getRmesh(MeshT &mesh, const bool triangulate) {
   }
   Rcpp::NumericMatrix vnormals_mat = getVNormals<KernelT, MeshT, VectorT>(mesh);
   if(vnormals_mat.ncol() > 0) {
-    rmesh["normals"] = vnormals_matx;
+    rmesh["normals"] = vnormals_mat;
   }
 
   return rmesh;
@@ -312,56 +271,52 @@ template Rcpp::List getRmesh<EK, EMesh3, EPoint3, EVector3>(EMesh3&, const bool)
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // CAVE: pass by reference, modifies mesh
-template <typename MeshT>
+template <typename MeshT, typename VectorT>
 void removeProperties(MeshT &mesh, const std::vector<std::string> &props) {
   using vertex_descriptor  = typename boost::graph_traits<MeshT>::vertex_descriptor;
   using face_descriptor    = typename boost::graph_traits<MeshT>::face_descriptor;
   using vertex_colors_map  = typename MeshT::template Property_map<vertex_descriptor, std::string>;
   using face_colors_map    = typename MeshT::template Property_map<face_descriptor,   std::string>;
+  using vertex_normals_map = typename MeshT::template Property_map<vertex_descriptor, VectorT>;
   using vertex_scalars_map = typename MeshT::template Property_map<vertex_descriptor, double>;
   using face_scalars_map   = typename MeshT::template Property_map<face_descriptor,   double>;
-  using vertex_normals_map = typename MeshT::template Property_map<vertex_descriptor, Rcpp::NumericVector>;
 
   for(std::size_t i = 0; i < props.size(); i++) {
     std::string prop = props[i];
     if(prop == "v:color") {
-      std::pair<vertex_colors_map, bool> pmap_ =
-        property_map_pair<vertex_descriptor, std::string, MeshT>(mesh, "v:color");
-        // mesh.property_map<vertex_descriptor, std::string>("v:color");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
+      std::optional<vertex_colors_map> pmap_ =
+        mesh.template property_map<vertex_descriptor, std::string>("v:color");
+      if(pmap_.has_value()) {
+        mesh.template remove_property_map(pmap_.value());
       }
     } else if(prop == "f:color") {
-      std::pair<face_colors_map, bool> pmap_ =
-        property_map_pair<face_descriptor, std::string, MeshT>(mesh, "f:color");
-        // mesh.property_map<face_descriptor, std::string>("f:color");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
+      std::optional<face_colors_map> pmap_ =
+        mesh.template property_map<face_descriptor, std::string>("f:color");
+      if(pmap_.has_value()) {
+        mesh.template remove_property_map(pmap_.value());
       }
     } else if(prop == "v:normal") {
-      std::pair<vertex_normals_map, bool> pmap_ =
-        property_map_pair<vertex_descriptor, Rcpp::NumericVector, MeshT>(mesh, "v:normal");
-        // mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
+      std::optional<vertex_normals_map> pmap_ =
+        mesh.template property_map<vertex_descriptor, VectorT>("v:normal");
+
+      if(pmap_.has_value()) {
+        mesh.template remove_property_map(pmap_.value());
       }
     } else if(prop == "v:scalar") {
-      std::pair<vertex_scalars_map, bool> pmap_ =
-        property_map_pair<vertex_descriptor, double, MeshT>(mesh, "v:scalar");
-        // mesh.property_map<vertex_descriptor, double>("v:scalar");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
+      std::optional<vertex_scalars_map> pmap_ =
+        mesh.template property_map<vertex_descriptor, double>("v:scalar");
+      if(pmap_.has_value()) {
+        mesh.template remove_property_map(pmap_.value());
       }
     } else if(prop == "f:scalar") {
-      std::pair<face_scalars_map, bool> pmap_ =
-        property_map_pair<face_descriptor, double, MeshT>(mesh, "f:scalar");
-        // mesh.property_map<face_descriptor, double>("f:scalar");
-      if(pmap_.second) {
-        mesh.remove_property_map(pmap_.first);
+      std::optional<face_scalars_map> pmap_ =
+        mesh.template property_map<face_descriptor, double>("f:scalar");
+      if(pmap_.has_value()) {
+        mesh.template remove_property_map(pmap_.value());
       }
     }
   }
 }
 
-template void removeProperties<Mesh3>(Mesh3&,   const std::vector<std::string>&);
-template void removeProperties<EMesh3>(EMesh3&, const std::vector<std::string>&);
+template void removeProperties<Mesh3,  Vector3>(Mesh3&,   const std::vector<std::string>&);
+template void removeProperties<EMesh3, EVector3>(EMesh3&, const std::vector<std::string>&);

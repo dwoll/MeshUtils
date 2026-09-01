@@ -14,6 +14,10 @@
 #include "MeshUtils.h"
 #endif
 
+#include <CGAL/pca_estimate_normals.h>
+#include <CGAL/jet_estimate_normals.h>
+#include <CGAL/mst_orient_normals.h>
+
 // ----------------------------------------------------------------------- //
 // EPIC kernel only
 // [[Rcpp::export]]
@@ -21,7 +25,7 @@ Rcpp::NumericMatrix jet_pca_normals_cpp(const Rcpp::NumericMatrix pts,
                                         const unsigned int nbNeighbors,
                                         const unsigned int method) {
   const std::size_t nPts = pts.ncol();
-  std::vector<P3wn> points(nPts);
+  std::vector<P3V3> points(nPts);
   for(std::size_t i = 0; i < nPts; i++) {
     const Rcpp::NumericVector pt_i = pts(Rcpp::_, i);
     points[i] = std::make_pair(Point3(pt_i(0), pt_i(1), pt_i(2)),
@@ -29,23 +33,23 @@ Rcpp::NumericMatrix jet_pca_normals_cpp(const Rcpp::NumericMatrix pts,
   }
 
   if(method == 1) {
-      CGAL::jet_estimate_normals<Concurrency_tag>(
+      CGAL::jet_estimate_normals<PIA_TAG>(
           points, nbNeighbors,
-          CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
-              .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
+          CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3V3>())
+              .normal_map(CGAL::Second_of_pair_property_map<P3V3>()));
   } else if(method == 2) {
-      CGAL::pca_estimate_normals<Concurrency_tag>(
+      CGAL::pca_estimate_normals<PIA_TAG>(
           points, nbNeighbors,
-          CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
-              .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
+          CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3V3>())
+              .normal_map(CGAL::Second_of_pair_property_map<P3V3>()));
   } else {
       Rcpp::stop("Wrong method.");
   }
 
   CGAL::mst_orient_normals(
       points, nbNeighbors,
-      CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
-          .normal_map(CGAL::Second_of_pair_property_map<P3wn>()));
+      CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3V3>())
+          .normal_map(CGAL::Second_of_pair_property_map<P3V3>()));
 
   Rcpp::NumericMatrix normals_mat(3, nPts);
   for(std::size_t i = 0; i < nPts; i++) {

@@ -14,6 +14,9 @@
 #include "MeshUtils.h"
 #endif
 
+#include <CGAL/Polygon_mesh_processing/remesh.h>
+#include <CGAL/Polygon_mesh_processing/Adaptive_sizing_field.h>
+
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List remeshIsotropicUniform_cpp(

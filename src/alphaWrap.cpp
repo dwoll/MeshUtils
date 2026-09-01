@@ -14,6 +14,8 @@
 #include "MeshUtils.h"
 #endif
 
+#include <CGAL/alpha_wrap_3.h>
+
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List alphaWrap_cpp(

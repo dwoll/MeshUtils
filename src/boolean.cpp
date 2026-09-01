@@ -14,6 +14,8 @@
 #include "MeshUtils.h"
 #endif
 
+#include <CGAL/Polygon_mesh_processing/corefinement.h>
+
 // ----------------------------------------------------------------------- //
 template <typename MeshT>
 void checkMesh1(const MeshT &mesh, std::size_t i) {

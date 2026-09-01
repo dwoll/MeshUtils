@@ -14,38 +14,9 @@
 #include "MeshUtils.h"
 #endif
 
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-// EPEC kernel only
-// currently not used
-template <typename MeshT, typename PointT>
-bool is_small_hole(//hlfdg_descriptor h,
-                   //const EMesh3 &mesh,
-                   typename boost::graph_traits<MeshT>::halfedge_descriptor h,
-                   const MeshT &mesh,
-                   const double max_hole_diam,
-                   const int max_num_hole_edges) {
-  using halfedge_descriptor = typename boost::graph_traits<MeshT>::halfedge_descriptor;
-  int num_hole_edges = 0;
-  CGAL::Bbox_3 hole_bbox;
-  for (halfedge_descriptor hc : CGAL::halfedges_around_face(h, mesh)) {
-    const PointT& p = mesh.point(target(hc, mesh));
-
-    hole_bbox += p.bbox();
-    ++num_hole_edges;
-
-    // exit early, to avoid unnecessary traversal of large holes
-    if (num_hole_edges > max_num_hole_edges) return false;
-    if (hole_bbox.xmax() - hole_bbox.xmin() > max_hole_diam) return false;
-    if (hole_bbox.ymax() - hole_bbox.ymin() > max_hole_diam) return false;
-    if (hole_bbox.zmax() - hole_bbox.zmin() > max_hole_diam) return false;
-  }
-
-  return true;
-}
-
-template bool is_small_hole<Mesh3,  Point3>(typename  boost::graph_traits<Mesh3>::halfedge_descriptor,  const Mesh3&,  const double, const int);
-template bool is_small_hole<EMesh3, EPoint3>(typename boost::graph_traits<EMesh3>::halfedge_descriptor, const EMesh3&, const double, const int);
+#include <CGAL/Polygon_mesh_processing/autorefinement.h>
+#include <CGAL/Polygon_mesh_processing/polygon_mesh_to_polygon_soup.h>
+#include <CGAL/make_conforming_constrained_Delaunay_triangulation_3.h>
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -83,14 +54,11 @@ MeshT fillBoundaryHoles(
     if((nb_holes_ok + nb_holes_fail) >= max_num_holes) {
         break;
     }
-    /*
-    if((max_hole_diam > 0)      &&
-       (max_num_hole_edges > 0) &&
-       !is_small_hole<MeshT, PointT>(h, mesh, max_hole_diam, max_num_hole_edges)) {
-        continue;
-    }
-    */
-
+    // if((max_hole_diam > 0)      &&
+    //    (max_num_hole_edges > 0) &&
+    //    !is_small_hole<MeshT, PointT>(h, mesh, max_hole_diam, max_num_hole_edges)) {
+    //     continue;
+    // }
     std::vector<face_descriptor>   patch_facets;
     std::vector<vertex_descriptor> patch_vertices;
     bool success = std::get<0>(PMP::triangulate_refine_and_fair_hole(
@@ -168,8 +136,9 @@ bool removeSelfIntSoup(std::vector<PointT> &points,
     if(PMP::does_polygon_soup_self_intersect(points, polygons)) {
         Message("Polygon soup still self-intersects after autorefine.");
     }
-    CGAL::Conforming_constrained_Delaunay_triangulation_3<KernelT> ccdt;
-    ccdt = CGAL::make_conforming_constrained_Delaunay_triangulation_3(points, polygons);
+    // TODO what to do with this?
+    // CGAL::Conforming_constrained_Delaunay_triangulation_3<KernelT> ccdt;
+    // ccdt = CGAL::make_conforming_constrained_Delaunay_triangulation_3(points, polygons);
     return success;
 }
 
@@ -178,30 +147,3 @@ template bool removeSelfIntSoup<K, Point3>(
 
 template bool removeSelfIntSoup<EK, EPoint3>(
     std::vector<EPoint3>&, std::vector<std::vector<std::size_t>>&, const int);
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-// mesh passed by const reference, then uses a polygon soup
-// as container as the output will most likely be non-manifold
-template <typename KernelT, typename MeshT, typename PointT>
-MeshT removeSelfIntMesh(const MeshT &mesh, const int method) {
-  std::vector<PointT> points;
-  std::vector<std::vector<std::size_t>> polygons;
-  PMP::polygon_mesh_to_polygon_soup(mesh, points, polygons);
-  const bool success = removeSelfIntSoup<KernelT, PointT>(points, polygons, method);
-  MeshT mesh_out;
-  if(PMP::is_polygon_soup_a_polygon_mesh(polygons)) {
-    PMP::orient_polygon_soup(points, polygons);
-    PMP::polygon_soup_to_polygon_mesh(points, polygons, mesh_out);
-  } else {
-    Message("Polygon soup not a polygon mesh after removing intersections. Nothing done.");
-    return mesh;
-  }
-  if(PMP::does_self_intersect(mesh_out)) {
-    Message("Mesh self-intersections could not be removed.");
-  }
-  return mesh_out;
-}
-
-template Mesh3  removeSelfIntMesh<K,  Mesh3,  Point3>(const Mesh3&,   const int);
-template EMesh3 removeSelfIntMesh<EK, EMesh3, EPoint3>(const EMesh3&, const int);

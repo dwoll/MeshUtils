@@ -14,6 +14,8 @@
 #include "MeshUtils.h"
 #endif
 
+#include <CGAL/optimal_bounding_box.h>
+
 // ----------------------------------------------------------------------- //
 // initial mesh generation - EPIC kernel - TODO make parameter
 // [[Rcpp::export]]
