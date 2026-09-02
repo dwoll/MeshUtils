@@ -7,7 +7,7 @@
 alphaWrap(x, alphaRel, offsetRel, normals = FALSE)
 }
 \arguments{
-\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}},
 or a numeric matrix which stores the points, one point per row.}
 
 \item{alphaRel}{Relative alpha parameter. The actual alpha parameter (see
@@ -38,7 +38,7 @@ library(rgl)
 
 mesh            <- dataHeart1
 mesh_rgl        <- toRGL(mesh)
-mesh_alwrap     <- alphaWrap(mesh,
+mesh_alwrap     <- alphaWrap(mesh[["vertices"]],
                              alphaRel =5,
                              offsetRel=300)
 mesh_alwrap_rgl <- toRGL(mesh_alwrap)

@@ -14,7 +14,7 @@
 #' @description Reconstruction of a surface from a cloud of 3D points by
 #'   alpha wrapping.
 #'
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}},
 #'    or a numeric matrix which stores the points, one point per row.
 #' @param alphaRel Relative alpha parameter. The actual alpha parameter (see
 #'   details) is defined as the length of the diagonal of the bounding box of
@@ -42,7 +42,7 @@
 #'
 #' mesh            <- dataHeart1
 #' mesh_rgl        <- toRGL(mesh)
-#' mesh_alwrap     <- alphaWrap(mesh,
+#' mesh_alwrap     <- alphaWrap(mesh[["vertices"]],
 #'                              alphaRel =5,
 #'                              offsetRel=300)
 #' mesh_alwrap_rgl <- toRGL(mesh_alwrap)
@@ -83,7 +83,7 @@ alphaWrap <- function(x, alphaRel, offsetRel, normals=FALSE) {
     alphaWrapPoints_cpp(t(x), alphaRel, offsetRel, normals)
   } else {
     meshCPP <- fromR(x)
-    alphaWrapMesh_cpp(x, alphaRel, offsetRel, normals)
+    alphaWrapMesh_cpp(meshCPP, alphaRel, offsetRel, normals)
   }
   fromCPP(meshOut)
 }

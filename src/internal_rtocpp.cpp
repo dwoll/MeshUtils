@@ -172,6 +172,17 @@ MeshT soup_to_mesh(std::vector<PointT> points,
         msg_closed    = "now ";
         msg_notclosed = "still ";
     }
+
+    if(is_triangle) {
+      if(!PMP::is_outward_oriented(mesh)) {
+        PMP::reverse_face_orientations(mesh);
+      }
+
+      if(!PMP::does_bound_a_volume(mesh)) {
+        PMP::orient_to_bound_a_volume(mesh);
+      }
+    }
+
     if(CGAL::is_closed(mesh)) {
         msg_closed    = "Mesh is " + msg_closed    + "closed.";
         Message(msg_closed);

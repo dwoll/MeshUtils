@@ -95,6 +95,13 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
       false,      // fair hole
       0);         // max_num_holes
   // surface reconstruction makes triangle mesh
+  if(!PMP::is_outward_oriented(mesh)) {
+    PMP::reverse_face_orientations(mesh);
+  }
+
+  if(!PMP::does_bound_a_volume(mesh)) {
+    PMP::orient_to_bound_a_volume(mesh);
+  }
   return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
@@ -153,6 +160,13 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
   Mesh3 mesh;
   CGAL::copy_face_graph(poly, mesh);
   // surface reconstruction makes triangle mesh
+  if(!PMP::is_outward_oriented(mesh)) {
+    PMP::reverse_face_orientations(mesh);
+  }
+
+  if(!PMP::does_bound_a_volume(mesh)) {
+    PMP::orient_to_bound_a_volume(mesh);
+  }
   return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
@@ -185,15 +199,13 @@ Rcpp::List reconstructSSS_cpp(
   }
   PMP::orient_polygon_soup(smoothed, polygons);
   PMP::polygon_soup_to_polygon_mesh(smoothed, polygons, mesh);
-  if(CGAL::is_triangle_mesh(mesh)) {
-      if(!PMP::is_outward_oriented(mesh)) {
-        PMP::reverse_face_orientations(mesh);
-      }
-
-      if(!PMP::does_bound_a_volume(mesh)) {
-          PMP::orient_to_bound_a_volume(mesh);
-      }
+  // SSS surface reconstruction makes triangle mesh
+  if(!PMP::is_outward_oriented(mesh)) {
+    PMP::reverse_face_orientations(mesh);
   }
-  // surface reconstruction makes triangle mesh
+
+  if(!PMP::does_bound_a_volume(mesh)) {
+    PMP::orient_to_bound_a_volume(mesh);
+  }
   return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
