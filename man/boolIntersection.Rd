@@ -25,11 +25,14 @@ A \code{CGALmesh} object.
 \description{
 Computes the intersection of the given meshes.
 }
+\details{
+See \url{https://doc.cgal.org/latest/PMP_Boolean_operations/} for details.
+}
 \examples{
 library(MeshUtils)
 library(rgl)
 
-# mesh one: truncated icosahedron; we triangulate it for plotting
+# mesh one: truncated icosahedron; we triangulate it
 mesh1 <- makeMesh(mesh       =dataTruncIcosahedron,
                   triangulate=TRUE,
                   normals    = FALSE)

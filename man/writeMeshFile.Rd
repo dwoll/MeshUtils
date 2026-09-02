@@ -8,8 +8,9 @@ writeMeshFile(x, filename, precision = 17L, binary = FALSE)
 }
 \arguments{
 \item{x}{A mesh given either as a list containing (at least) the fields
-   \code{vertices} and \code{faces}, otherwise a \strong{rgl} mesh
-   (i.e. a \code{\link[rgl]{mesh3d}} object).}
+\code{vertices} and \code{faces}, otherwise a \strong{rgl} mesh
+(i.e. a \code{\link[rgl]{mesh3d}} object).}
+
 \item{filename}{Name of the file to be written, with extension \code{stl},
 \code{ply}, \code{obj} or \code{off}}
 

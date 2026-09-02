@@ -4,18 +4,23 @@
 \alias{getOptimalBoundingBox}
 \title{Get optimal bounding box}
 \usage{
-getOptimalBoundingBox(x, normals = FALSE)
+getOptimalBoundingBox(x, triangulate = FALSE, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
-\item{normals}{Boolean: Whether to return normals.}
 
+\item{triangulate}{Boolean: Whether to triangulate the faces of the bounding box.}
+
+\item{normals}{Boolean: Whether to return vertex normals.}
 }
 \value{
 A \code{CGALmesh} object.
 }
 \description{
 Get oriented bounding box
+}
+\details{
+See \url{https://doc.cgal.org/latest/Optimal_bounding_box/} for details.
 }
 \examples{
 library(MeshUtils)
@@ -28,4 +33,7 @@ open3d(windowRect=50 + c(0, 0, 800, 400))
 wire3d(mesh_rgl)
 wire3d(obb_rgl)
 
+}
+\author{
+Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 }

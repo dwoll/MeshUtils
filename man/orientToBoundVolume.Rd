@@ -4,13 +4,12 @@
 \alias{orientToBoundVolume}
 \title{Orient mesh to bound a volume}
 \usage{
-orientToBoundVolume(x, triangulate = FALSE)
+orientToBoundVolume(x, normals)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
-are already triangle.}
+\item{normals}{Boolean: Whether to return vertex normals.}
 }
 \value{
 \code{CGALmesh} object.
@@ -20,8 +19,8 @@ Orient mesh to bound a volume
 }
 \examples{
 library(MeshUtils)
-mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=FALSE)
-mesh_o <- orientToBoundVolume(mesh, triangulate=TRUE)
+mesh   <- makeMesh(mesh=dataPentaPrism)
+mesh_o <- orientToBoundVolume(mesh)
 getVolume(mesh_o)
 
 }

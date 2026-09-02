@@ -20,6 +20,7 @@
 #'   smoothing preprocessing relocates the points and then should not be used
 #'   if the points have been sampled without noise on the surface.
 #' @param repairSoup Boolean. Attempt to fix polygon soup?
+#' @param normals Boolean: Whether to return vertex normals.
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -54,7 +55,7 @@
 #' wire3d(mesh_afs2_rgl)
 #'
 #' @export
-reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE) {
+reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE, normals=FALSE) {
   if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -74,7 +75,7 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE) {
     jetSmoothing <- 0L
   }
   stopifnot(isBoolean(repairSoup))
-  mesh_cpp <- reconstructAFS_cpp(t(x), as.integer(jetSmoothing), repairSoup)
+  mesh_cpp <- reconstructAFS_cpp(t(x), as.integer(jetSmoothing), repairSoup, normals)
   fromCPP(mesh_cpp)
 }
 
@@ -82,11 +83,8 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE) {
 #' @description Poisson reconstruction of a surface, from a cloud of 3D points.
 #'
 #' @param x Numeric matrix which stores the points, one point per row.
-#' @param normals Numeric matrix which stores the normals, one normal per row
-#'   (it must have the same size as the \code{x} matrix). If you do not
-#'   have normals, set \code{normals=NULL} (the default), and some normals will
-#'   be computed with the help of \code{\link[Rvcg]{vcgUpdateNormals}}, or
-#'   use the \code{\link[MeshUtils]{getSomeNormals}} function.
+#' @param normalsFun A function to generate normals as returned from
+#'   \code{\link[MeshUtils]{getNormalsFun}}.
 #' @param spacing Size parameter. Smaller values increase the precision of the
 #'   output mesh at the cost of higher computation time. Set to \code{NULL}
 #'   (the default) for a reasonable automatic value: an average spacing whose
@@ -95,6 +93,7 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE) {
 #' @param smAngle Bound for the minimum facet angle in degrees.
 #' @param smRadius Relative bound for the radius of the surface Delaunay balls.
 #' @param smDistance Relative bound for the center-center distances.
+#' @param normals Boolean: Whether to return vertex normals.
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -105,7 +104,6 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE) {
 #' @seealso \code{\link[MeshUtils]{reconstructAFS}},
 #'    \code{\link[MeshUtils]{reconstructSSS}},
 #'    \code{\link[MeshUtils]{alphaWrap}}
-
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
@@ -128,11 +126,12 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE) {
 #' @importFrom Rvcg vcgUpdateNormals
 reconstructPoisson <- function(
   x,
-  normals   = NULL,
+  normalsFun= getNormalsFun(6L),
   spacing   = NULL,
   smAngle   = 20,
   smRadius  = 30,
-  smDistance= 0.375) {
+  smDistance= 0.375,
+  normals   = FALSE) {
   if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -144,19 +143,15 @@ reconstructPoisson <- function(
     stop("The `x` matrix must have three columns.", call. = TRUE)
   }
   storage.mode(x) <- "double"
-  if(is.null(normals)) {
-    normals <- vcgUpdateNormals(x, silent = TRUE)[["normals"]][-4L, ]
-  } else if(is.function(normals) && inherits(normals, "CGALnormalsFunc")) {
-    normals <- normals(x)
-  } else {
-    stop("Invalid argument `normals`: it must be `NULL` or a function ",
-         "returned by the `getSomeNormals` function.")
+  if(!is.function(normalsFun) || !inherits(normalsFun, "CGALnormalsFunc")) {
+    stop("Invalid argument `normalsFun`must be a function as ",
+         "returned by `getNormalsFun`")
   }
   if(nrow(x) <= dimension) {
     stop("Insufficient number of points.", call. = TRUE)
   }
-  # if(any(is.na(points)) || (!is.null(normals) && any(is.na(normals)))) {
-  #   stop("Points or normals with missing values are not allowed.", call. = TRUE)
+  # if(any(is.na(points)) || (!is.null(normalsIn) && any(is.na(normalsIn)))) {
+  #   stop("Points or normalsIn with missing values are not allowed.", call. = TRUE)
   # }
   if(is.null(spacing)) {
     spacing <- -1
@@ -166,8 +161,9 @@ reconstructPoisson <- function(
   stopifnot(isPositiveNumber(smAngle))
   stopifnot(isPositiveNumber(smRadius))
   stopifnot(isPositiveNumber(smDistance))
+  normalsIn <- normalsFun(x)
   mesh_cpp <- reconstructPoisson_cpp(
-    t(x), normals, spacing, smAngle, smRadius, smDistance)
+    t(x), normalsIn, spacing, smAngle, smRadius, smDistance, normals)
   fromCPP(mesh_cpp)
 }
 
@@ -182,6 +178,7 @@ reconstructPoisson <- function(
 #' @param forceManifold Boolean, whether to force a manifold output mesh.
 #' @param borderAngle Bound on the angle in degrees used to detect border edges.
 #' @param repairSoup Boolean. Attempt to fix polygon soup?
+#' @param normals Boolean: Whether to return vertex normals.
 #'
 #' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
@@ -220,7 +217,8 @@ reconstructSSS <- function(
   separateShells =FALSE,
   forceManifold  =TRUE,
   borderAngle    =45,
-  repairSoup     =TRUE) {
+  repairSoup     =TRUE,
+  normals        =FALSE) {
   if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -240,6 +238,7 @@ reconstructSSS <- function(
   stopifnot(isBoolean(forceManifold))
   stopifnot(isNonNegativeNumber(borderAngle))
   stopifnot(isBoolean(repairSoup))
+  stopifnot(isBoolean(normals))
   mesh_cpp <- reconstructSSS_cpp(
     t(x),
     as.integer(scaleIterations),
@@ -248,6 +247,7 @@ reconstructSSS <- function(
     separateShells,
     forceManifold,
     as.double(borderAngle),
-    repairSoup)
+    repairSoup,
+    normals)
   fromCPP(mesh_cpp)
 }

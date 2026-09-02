@@ -18,6 +18,7 @@
 #' @param method Either \code{"soup"} when the file is a polygon soup, or \code{"mesh"} when
 #'   the file is a valid mesh.
 #' @param binary Boolean: For \code{method="mesh"}: Whether input file is binary.
+#' @param normals Boolean: Whether to return vertex normals for \code{method="mesh"}.
 #'
 #' @returns For \code{method="soup"}: A list with two components: \code{vertices},
 #'   a numeric matrix with three
@@ -42,7 +43,7 @@
 #' shade3d(mesh_rgl, color="palevioletred")
 #'
 #' @export
-readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE) {
+readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE, normals=FALSE) {
   stopifnot(isString(x))
   stopifnot(isBoolean(binary))
   method <- match.arg(method)
@@ -58,7 +59,8 @@ readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE) {
     }
     mesh
   } else {
-    mesh_cpp <- readFileMesh_cpp(x, binary)
+    stopifnot(isBoolean(normals))
+    mesh_cpp <- readFileMesh_cpp(x, binary, normals)
     fromCPP(mesh_cpp)
   }
 }

@@ -23,10 +23,11 @@ Rcpp::List remeshIsotropicUniform_cpp(
     const Rcpp::List rmesh,
     const double targetEdgeLen,
     const unsigned int nIter,
-    const unsigned int nRelaxSteps) {
+    const unsigned int nRelaxSteps,
+    const bool normals) {
     Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
         rmesh,
-        true,        // triangulate
+        true,        // triangulate - must be triangle
         false,       // repair_soup
         false,       // remove_intersections
         1,           // remove_method
@@ -53,7 +54,8 @@ Rcpp::List remeshIsotropicUniform_cpp(
                       .number_of_relaxation_steps(nRelaxSteps)
                       .protect_constraints(true));
     mesh.collect_garbage();
-    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
+    // remeshing requires triangle mesh -> output is triangle
+    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -64,10 +66,11 @@ Rcpp::List remeshIsotropicAdapt_cpp(
     const double edgeMin,
     const double edgeMax,
     const unsigned int nIter,
-    const unsigned int nRelaxSteps) {
+    const unsigned int nRelaxSteps,
+    const bool normals) {
     Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
         rmesh,
-        true,        // triangulate
+        true,        // triangulate - must be triangle
         false,       // repair_soup
         false,       // remove_intersections
         1,           // remove_method
@@ -88,5 +91,6 @@ Rcpp::List remeshIsotropicAdapt_cpp(
                       .number_of_relaxation_steps(nRelaxSteps)
                       .protect_constraints(true));
     mesh.collect_garbage();
-    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
+    // remeshing requires triangle mesh -> output is triangle
+    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }

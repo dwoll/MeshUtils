@@ -4,16 +4,17 @@
 \alias{getBoundingBox}
 \title{Get axis-parallel bounding box}
 \usage{
-getBoundingBox(x, out = c("CGALmesh", "rgl"), normals = FALSE)
+getBoundingBox(x, triangulate = FALSE, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{out}{Character to indicate output mesh format.}
-\item{normals}{Boolean: Whether to return normals.}
+\item{triangulate}{Boolean: Whether to triangulate the faces of the bounding box.}
+
+\item{normals}{Boolean: Whether to return vertex normals.}
 }
 \value{
-A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+A \code{CGALmesh} object.
 }
 \description{
 Get axis-parallel bounding box
@@ -24,7 +25,8 @@ library(rgl)
 
 mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 mesh_rgl <- toRGL(mesh)
-bb_rgl   <- getBoundingBox(mesh, out="rgl")
+bb       <- getBoundingBox(mesh)
+bb_rgl   <- toRGL(bb)
 open3d(windowRect=50 + c(0, 0, 800, 400))
 wire3d(mesh_rgl)
 wire3d(bb_rgl)

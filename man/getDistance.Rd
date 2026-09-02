@@ -4,15 +4,12 @@
 \alias{getDistance}
 \title{Get distance from points to a mesh}
 \usage{
-getDistance(x, points, triangulate = FALSE)
+getDistance(x, points)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.}
 
 \item{points}{\code{numeric} matrix with 3 columns with one point per row.}
-
-\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
-are already triangle.}
 }
 \value{
 \code{numeric} vector: The distance of each point in \code{points}
@@ -28,4 +25,7 @@ mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 points <- matrix(2*runif(3*4), ncol=3)
 getDistance(mesh, points)
 
+}
+\author{
+Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 }

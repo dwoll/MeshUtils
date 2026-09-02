@@ -22,7 +22,7 @@
 #'   matrix of the same size as the input matrix, with each row giving one
 #'   unit normal for the point.
 #'
-#' @note The \code{getSomeNormals} function is intended to be used in the
+#' @note The \code{getNormalsFun} function is intended to be used in the
 #'   \code{\link[MeshUtils]{reconstructPoisson}} function. If you want to use it for
 #'   another purpose, be careful because the function it returns does not
 #'   check the matrix it takes as argument.
@@ -34,8 +34,8 @@
 #' library(rgl)
 #' mesh     <- dataHeart1
 #' mesh_rgl <- toRGL(mesh)
-#' fun      <- getSomeNormals(6)
-#' mesh_psr <- reconstructPoisson(mesh[["vertices"]],
+#' fun      <- getNormalsFun(6)
+#' mesh_psr <- reconstructPoisson(mesh,
 #'                                normals=fun,
 #'                                smAngle=10,
 #'                                smRadius=1.5,
@@ -50,7 +50,7 @@
 #' wire3d(mesh_psr_rgl)
 #'
 #' @export
-getSomeNormals <- function(x, method = c("PCA", "Jet")) {
+getNormalsFun <- function(x, method = c("PCA", "Jet")) {
   method_choices <- c("pca", "jet")
   method         <- match.arg(tolower(method), choices=method_choices)
   methodInt      <- match(method, method_choices)

@@ -89,7 +89,7 @@ template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List RSurfMesh2(const MeshT&, const bool, const std::size_t);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List getRmesh(MeshT&, const bool);
+Rcpp::List getRmesh(MeshT&, const bool, const bool);
 
 template <typename KernelT, typename PointT>
 bool removeSelfIntSoup(

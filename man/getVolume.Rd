@@ -4,13 +4,10 @@
 \alias{getVolume}
 \title{Get mesh volume}
 \usage{
-getVolume(x, triangulate = FALSE)
+getVolume(x)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
-
-\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
-are already triangle.}
 }
 \value{
 \code{numeric}: The mesh volume - if mesh bounds a volume.
@@ -23,4 +20,7 @@ library(MeshUtils)
 mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 getVolume(mesh)
 
+}
+\author{
+Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 }

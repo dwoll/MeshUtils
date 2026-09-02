@@ -14,7 +14,8 @@
 #' @description Reconstruction of a surface from a cloud of 3D points by
 #'   alpha wrapping.
 #'
-#' @param x Numeric matrix which stores the points, one point per row.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}
+#'    or a numeric matrix which stores the points, one point per row.
 #' @param alphaRel Relative alpha parameter. The actual alpha parameter (see
 #'   details) is defined as the length of the diagonal of the bounding box of
 #'   the point cloud divided by the relative alpha parameter. Increase for
@@ -23,10 +24,9 @@
 #'   is defined as the length of the diagonal of the bounding box of the
 #'   point cloud divided by the relative offset parameter. Increase for
 #'   output that is closer to input mesh.
-#' @param out Character to indicate output mesh format.
+#' @param normals Boolean: Whether to return vertex normals.
 #'
-#' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package
-#'   \strong{rgl}.
+#' @returns A \code{CGALmesh} object.
 #'
 #' @details See \url{https://doc.cgal.org/latest/Alpha_wrap_3/} for details.
 #'
@@ -40,12 +40,12 @@
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' # reconstruct the mesh from the points
-#' mesh_rgl        <- toRGL(dataHeart1)
-#' mesh_alwrap_rgl <- alphaWrap(dataHeart1[["vertices"]],
+#' mesh            <- dataHeart1
+#' mesh_rgl        <- toRGL(mesh)
+#' mesh_alwrap     <- alphaWrap(mesh,
 #'                              alphaRel =5,
-#'                              offsetRel=300,
-#'                              out      ="rgl")
+#'                              offsetRel=300)
+#' mesh_alwrap_rgl <- toRGL(mesh_alwrap)
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
 #' mfrow3d(1, 2)
@@ -54,35 +54,35 @@
 #' wire3d(mesh_alwrap_rgl)
 #'
 #' @export
-#' @importFrom Rvcg vcgUpdateNormals
 #' @importFrom rgl tmesh3d
-alphaWrap <- function(x, alphaRel, offsetRel, out=c("CGALmesh", "rgl")) {
-  out <- match.arg(out)
+alphaWrap <- function(x, alphaRel, offsetRel, normals=FALSE) {
   stopifnot(isPositiveNumber(alphaRel))
   stopifnot(isPositiveNumber(offsetRel))
-  if(!is.matrix(x) || !is.numeric(x)){
-    stop("The `x` argument must be a numeric matrix.", call. = TRUE)
+  stopifnot(isBoolean(normals))
+
+  if(!inherits(x, "CGALmesh") && !is.matrix(x)) {
+      stop("The `x` argument must be either of class 'CGALmesh'",
+           " (i.e., the output of the `makeMesh()` function),",
+           " or a numeric matrix with 3 columns.")
   }
-  if(ncol(x) != 3L) {
-    stop("The `points` matrix must have three columns.", call. = TRUE)
-  }
-  if(nrow(x) <= 3L) {
-    stop("Insufficient number of points.", call. = TRUE)
-  }
-  storage.mode(x) <- "double"
-  if(anyNA(x)){
-    stop("Points with missing values are not allowed.", call. = TRUE)
-  }
-  alwrap   <- alphaWrap_cpp(t(x), alphaRel, offsetRel)
-  mesh_rwn <- vcgUpdateNormals(
-    tmesh3d(alwrap[["vertices"]],
-            alwrap[["faces"]],
-            normals    =NULL,
-            homogeneous=FALSE))
-  mesh_out <- if(out == "rgl") {
-    mesh_rwn
+
+  meshOut <- if(is.matrix(x)) {
+    if(!is.numeric(x)) {
+      stop("The `x` matrix must be numeric.", call. = TRUE)
+    }
+    if(ncol(x) != 3L) {
+      stop("The `x` matrix must have three columns.", call. = TRUE)
+    }
+    if(nrow(x) <= 3L) {
+      stop("Insufficient number of points.", call. = TRUE)
+    }
+    storage.mode(x) <- "double"
+    if(anyNA(x)) {
+      stop("Points in `x` with missing values are not allowed.", call. = TRUE)
+    }
+    alphaWrapPoints_cpp(t(x), alphaRel, offsetRel, normals)
   } else {
-    makeMesh(mesh=mesh_rwn)
+    alphaWrapMesh_cpp(x, alphaRel, offsetRel, normals)
   }
-  mesh_out
+  fromCPP(meshOut)
 }

@@ -1,13 +1,5 @@
 # TODO
 
-  * `getRmesh()`
-      * crashes, but `RSurfMesh1/2()` doesn't
-  * `smoothShape()`
-      * check
-  * normals
-      * consistent handling in `alphaWrap()`, `getBoundingBox()`, `remeshIsotropic()` - really use `Rvcg::vcgUpdateNormals()`?
-      * R to C++: normals are lost
-      * C++ to R: vertex normals via `RSurfMesh1/2()` -> `computeVNormals()`, `getRmesh()` -> `getVNormals()`
   * `fillBoundaryHole()`
       * pass more parameters (small holes)
   * `remeshIsotropic()`

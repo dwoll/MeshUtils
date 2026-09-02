@@ -38,7 +38,7 @@ Rcpp::List makeMesh_cpp(const Rcpp::List rmesh,
       fillHoles,           // fill_holes
       fairHole,            // fair hole
       maxNumHoles);        // max_num_holes
-  return RSurfMesh1<K, Mesh3, Point3, Vector3>(mesh, normals);
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -73,41 +73,32 @@ bool hasGarbage_cpp(const Rcpp::List rmesh) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-bool doesBoundVolume_cpp(
-  const Rcpp::List rmesh, const bool triangulate = false) {
+bool doesBoundVolume_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
-      triangulate, // triangulate
+      true,        // triangulate - must be triangle
       false,       // repair_soup
       false,       // remove_intersections
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
-  if(!CGAL::is_triangle_mesh(mesh)) {
-    Rcpp::warning("The mesh is not triangle.");
-    return Rcpp::LogicalVector::get_na();
-  }
   return PMP::does_bound_a_volume(mesh);
 }
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 bool doesSelfIntersect_cpp(
-  const Rcpp::List rmesh, const bool triangulate = false) {
+  const Rcpp::List rmesh) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
-      triangulate, // triangulate
+      true,        // triangulate - must be triangle
       false,       // repair_soup
       false,       // remove_intersections
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
-  if(!CGAL::is_triangle_mesh(mesh)) {
-    Rcpp::warning("The mesh is not triangle.");
-    return Rcpp::LogicalVector::get_na();
-  }
   return PMP::does_self_intersect(mesh);
 }
 
@@ -129,10 +120,10 @@ bool isClosed_cpp(const Rcpp::List rmesh) {
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List orientToBoundVolume_cpp(
-  const Rcpp::List rmesh, const bool triangulate = false) {
+  const Rcpp::List rmesh, const bool normals) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
-      triangulate, // triangulate
+      true,        // triangulate - must be triangle
       false,       // repair_soup
       false,       // remove_intersections
       1,           // remove_method
@@ -143,7 +134,7 @@ Rcpp::List orientToBoundVolume_cpp(
     Rcpp::stop("The mesh is not triangle.");
   }
   PMP::orient_to_bound_a_volume(mesh);
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -151,18 +142,18 @@ Rcpp::List orientToBoundVolume_cpp(
 // [[Rcpp::export]]
 Rcpp::List removeSelfIntersections_cpp(
   const Rcpp::List rmesh,
-  const bool triangulate,
-  const int method) {
+  const int method,
+  const bool normals) {
   EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
       rmesh,
-      triangulate, // triangulate
+      true,        // triangulate - must be triangle
       true,        // repair_soup
       true,        // remove_intersections
       method,      // remove_method
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
-  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false);
+  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -171,35 +162,32 @@ Rcpp::List removeSelfIntersections_cpp(
 Rcpp::List fillBoundaryHoles_cpp(
   const Rcpp::List rmesh,
   const bool fairHole,
-  const unsigned int maxNumHoles) {
+  const unsigned int maxNumHoles,
+  const bool normals) {
   EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
       rmesh,
-      true,         // triangulate
+      true,         // triangulate - must be triangle
       true,         // repair_soup
       false,        // remove_intersections
       1,            // remove_method
       true,         // fill_holes
       fairHole,     // fair hole
       maxNumHoles); // max_num_holes
-  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false);
+  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-double getArea_cpp(const Rcpp::List rmesh, const bool triangulate = false) {
+double getArea_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
-      triangulate, // triangulate
+      true,        // triangulate - must be triangle
       false,       // repair_soup
       false,       // remove_intersections
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
-  if(!CGAL::is_triangle_mesh(mesh)) {
-    Rcpp::warning("The mesh is not triangle.");
-    return Rcpp::NumericVector::get_na();
-  }
   if(PMP::does_self_intersect(mesh)) {
     Rcpp::warning("The mesh self-intersects.");
     return Rcpp::NumericVector::get_na();
@@ -210,21 +198,16 @@ double getArea_cpp(const Rcpp::List rmesh, const bool triangulate = false) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-double getVolume_cpp(
-  const Rcpp::List rmesh, const bool triangulate = false) {
+double getVolume_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
-      triangulate, // triangulate
+      true,        // triangulate - must be triangle
       false,       // repair_soup
       false,       // remove_intersections
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
-  if(!CGAL::is_triangle_mesh(mesh)) {
-    Message("The mesh is not triangle.");
-    return Rcpp::NumericVector::get_na();
-  }
   if(!CGAL::is_closed(mesh)) {
     Message("The mesh is not closed.");
     return Rcpp::NumericVector::get_na();
@@ -239,11 +222,10 @@ double getVolume_cpp(
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::NumericVector getCentroid_cpp(
-  const Rcpp::List rmesh, const bool triangulate = false) {
+Rcpp::NumericVector getCentroid_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
-      triangulate, // triangulate
+      true,        // triangulate - must be triangle
       false,       // repair_soup
       false,       // remove_intersections
       1,           // remove_method
@@ -267,7 +249,8 @@ Rcpp::NumericVector getCentroid_cpp(
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn, const bool normals) {
+Rcpp::List optimalBoundingBox_cpp(
+  const Rcpp::List rmeshIn, const bool triangulate, const bool normals) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmeshIn,
       false,       // triangulate
@@ -287,7 +270,7 @@ Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn, const bool normals) 
     obb_pts[4], obb_pts[5], obb_pts[6], obb_pts[7],
     obb_mesh
   );
-  Rcpp::List rmesh_obb = RSurfMesh2<K, Mesh3, Point3, Vector3>(obb_mesh, normals, 4);
+  Rcpp::List rmesh_obb = getRmesh<K, Mesh3, Point3, Vector3>(obb_mesh, triangulate, normals);
   Rcpp::NumericMatrix hex_verts(3, 8);
   for(int i = 0; i < 8; i++) {
     Point3 pt = obb_pts[i];
@@ -325,10 +308,10 @@ Rcpp::List boundingBox_cpp(const Rcpp::List rmesh) {
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::NumericVector getDistance_cpp(
-    const Rcpp::List rmesh, const Rcpp::NumericMatrix points, const bool triangulate = false) {
+    const Rcpp::List rmesh, const Rcpp::NumericMatrix points) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
       rmesh,
-      triangulate, // triangulate
+      true,        // triangulate - must be triangle
       false,       // repair_soup
       false,       // remove_intersections
       1,           // remove_method
@@ -364,13 +347,5 @@ Rcpp::List addVNormals_cpp(const Rcpp::List rmesh) {
     false,       // fill_holes
     false,       // fair hole
     0);          // max_num_holes
-  Rcpp::List mesh_out;
-  if(CGAL::is_triangle_mesh(mesh)) {
-    mesh_out = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, true, 3);
-  } else if(CGAL::is_quad_mesh(mesh)) {
-    mesh_out = RSurfMesh2<K, Mesh3, Point3, Vector3>(mesh, true, 4);
-  } else {
-    mesh_out = RSurfMesh1<K, Mesh3, Point3, Vector3>(mesh, true);
-  }
-  return mesh_out;
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, true);
 }

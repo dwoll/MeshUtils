@@ -15,10 +15,6 @@
 #'   approximate distance, or distance estimate with a given error bound.
 #' @param mesh1 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param mesh2 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param triangulate1 Boolean: Whether to triangulate the faces of \code{mesh1}.
-#'   Ignored if faces are already triangle.
-#' @param triangulate2 Boolean: Whether to triangulate the faces of \code{mesh2}.
-#'   Ignored if faces are already triangle.
 #' @param symmetric Boolean: Whether to consider the symmetric Hausdorff
 #'   distance.
 #' @param errorBound A positive number, a bound on the error of the
@@ -38,21 +34,16 @@
 #'                      errorBound=0.001)
 #'
 #' @export
-getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound,
-	triangulate1 = FALSE, triangulate2 = FALSE) {
+getHausdorffDistance <- function(mesh1, mesh2, symmetric = TRUE, errorBound) {
   stopifnot(inherits(mesh1, "CGALmesh"))
   stopifnot(inherits(mesh2, "CGALmesh"))
   stopifnot(isBoolean(symmetric))
-  stopifnot(isBoolean(triangulate1))
-  stopifnot(isBoolean(triangulate1))
   meshCPP1 <- fromR(mesh1)
   meshCPP2 <- fromR(mesh2)
   if(!missing(errorBound)) {
     stopifnot(isPositiveNumber(errorBound))
-    getHausdorffEst_cpp(meshCPP1, meshCPP2, symmetric, errorBound,
-                        triangulate1, triangulate2)
+    getHausdorffEst_cpp(meshCPP1, meshCPP2, symmetric, errorBound)
   } else {
-    getHausdorffApprox_cpp(meshCPP1, meshCPP2, symmetric,
-    	                     triangulate1, triangulate2)
+    getHausdorffApprox_cpp(meshCPP1, meshCPP2, symmetric)
   }
 }

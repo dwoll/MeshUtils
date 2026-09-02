@@ -39,7 +39,8 @@ typedef SSS_reconstruction::Point_const_iterator                     SSS_point_i
 // [[Rcpp::export]]
 Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
                               const int nNeighbors,
-                              const bool repairSoup) {
+                              const bool repairSoup,
+                              const bool normals) {
   std::vector<Point3> points = matrix_to_points3<Point3>(pts);
   if(nNeighbors >= 2) {
     CGAL::jet_smooth_point_set<CGAL::Sequential_tag>(points, nNeighbors);
@@ -93,22 +94,24 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
       false,      // fill_holes
       false,      // fair hole
       0);         // max_num_holes
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
+  // surface reconstruction makes triangle mesh
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
-                                  const Rcpp::NumericMatrix normals,
+                                  const Rcpp::NumericMatrix normalsIn,
                                   const double spacing,
                                   const double smAngle,
                                   const double smRadius,
-                                  const double smDistance) {
+                                  const double smDistance,
+                                  const bool normals) {
   const std::size_t nPts = pts.ncol();
-  std::vector<P3V3> points(nPts);   // normals
+  std::vector<P3V3> points(nPts);   // points with normals
   for(std::size_t i = 0; i < nPts; i++) {
     const Rcpp::NumericVector pt_i = pts(Rcpp::_, i);
-    const Rcpp::NumericVector nrml_i = normals(Rcpp::_, i);
+    const Rcpp::NumericVector nrml_i = normalsIn(Rcpp::_, i);
     points[i] =
       std::make_pair(Point3(pt_i(0), pt_i(1), pt_i(2)),
                      Vector3(nrml_i(0), nrml_i(1), nrml_i(2)));
@@ -149,7 +152,8 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
 
   Mesh3 mesh;
   CGAL::copy_face_graph(poly, mesh);
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
+  // surface reconstruction makes triangle mesh
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -162,7 +166,8 @@ Rcpp::List reconstructSSS_cpp(
   const bool separateShells,
   const bool forceManifold,
   const double borderAngle,
-  const bool repairSoup) {
+  const bool repairSoup,
+  const bool normals) {
   std::vector<Point3> points = matrix_to_points3<Point3>(pts);
   SSS_reconstruction SSSR(points.begin(), points.end());
   SSS_smoother smoother(nNeighbors, nSamples);
@@ -189,5 +194,6 @@ Rcpp::List reconstructSSS_cpp(
           PMP::orient_to_bound_a_volume(mesh);
       }
   }
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
+  // surface reconstruction makes triangle mesh
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }

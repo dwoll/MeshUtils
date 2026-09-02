@@ -19,12 +19,10 @@
 double getHausdorffApprox_cpp(
     const Rcpp::List rmesh1,
     const Rcpp::List rmesh2,
-    const bool symmetric,
-    const bool triangulate1 = false,
-    const bool triangulate2 = false) {
+    const bool symmetric) {
   Mesh3 mesh1 = makeSurfMesh<K, Mesh3, Point3>(
       rmesh1,
-      triangulate1, // triangulate
+      true,         // triangulate
       false,        // repair_soup
       false,        // remove_intersections
       1,            // remove_method
@@ -33,7 +31,7 @@ double getHausdorffApprox_cpp(
       0);           // max_num_holes
   Mesh3 mesh2 = makeSurfMesh<K, Mesh3, Point3>(
       rmesh2,
-      triangulate2, // triangulate
+      true,         // triangulate
       false,        // repair_soup
       false,        // remove_intersections
       1,            // remove_method
@@ -71,12 +69,10 @@ double getHausdorffEst_cpp(
     const Rcpp::List rmesh1,
     const Rcpp::List rmesh2,
     const bool symmetric,
-    const double error_bound,
-    const bool triangulate1 = false,
-    const bool triangulate2 = false) {
+    const double error_bound) {
     Mesh3 mesh1 = makeSurfMesh<K, Mesh3, Point3>(
         rmesh1,
-        triangulate1, // triangulate
+        true,         // triangulate
         false,        // repair_soup
         false,        // remove_intersections
         1,            // remove_method
@@ -85,7 +81,7 @@ double getHausdorffEst_cpp(
         0);           // max_num_holes
     Mesh3 mesh2 = makeSurfMesh<K, Mesh3, Point3>(
         rmesh2,
-        triangulate2, // triangulate
+        true,         // triangulate
         false,        // repair_soup
         false,        // remove_intersections
         1,            // remove_method

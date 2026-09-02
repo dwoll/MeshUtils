@@ -4,13 +4,10 @@
 \alias{getArea}
 \title{Get mesh area}
 \usage{
-getArea(x, triangulate = FALSE)
+getArea(x)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
-
-\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
-are already triangle.}
 }
 \value{
 \code{numeric}: The mesh area.
@@ -23,4 +20,7 @@ library(MeshUtils)
 mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 getArea(mesh)
 
+}
+\author{
+Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 }

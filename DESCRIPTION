@@ -9,8 +9,9 @@ Maintainer: Daniel Wollschlaeger <wollschlaeger@uni-mainz.de>
 Description: An adaptation of code from packages 'Boov', 'PolygonSoup',
     and 'cgalMeshes' developed by Stéphane Laurent. Uses the 'C++'
     library 'CGAL' <https://www.cgal.org/>. Supports basic processing
-    of 3D meshes as well as mesh repair, remeshing, Boolean operations
-    (union, difference and intersection), surface reconstruction,
+    of 3D meshes as well as mesh repair, remeshing, smoothing,
+    Boolean operations (union, difference, intersection),
+    surface reconstruction (AFS, SSS, Poisson),
     (optimal) bounding box, and Hausdorff distance.
 License: GPL-3
 URL: https://github.com/dwoll/MeshUtils/
@@ -19,8 +20,7 @@ Depends:
     R (>= 3.5.0)
 Imports:
     Rcpp (>= 1.0.9),
-    rgl,
-    Rvcg
+    rgl
 LinkingTo:
     BH,
     Rcpp,

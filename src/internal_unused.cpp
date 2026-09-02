@@ -24,6 +24,36 @@ Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT>&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+template <typename KernelT, typename MeshT, typename VectorT>
+std::optional<Rcpp::NumericMatrix> getVNormals(const MeshT &mesh) {
+    using vertex_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
+    using vnormals_map      = typename MeshT::template Property_map<vertex_descriptor, VectorT>;
+
+    std::optional<Rcpp::NumericMatrix> normals_mat;
+    std::optional<vnormals_map> vnormals =
+        mesh.template property_map<vertex_descriptor, VectorT>("v:normal");
+    if(vnormals.has_value()) {
+        Rcpp::NumericMatrix nm(3, mesh.number_of_vertices());
+        std::size_t i = 0;
+        for(vertex_descriptor vd : vertices(mesh)) {
+          Rcpp::NumericVector col_i(3);
+          const VectorT normal = vnormals.value()[vd];
+          col_i(0) = CGAL::to_double<typename KernelT::FT>(normal.x());
+          col_i(1) = CGAL::to_double<typename KernelT::FT>(normal.y());
+          col_i(2) = CGAL::to_double<typename KernelT::FT>(normal.z());
+          nm(Rcpp::_, i) = col_i;
+          i++;
+        }
+        normals_mat = std::move(nm);
+    }
+    return normals_mat;
+}
+
+template std::optional<Rcpp::NumericMatrix> getVNormals<K,  Mesh3,  Vector3>(const  Mesh3&);
+template std::optional<Rcpp::NumericMatrix> getVNormals<EK, EMesh3, EVector3>(const EMesh3&);
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
 // currently not used
 template <typename MeshT, typename PointT>
 bool is_small_hole(typename boost::graph_traits<MeshT>::halfedge_descriptor h,

@@ -28,6 +28,9 @@ A \code{CGALmesh} object.
 \description{
 Computes the difference between two meshes.
 }
+\details{
+See \url{https://doc.cgal.org/latest/PMP_Boolean_operations/} for details.
+}
 \examples{
 library(MeshUtils)
 library(rgl)

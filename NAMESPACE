@@ -14,8 +14,8 @@ export(getBoundingBox)
 export(getCentroid)
 export(getDistance)
 export(getHausdorffDistance)
+export(getNormalsFun)
 export(getOptimalBoundingBox)
-export(getSomeNormals)
 export(getVolume)
 export(hasGarbage)
 export(isClosed)
@@ -37,7 +37,6 @@ export(subdivideSqrt3)
 export(toRGL)
 export(writeMeshFile)
 importFrom(Rcpp,evalCpp)
-importFrom(Rvcg,vcgUpdateNormals)
 importFrom(rgl,
   cube3d,
   cylinder3d,

@@ -39,7 +39,6 @@ void checkMesh2(const MeshT &mesh, const std::string& what) {
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolIntersection(const Rcpp::List &rmeshes,
-                       const Rcpp::LogicalVector triangulate,
                        const bool repairSoup) {
   const std::size_t nMeshes = rmeshes.size();
   if(nMeshes < 2) {
@@ -50,7 +49,7 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
   Message("Processing mesh1");
   MeshT mesh_0 = makeSurfMesh<KernelT, MeshT, PointT>(
       rmesh_0,
-      triangulate[0], // triangulate
+      true,           // triangulate - must be triangle
       repairSoup,     // repair_soup
       false,          // remove_intersections
       1,              // remove_method
@@ -70,7 +69,7 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
     Message("Processing mesh" + meshnum);
     MeshT mesh_i = makeSurfMesh<KernelT, MeshT, PointT>(
         rmesh_i,
-        triangulate[i], // triangulate
+        true,           // triangulate - must be triangle
         repairSoup,     // repair_soup
         false,          // remove_intersections
         1,              // remove_method
@@ -89,46 +88,21 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
 
 // [[Rcpp::export]]
 Rcpp::List boolIntersectionEK_cpp(const Rcpp::List rmeshes,
-                                  const Rcpp::LogicalVector triangulate,
                                   const bool repairSoup,
                                   const bool normals) {
-  EMesh3 mesh = boolIntersection<EK, EMesh3, EPoint3>(
-      rmeshes,
-      triangulate,
-      repairSoup);
-  // PMP::corefine_and_compute_intersection() requires triangle mesh
-  // -> output is triangle
-  return RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, normals, 3);
-}
-
-// ----------------------------------------------------------------------- //
-template <typename KernelT, typename MeshT, typename PointT>
-MeshT boolDifferenceSM(MeshT &mesh1,
-                       MeshT &mesh2,
-                       const bool triangulate1,
-                       const bool triangulate2,
-                       const bool repairSoup) {
-  checkMesh1<MeshT>(mesh1, 1);
-  checkMesh1<MeshT>(mesh2, 2);
-  MeshT mesh_d;
-  bool ok = PMP::corefine_and_compute_difference(mesh1, mesh2, mesh_d);
-  if(!ok) {
-    Rcpp::stop("Difference computation has failed.");
-  }
-  return mesh_d;
+  EMesh3 mesh = boolIntersection<EK, EMesh3, EPoint3>(rmeshes, repairSoup);
+  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolDifference(const Rcpp::List &rmesh1,
                      const Rcpp::List &rmesh2,
-                     const bool triangulate1,
-                     const bool triangulate2,
                      const bool repairSoup) {
   Message("Processing mesh1");
   MeshT smesh1 = makeSurfMesh<KernelT, MeshT, PointT>(
       rmesh1,
-      triangulate1,   // triangulate
+      true,           // triangulate - must be triangle
       repairSoup,     // repair_soup
       false,          // remove_intersections
       1,              // remove_method
@@ -139,7 +113,7 @@ MeshT boolDifference(const Rcpp::List &rmesh1,
   Message("Processing mesh2");
   MeshT smesh2 = makeSurfMesh<KernelT, MeshT, PointT>(
       rmesh2,
-      triangulate2,   // triangulate
+      true,           // triangulate - must be triangle
       repairSoup,     // repair_soup
       false,          // remove_intersections
       1,              // remove_method
@@ -158,21 +132,15 @@ MeshT boolDifference(const Rcpp::List &rmesh1,
 // [[Rcpp::export]]
 Rcpp::List boolDifferenceEK_cpp(const Rcpp::List rmesh1,
                                 const Rcpp::List rmesh2,
-                                const bool triangulate1,
-                                const bool triangulate2,
                                 const bool repairSoup,
                                 const bool normals) {
-  EMesh3 mesh = boolDifference<EK, EMesh3, EPoint3>(
-    rmesh1, rmesh2, triangulate1, triangulate2, repairSoup);
-  // PMP::corefine_and_compute_difference() requires triangle mesh
-  // -> output is triangle
-  return RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, normals, 3);
+  EMesh3 mesh = boolDifference<EK, EMesh3, EPoint3>(rmesh1, rmesh2, repairSoup);
+  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolUnion(const Rcpp::List &rmeshes,
-                const Rcpp::LogicalVector triangulate,
                 const bool repairSoup) {
   const std::size_t nMeshes = rmeshes.size();
   if(nMeshes < 2) {
@@ -183,7 +151,7 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
   Message("Processing mesh1");
   MeshT mesh_0 = makeSurfMesh<KernelT, MeshT, PointT>(
       rmesh,
-      triangulate[0], // triangulate
+      true,           // triangulate - must be triangle
       repairSoup,     // repair_soup
       false,          // remove_intersections
       1,              // remove_method
@@ -202,7 +170,7 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
     Message("Processing mesh" + meshnum);
     MeshT mesh_i = makeSurfMesh<KernelT, MeshT, PointT>(
         rmesh_i,
-        triangulate[i], // triangulate
+        true,           // triangulate - must be triangle
         repairSoup,     // repair_soup
         false,          // remove_intersections
         1,              // remove_method
@@ -222,14 +190,8 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
 
 // [[Rcpp::export]]
 Rcpp::List boolUnionEK_cpp(const Rcpp::List rmeshes,
-                           const Rcpp::LogicalVector triangulate,
                            const bool repairSoup,
                            const bool normals) {
-  EMesh3 mesh = boolUnion<EK, EMesh3, EPoint3>(
-      rmeshes,
-      triangulate,
-      repairSoup);
-  // PMP::corefine_and_compute_union() requires triangle mesh
-  // -> output is triangle
-  return RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(mesh, normals, 3);
+  EMesh3 mesh = boolUnion<EK, EMesh3, EPoint3>(rmeshes, repairSoup);
+  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }

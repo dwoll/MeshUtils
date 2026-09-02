@@ -95,7 +95,7 @@ template Rcpp::DataFrame getEdges<EK, EMesh3, EPoint3>(const EMesh3&);
 template <typename MeshT>
 Rcpp::List getFaces1(const MeshT &mesh) {
   const std::size_t nFaces = mesh.number_of_faces();
-  Rcpp::List Faces(nFaces);
+  Rcpp::List face_list(nFaces);
   {
     std::size_t i = 0;
     for(typename MeshT::Face_index fd : mesh.faces()) {
@@ -104,11 +104,11 @@ Rcpp::List getFaces1(const MeshT &mesh) {
           vertices_around_face(mesh.halfedge(fd), mesh)) {
         col_i.push_back(vd + 1);
       }
-      Faces(i) = col_i;
+      face_list(i) = col_i;
       i++;
     }
   }
-  return Faces;
+  return face_list;
 }
 
 template Rcpp::List getFaces1<Mesh3>(const  Mesh3&);
@@ -120,54 +120,23 @@ template Rcpp::List getFaces1<EMesh3>(const EMesh3&);
 template <typename MeshT>
 Rcpp::IntegerMatrix getFaces2(const MeshT &mesh, const std::size_t nSides) {
   const std::size_t nFaces = mesh.number_of_faces();
-  Rcpp::IntegerMatrix Faces(nSides, nFaces);
+  Rcpp::IntegerMatrix face_mat(nSides, nFaces);
   {
     std::size_t i = 0;
     for(typename MeshT::Face_index fd : mesh.faces()) {
-      // bool TEST = CGAL::is_triangle(mesh.halfedge(fd), mesh);
       Rcpp::IntegerVector col_i;
       for(typename MeshT::Vertex_index vd :
           vertices_around_face(mesh.halfedge(fd), mesh)) {
         col_i.push_back(vd + 1);
       }
-      Faces(Rcpp::_, i++) = col_i;
+      face_mat(Rcpp::_, i++) = col_i;
     }
   }
-  return Faces;
+  return face_mat;
 }
 
 template Rcpp::IntegerMatrix getFaces2<Mesh3>(const Mesh3&,   const std::size_t);
 template Rcpp::IntegerMatrix getFaces2<EMesh3>(const EMesh3&, const std::size_t);
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-template <typename KernelT, typename MeshT, typename VectorT>
-std::optional<Rcpp::NumericMatrix> getVNormals(const MeshT &mesh) {
-    using vertex_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
-    using vnormals_map      = typename MeshT::template Property_map<vertex_descriptor, VectorT>;
-
-    std::optional<Rcpp::NumericMatrix> normals_mat;
-    std::optional<vnormals_map> vnormals =
-        mesh.template property_map<vertex_descriptor, VectorT>("v:normal");
-    if(vnormals.has_value()) {
-        Rcpp::NumericMatrix nm(3, mesh.number_of_vertices());
-        std::size_t i = 0;
-        for(vertex_descriptor vd : vertices(mesh)) {
-          Rcpp::NumericVector col_i(3);
-          const VectorT normal = vnormals.value()[vd];
-          col_i(0) = CGAL::to_double<typename KernelT::FT>(normal.x());
-          col_i(1) = CGAL::to_double<typename KernelT::FT>(normal.y());
-          col_i(2) = CGAL::to_double<typename KernelT::FT>(normal.z());
-          nm(Rcpp::_, i) = col_i;
-          i++;
-        }
-        normals_mat = std::move(nm);
-    }
-    return normals_mat;
-}
-
-template std::optional<Rcpp::NumericMatrix> getVNormals<K,  Mesh3,  Vector3>(const  Mesh3&);
-template std::optional<Rcpp::NumericMatrix> getVNormals<EK, EMesh3, EVector3>(const EMesh3&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -244,44 +213,25 @@ template Rcpp::List RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, con
 // ----------------------------------------------------------------------- //
 // PMP::triangulate_faces() modifies -> mesh not const
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List getRmesh(MeshT &mesh, const bool triangulate) {
+Rcpp::List getRmesh(MeshT &mesh, const bool triangulate, const bool normals) {
   bool is_triangle = CGAL::is_triangle_mesh(mesh);
   if(triangulate && !is_triangle) {
     is_triangle = PMP::triangulate_faces(mesh);
   }
   Rcpp::List rmesh;
   if(is_triangle) {
-    rmesh = RSurfMesh2<KernelT, MeshT, PointT, VectorT>(mesh, false, 3);
+    rmesh = RSurfMesh2<KernelT, MeshT, PointT, VectorT>(mesh, normals, 3);
   } else if(CGAL::is_quad_mesh(mesh)) {
-    rmesh = RSurfMesh2<KernelT, MeshT, PointT, VectorT>(mesh, false, 4);
+    rmesh = RSurfMesh2<KernelT, MeshT, PointT, VectorT>(mesh, normals, 4);
   } else {
-    rmesh = RSurfMesh1<KernelT, MeshT, PointT, VectorT>(mesh, false);
-  }
-
-
-  // TODO REMOVE BEGIN
-  using vertex_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
-  removeProperties<MeshT, VectorT>(mesh, {"v:normal"});
-  auto vnormals = mesh.template add_property_map<vertex_descriptor, VectorT>(
-                          "v:normal", CGAL::NULL_VECTOR).first;
-  PMP::compute_vertex_normals(mesh, vnormals);
-  // TODO REMOVE END
-
-
-  std::optional<Rcpp::NumericMatrix> vnormals_mat = getVNormals<KernelT, MeshT, VectorT>(mesh);
-  if(vnormals_mat.has_value()) {
-    Message("Normals in getRmesh() -> assignment to rmesh['normals']");
-    std::string msg;
-    msg = "Number of normals: " + std::to_string(vnormals_mat.value().ncol()) + ".";
-    Message(msg);
-    rmesh["normals"] = vnormals_mat.value();
+    rmesh = RSurfMesh1<KernelT, MeshT, PointT, VectorT>(mesh, normals);
   }
 
   return rmesh;
 }
 
-template Rcpp::List getRmesh<K,  Mesh3,  Point3,  Vector3>(Mesh3&,   const bool);
-template Rcpp::List getRmesh<EK, EMesh3, EPoint3, EVector3>(EMesh3&, const bool);
+template Rcpp::List getRmesh<K,  Mesh3,  Point3,  Vector3>(Mesh3&,   const bool, const bool);
+template Rcpp::List getRmesh<EK, EMesh3, EPoint3, EVector3>(EMesh3&, const bool, const bool);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //

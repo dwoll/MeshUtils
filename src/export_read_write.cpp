@@ -89,7 +89,8 @@ Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary) {
+Rcpp::List readFileMesh_cpp(
+  const std::string filename, const bool binary, const bool normals) {
   Mesh3 mesh;
   const std::string ext = toLower(std::filesystem::path(filename).extension().string());
   bool ok = false;
@@ -119,7 +120,7 @@ Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary) {
   if(!valid) {
     Rcpp::warning("The mesh is not valid.");
   }
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false);
+  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //

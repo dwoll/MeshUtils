@@ -4,7 +4,7 @@
 \alias{readMeshFile}
 \title{Read a mesh file}
 \usage{
-readMeshFile(x, method = c("soup", "mesh"), binary = FALSE)
+readMeshFile(x, method = c("soup", "mesh"), binary = FALSE, normals = FALSE)
 }
 \arguments{
 \item{x}{Path to the mesh file; supported formats are \code{stl},
@@ -14,6 +14,8 @@ readMeshFile(x, method = c("soup", "mesh"), binary = FALSE)
 the file is a valid mesh.}
 
 \item{binary}{Boolean: For \code{method="mesh"}: Whether input file is binary.}
+
+\item{normals}{Boolean: Whether to return vertex normals for \code{method="mesh"}.}
 }
 \value{
 For \code{method="soup"}: A list with two components: \code{vertices},

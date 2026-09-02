@@ -24,19 +24,16 @@ Rcpp::List smoothShape_cpp(
   const Rcpp::IntegerVector indices,
   const unsigned int nIter,
   const double time,
-  const bool triangulate) {
+  const bool normals) {
     Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
         rmesh,
-        triangulate, // triangulate
+        true,        // triangulate - must be triangle
         false,       // repair_soup
         false,       // remove_intersections
         1,           // remove_method
         false,       // fill_holes
         false,       // fair hole
         0);          // max_num_holes
-    if(!CGAL::is_triangle_mesh(mesh)) {
-      Rcpp::stop("The mesh is not triangle.");
-    }
     std::set<Mesh3::Vertex_index> constrained_vertices;
     for(Mesh3::Vertex_index v : vertices(mesh)) {
       if(is_border(v, mesh)) {
@@ -64,5 +61,6 @@ Rcpp::List smoothShape_cpp(
                                  PMP::parameters::number_of_iterations(nIter)
                                  .vertex_is_constrained_map(vcmap));
     }
-    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, triangulate);
+    // subdivision requires triangle mesh -> output is triangle
+    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }

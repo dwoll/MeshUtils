@@ -25,9 +25,8 @@
 #'   Maximum edge length. See details.
 #' @param nIter Positive \code{integer}: Number of iterations.
 #' @param nRelaxSteps Positive \code{integer}: Number of relaxation steps.
-#' @param out \code{character}: Indicate output mesh format.
-#' @return A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl},
-#'   depending on option \code{out}.
+#' @param normals Boolean: Whether to return vertex normals.
+#' @return A \code{CGALmesh} object.
 #' @details See \url{https://doc.cgal.org/latest/PMP_Remeshing/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -37,7 +36,8 @@
 #'
 #' mesh         <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
 #' mesh_rgl     <- toRGL(mesh)
-#' mesh_rem_rgl <- remeshIsotropic(mesh, targetEdgeLen=1, out="rgl")
+#' mesh_rem     <- remeshIsotropic(mesh, targetEdgeLen=1)
+#' mesh_rem_rgl <- toRGL(mesh_rem)
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
 #' mfrow3d(1, 2)
@@ -55,45 +55,37 @@ remeshIsotropic <- function(
         targetEdgeLen,
         nIter = 1,
         nRelaxSteps = 1,
-        out = c("CGALmesh", "rgl")) {
+        normals = FALSE) {
     method <- match.arg(method)
     if(!inherits(x, "CGALmesh")) {
         stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
     }
-    out <- match.arg(out)
     stopifnot(isStrictPositiveInteger(nIter))
     stopifnot(isStrictPositiveInteger(nRelaxSteps))
+    stopifnot(isBoolean(normals))
     meshCPP <- fromR(x)
-    if(method == "uniform") {
+    meshRem <- if(method == "uniform") {
       stopifnot(isPositiveNumber(targetEdgeLen))
-      meshRe <- remeshIsotropicUniform_cpp(
+      remeshIsotropicUniform_cpp(
           meshCPP,
           targetEdgeLen,
           as.integer(nIter),
-          as.integer(nRelaxSteps))
+          as.integer(nRelaxSteps),
+          normals)
     } else if(method == "adaptive") {
       stopifnot(isPositiveNumber(tol))
       stopifnot(isPositiveNumber(edgeMin))
       stopifnot(isPositiveNumber(edgeMax))
-
-      meshRe <- remeshIsotropicAdapt_cpp(
+      remeshIsotropicAdapt_cpp(
           meshCPP,
           tol,
           edgeMin,
           edgeMax,
           as.integer(nIter),
-          as.integer(nRelaxSteps))
+          as.integer(nRelaxSteps),
+          normals)
     }
 
-    meshReWN <- vcgUpdateNormals(
-        tmesh3d(meshRe[["vertices"]],
-                meshRe[["faces"]],
-                normals=NULL))
-    meshOut <- if(out == "rgl") {
-        meshReWN
-    } else {
-        makeMesh(mesh=meshReWN)
-    }
-    meshOut
+    fromCPP(meshRem)
 }

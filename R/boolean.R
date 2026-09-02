@@ -32,7 +32,7 @@
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' # mesh one: truncated icosahedron; we triangulate it for plotting
+#' # mesh one: truncated icosahedron; we triangulate it
 #' mesh1 <- makeMesh(mesh       =dataTruncIcosahedron,
 #'                   triangulate=TRUE,
 #'                   normals    = FALSE)
@@ -72,10 +72,8 @@ boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE) {
     }
     checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
   })
-  areTriangle <- vapply(checkMeshes, `[[`, logical(1L), "isTriangle")
-  triangulate <- !areTriangle
-  meshes      <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  inter       <- boolIntersectionEK_cpp(meshes, triangulate, repairSoup, normals)
+  meshes <- lapply(checkMeshes, `[`, c("vertices", "faces"))
+  inter  <- boolIntersectionEK_cpp(meshes, repairSoup, normals)
   fromCPP(inter)
 }
 
@@ -133,20 +131,18 @@ boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE) {
     vft   <- getVFT(mesh1, beforeCheck = TRUE)
     mesh1 <- vft[["rmesh"]]
   }
-  checkMesh1   <- checkMesh(mesh1[["vertices"]], mesh1[["faces"]], aslist = TRUE)
-  triangulate1 <- !checkMesh1[["isTriangle"]]
+  checkMesh1 <- checkMesh(mesh1[["vertices"]], mesh1[["faces"]], aslist = TRUE)
 
   if(inherits(mesh2, "mesh3d")) {
     vft   <- getVFT(mesh2, beforeCheck = TRUE)
     mesh2 <- vft[["rmesh"]]
   }
-  checkMesh2   <- checkMesh(mesh2[["vertices"]], mesh2[["faces"]], aslist = TRUE)
-  triangulate2 <- !checkMesh2[["isTriangle"]]
+  checkMesh2 <- checkMesh(mesh2[["vertices"]], mesh2[["faces"]], aslist = TRUE)
 
   mesh1  <- checkMesh1[c("vertices", "faces")]
   mesh2  <- checkMesh2[c("vertices", "faces")]
   differ <- boolDifferenceEK_cpp(
-    mesh1, mesh2, triangulate1, triangulate2, repairSoup, normals)
+    mesh1, mesh2, repairSoup, normals)
   fromCPP(differ)
 }
 
@@ -205,9 +201,7 @@ boolUnion <- function(x, repairSoup = TRUE, normals = FALSE) {
     checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
   })
 
-  areTriangle <- vapply(checkMeshes, `[[`, logical(1L), "isTriangle")
-  triangulate <- !areTriangle
-  meshes      <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  umesh       <- boolUnionEK_cpp(meshes, triangulate, repairSoup, normals)
+  meshes <- lapply(checkMeshes, `[`, c("vertices", "faces"))
+  umesh  <- boolUnionEK_cpp(meshes, repairSoup, normals)
   fromCPP(umesh)
 }
