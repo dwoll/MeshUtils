@@ -137,8 +137,8 @@ subdivideCatmullClark_cpp <- function(rmesh, nIter, normals) {
     .Call(`_MeshUtils_subdivideCatmullClark_cpp`, rmesh, nIter, normals)
 }
 
-subdivideDooSabin_cpp <- function(rmesh, nIter, normals) {
-    .Call(`_MeshUtils_subdivideDooSabin_cpp`, rmesh, nIter, normals)
+subdivideDooSabin_cpp <- function(rmesh, nIter, triangulate, normals) {
+    .Call(`_MeshUtils_subdivideDooSabin_cpp`, rmesh, nIter, triangulate, normals)
 }
 
 subdivideSqrt3_cpp <- function(rmesh, nIter, normals) {

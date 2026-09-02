@@ -463,15 +463,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // subdivideDooSabin_cpp
-Rcpp::List subdivideDooSabin_cpp(const Rcpp::List rmesh, const unsigned int nIter, const bool normals);
-RcppExport SEXP _MeshUtils_subdivideDooSabin_cpp(SEXP rmeshSEXP, SEXP nIterSEXP, SEXP normalsSEXP) {
+Rcpp::List subdivideDooSabin_cpp(const Rcpp::List rmesh, const unsigned int nIter, const bool triangulate, const bool normals);
+RcppExport SEXP _MeshUtils_subdivideDooSabin_cpp(SEXP rmeshSEXP, SEXP nIterSEXP, SEXP triangulateSEXP, SEXP normalsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type nIter(nIterSEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(subdivideDooSabin_cpp(rmesh, nIter, normals));
+    rcpp_result_gen = Rcpp::wrap(subdivideDooSabin_cpp(rmesh, nIter, triangulate, normals));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -524,7 +525,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_remeshIsotropicAdapt_cpp", (DL_FUNC) &_MeshUtils_remeshIsotropicAdapt_cpp, 7},
     {"_MeshUtils_smoothShape_cpp", (DL_FUNC) &_MeshUtils_smoothShape_cpp, 5},
     {"_MeshUtils_subdivideCatmullClark_cpp", (DL_FUNC) &_MeshUtils_subdivideCatmullClark_cpp, 3},
-    {"_MeshUtils_subdivideDooSabin_cpp", (DL_FUNC) &_MeshUtils_subdivideDooSabin_cpp, 3},
+    {"_MeshUtils_subdivideDooSabin_cpp", (DL_FUNC) &_MeshUtils_subdivideDooSabin_cpp, 4},
     {"_MeshUtils_subdivideSqrt3_cpp", (DL_FUNC) &_MeshUtils_subdivideSqrt3_cpp, 3},
     {NULL, NULL, 0}
 };
