@@ -257,11 +257,22 @@ Rcpp::List getRmesh(MeshT &mesh, const bool triangulate) {
   } else {
     rmesh = RSurfMesh1<KernelT, MeshT, PointT, VectorT>(mesh, false);
   }
+
+
+  // TODO REMOVE BEGIN
+  using vertex_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
+  removeProperties<MeshT, VectorT>(mesh, {"v:normal"});
+  auto vnormals = mesh.template add_property_map<vertex_descriptor, VectorT>(
+                          "v:normal", CGAL::NULL_VECTOR).first;
+  PMP::compute_vertex_normals(mesh, vnormals);
+  // TODO REMOVE END
+
+
   std::optional<Rcpp::NumericMatrix> vnormals_mat = getVNormals<KernelT, MeshT, VectorT>(mesh);
   if(vnormals_mat.has_value()) {
     Message("Normals in getRmesh() -> assignment to rmesh['normals']");
     std::string msg;
-    msg = "Number of normals: " + std::to_string(vnormals_mat.ncol()) + ".";
+    msg = "Number of normals: " + std::to_string(vnormals_mat.value().ncol()) + ".";
     Message(msg);
     rmesh["normals"] = vnormals_mat.value();
   }
