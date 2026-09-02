@@ -438,7 +438,7 @@ isClosed <- function(x) {
 #' getVolume(mesh_o)
 #'
 #' @export
-orientToBoundVolume <- function(x, normals) {
+orientToBoundVolume <- function(x, normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")

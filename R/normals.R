@@ -35,8 +35,8 @@
 #' mesh     <- dataHeart1
 #' mesh_rgl <- toRGL(mesh)
 #' fun      <- getNormalsFun(6)
-#' mesh_psr <- reconstructPoisson(mesh,
-#'                                normals=fun,
+#' mesh_psr <- reconstructPoisson(mesh[["vertices"]],
+#'                                normalsFun=fun,
 #'                                smAngle=10,
 #'                                smRadius=1.5,
 #'                                smDistance=0.3)

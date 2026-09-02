@@ -4,13 +4,15 @@
 \alias{subdivideDooSabin}
 \title{Doo-Sabin subdivision and deformation}
 \usage{
-subdivideDooSabin(x, nIter = 1, normals = FALSE)
+subdivideDooSabin(x, nIter = 1, triangulate = TRUE, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 The mesh must be triangle or be able to be made triangle.}
 
 \item{nIter}{Positive \code{integer}: Number of iterations.}
+
+\item{triangulate}{Boolean: Whether to triangulate the resulting mesh.}
 
 \item{normals}{Boolean: Whether to return vertex normals.}
 }
@@ -30,7 +32,7 @@ library(rgl)
 
 mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
 mesh_rgl    <- toRGL(mesh)
-mesh_ds     <- subdivideDooSabin(mesh, nIter=2)
+mesh_ds     <- subdivideDooSabin(mesh, nIter=2, triangulate=TRUE)
 mesh_ds_rgl <- toRGL(mesh_ds)
 
 open3d(windowRect=50 + c(0, 0, 800, 400))

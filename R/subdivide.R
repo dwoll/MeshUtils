@@ -58,6 +58,7 @@ subdivideCatmullClark <- function(x, nIter = 1, normals = FALSE) {
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #'   The mesh must be triangle or be able to be made triangle.
 #' @param nIter Positive \code{integer}: Number of iterations.
+#' @param triangulate Boolean: Whether to triangulate the resulting mesh.
 #' @param normals Boolean: Whether to return vertex normals.
 #' @returns A \code{CGALmesh} object.
 #' @details See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
@@ -81,15 +82,16 @@ subdivideCatmullClark <- function(x, nIter = 1, normals = FALSE) {
 #' wire3d(mesh_ds_rgl)
 #'
 #' @export
-subdivideDooSabin <- function(x, nIter = 1, normals = FALSE) {
+subdivideDooSabin <- function(x, nIter = 1, triangulate = TRUE, normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			     " (i.e., the output of the `makeMesh()` function).")
   }
   stopifnot(isStrictPositiveInteger(nIter))
   stopifnot(isBoolean(normals))
+  stopifnot(isBoolean(triangulate))
   meshCPP <- fromR(x)
-  meshOut <- subdivideDooSabin_cpp(meshCPP, as.integer(nIter), normals)
+  meshOut <- subdivideDooSabin_cpp(meshCPP, as.integer(nIter), triangulate, normals)
   fromCPP(meshOut)
 }
 

@@ -37,7 +37,7 @@ Rcpp::List subdivideCatmullClark_cpp(
     CGAL::Subdivision_method_3::CatmullClark_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
-    // subdivision requires triangle mesh -> output is triangle
+    // subdivision creates triangle mesh
     return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
@@ -48,6 +48,7 @@ Rcpp::List subdivideCatmullClark_cpp(
 Rcpp::List subdivideDooSabin_cpp(
   const Rcpp::List rmesh,
   const unsigned int nIter,
+  const bool triangulate,
   const bool normals) {
     EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
         rmesh,
@@ -62,8 +63,8 @@ Rcpp::List subdivideDooSabin_cpp(
     CGAL::Subdivision_method_3::DooSabin_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
-    // subdivision requires triangle mesh -> output is triangle
-    return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+    // subdivision result may not be triangle
+    return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, triangulate, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -87,6 +88,6 @@ Rcpp::List subdivideSqrt3_cpp(
     CGAL::Subdivision_method_3::Sqrt3_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
-    // subdivision requires triangle mesh -> output is triangle
+    // subdivision creates triangle mesh
     return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }

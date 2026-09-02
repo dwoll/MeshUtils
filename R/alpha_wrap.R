@@ -82,6 +82,7 @@ alphaWrap <- function(x, alphaRel, offsetRel, normals=FALSE) {
     }
     alphaWrapPoints_cpp(t(x), alphaRel, offsetRel, normals)
   } else {
+    meshCPP <- fromR(x)
     alphaWrapMesh_cpp(x, alphaRel, offsetRel, normals)
   }
   fromCPP(meshOut)

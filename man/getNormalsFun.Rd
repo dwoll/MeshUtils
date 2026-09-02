@@ -32,9 +32,9 @@ library(MeshUtils)
 library(rgl)
 mesh     <- dataHeart1
 mesh_rgl <- toRGL(mesh)
-fun      <- getSNormalsFun(6)
-mesh_psr <- reconstructPoisson(mesh,
-                               normals=fun,
+fun      <- getNormalsFun(6)
+mesh_psr <- reconstructPoisson(mesh[["vertices"]],
+                               normalsFun=fun,
                                smAngle=10,
                                smRadius=1.5,
                                smDistance=0.3)
