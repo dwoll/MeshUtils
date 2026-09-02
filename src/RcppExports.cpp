@@ -286,14 +286,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// addVnormals_cpp
-Rcpp::List addVnormals_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_addVnormals_cpp(SEXP rmeshSEXP) {
+// addVNormals_cpp
+Rcpp::List addVNormals_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_addVNormals_cpp(SEXP rmeshSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(addVnormals_cpp(rmesh));
+    rcpp_result_gen = Rcpp::wrap(addVNormals_cpp(rmesh));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -502,7 +502,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_optimalBoundingBox_cpp", (DL_FUNC) &_MeshUtils_optimalBoundingBox_cpp, 2},
     {"_MeshUtils_boundingBox_cpp", (DL_FUNC) &_MeshUtils_boundingBox_cpp, 1},
     {"_MeshUtils_getDistance_cpp", (DL_FUNC) &_MeshUtils_getDistance_cpp, 3},
-    {"_MeshUtils_addVnormals_cpp", (DL_FUNC) &_MeshUtils_addVnormals_cpp, 1},
+    {"_MeshUtils_addVNormals_cpp", (DL_FUNC) &_MeshUtils_addVNormals_cpp, 1},
     {"_MeshUtils_jet_pca_normals_cpp", (DL_FUNC) &_MeshUtils_jet_pca_normals_cpp, 3},
     {"_MeshUtils_readFileSoup_cpp", (DL_FUNC) &_MeshUtils_readFileSoup_cpp, 2},
     {"_MeshUtils_readFileMesh_cpp", (DL_FUNC) &_MeshUtils_readFileMesh_cpp, 2},

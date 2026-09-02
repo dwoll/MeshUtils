@@ -85,8 +85,8 @@ getDistance_cpp <- function(rmesh, points, triangulate = FALSE) {
     .Call(`_MeshUtils_getDistance_cpp`, rmesh, points, triangulate)
 }
 
-addVnormals_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_addVnormals_cpp`, rmesh)
+addVNormals_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_addVNormals_cpp`, rmesh)
 }
 
 jet_pca_normals_cpp <- function(pts, nbNeighbors, method) {

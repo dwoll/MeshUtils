@@ -354,7 +354,7 @@ Rcpp::NumericVector getDistance_cpp(
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List addVnormals_cpp(const Rcpp::List rmesh) {
+Rcpp::List addVNormals_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
     rmesh,
     false,       // triangulate

@@ -142,14 +142,15 @@ template Rcpp::IntegerMatrix getFaces2<EMesh3>(const EMesh3&, const std::size_t)
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename VectorT>
-Rcpp::NumericMatrix getVNormals(const MeshT &mesh) {
+std::optional<Rcpp::NumericMatrix> getVNormals(const MeshT &mesh) {
     using vertex_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
     using vnormals_map      = typename MeshT::template Property_map<vertex_descriptor, VectorT>;
 
+    std::optional<Rcpp::NumericMatrix> normals_mat;
     std::optional<vnormals_map> vnormals =
         mesh.template property_map<vertex_descriptor, VectorT>("v:normal");
     if(vnormals.has_value()) {
-        Rcpp::NumericMatrix normals_mat(3, mesh.number_of_vertices());
+        Rcpp::NumericMatrix nm(3, mesh.number_of_vertices());
         std::size_t i = 0;
         for(vertex_descriptor vd : vertices(mesh)) {
           Rcpp::NumericVector col_i(3);
@@ -157,17 +158,16 @@ Rcpp::NumericMatrix getVNormals(const MeshT &mesh) {
           col_i(0) = CGAL::to_double<typename KernelT::FT>(normal.x());
           col_i(1) = CGAL::to_double<typename KernelT::FT>(normal.y());
           col_i(2) = CGAL::to_double<typename KernelT::FT>(normal.z());
-          normals_mat(Rcpp::_, i) = col_i;
+          nm(Rcpp::_, i) = col_i;
           i++;
         }
-        return normals_mat;
-    } else {
-        Rcpp::NumericMatrix normals_mat(3, 0);
+        normals_mat = std::move(nm);
     }
+    return normals_mat;
 }
 
-template Rcpp::NumericMatrix getVNormals<K,  Mesh3,  Vector3>(const  Mesh3&);
-template Rcpp::NumericMatrix getVNormals<EK, EMesh3, EVector3>(const EMesh3&);
+template std::optional<Rcpp::NumericMatrix> getVNormals<K,  Mesh3,  Vector3>(const  Mesh3&);
+template std::optional<Rcpp::NumericMatrix> getVNormals<EK, EMesh3, EVector3>(const EMesh3&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -257,9 +257,13 @@ Rcpp::List getRmesh(MeshT &mesh, const bool triangulate) {
   } else {
     rmesh = RSurfMesh1<KernelT, MeshT, PointT, VectorT>(mesh, false);
   }
-  Rcpp::NumericMatrix vnormals_mat = getVNormals<KernelT, MeshT, VectorT>(mesh);
-  if(vnormals_mat.ncol() > 0) {
-    rmesh["normals"] = vnormals_mat;
+  std::optional<Rcpp::NumericMatrix> vnormals_mat = getVNormals<KernelT, MeshT, VectorT>(mesh);
+  if(vnormals_mat.has_value()) {
+    Message("Normals in getRmesh() -> assignment to rmesh['normals']");
+    std::string msg;
+    msg = "Number of normals: " + std::to_string(vnormals_mat.ncol()) + ".";
+    Message(msg);
+    rmesh["normals"] = vnormals_mat.value();
   }
 
   return rmesh;

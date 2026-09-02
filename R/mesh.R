@@ -748,6 +748,6 @@ assignNormals <- function(x) {
 			       " (i.e., the output of the `makeMesh()` function).")
   }
   meshCPP <- fromR(x)
-  mesh    <- addVnormals_cpp(meshCPP)
+  mesh    <- addVNormals_cpp(meshCPP)
   fromCPP(mesh)
 }
