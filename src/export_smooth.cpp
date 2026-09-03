@@ -25,7 +25,7 @@ Rcpp::List smoothShape_cpp(
   const unsigned int nIter,
   const double time,
   const bool normals) {
-    Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
+    Mesh3 mesh = make_surf_mesh<K, Mesh3, Point3>(
         rmesh,
         true,        // triangulate - must be triangle
         false,       // repair_soup
@@ -62,5 +62,5 @@ Rcpp::List smoothShape_cpp(
                                  .vertex_is_constrained_map(vcmap));
     }
     // subdivision requires triangle mesh -> output is triangle
-    return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+    return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }

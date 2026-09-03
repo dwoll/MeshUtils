@@ -1,8 +1,8 @@
 # TODO
 
-  * `fillBoundaryHole()`
+  * `fill_boundary_hole()`
       * pass more parameters (small holes)
-  * `remeshIsotropic()`
+    * `remeshIsotropic()`
       * does not work well for pentagrammic prism - why? (`Rvcg::vcgIsotropicRemeshing()` works)
   * `readFile_cpp()` STL filename instead of `infile`?
   * use of `MeshT::Vertex_index` vs. `vertex_descriptor`? (and face)

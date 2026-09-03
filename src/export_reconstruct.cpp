@@ -20,6 +20,9 @@
 #include <CGAL/Scale_space_surface_reconstruction_3.h>
 #include <CGAL/poisson_surface_reconstruction.h>
 #include <CGAL/jet_smooth_point_set.h>
+#include <CGAL/Polygon_mesh_processing/repair_polygon_soup.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
+#include <CGAL/Polygon_mesh_processing/orientation.h>
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -102,7 +105,7 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
   if(!PMP::does_bound_a_volume(mesh)) {
     PMP::orient_to_bound_a_volume(mesh);
   }
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -167,7 +170,7 @@ Rcpp::List reconstructPoisson_cpp(const Rcpp::NumericMatrix pts,
   if(!PMP::does_bound_a_volume(mesh)) {
     PMP::orient_to_bound_a_volume(mesh);
   }
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -207,5 +210,5 @@ Rcpp::List reconstructSSS_cpp(
   if(!PMP::does_bound_a_volume(mesh)) {
     PMP::orient_to_bound_a_volume(mesh);
   }
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }

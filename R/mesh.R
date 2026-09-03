@@ -357,6 +357,31 @@ isTriangle <- function(x) {
   checkedMesh[["isTriangle"]]
 }
 
+#' @title Is mesh a quad mesh?
+#' @description Is the given surface mesh a quad mesh?
+#'
+#' @param x A \code{list} with components \code{vertices} and \code{faces},
+#'   e.g., a \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @returns TRUE or FALSE.
+#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' f_mesh  <- system.file("extdata", "corner.off", package="MeshUtils")
+#' mesh_vf <- readMeshFile(f_mesh)
+#' mesh    <- makeMesh(mesh_vf[["vertices"]], mesh_vf[["faces"]])
+#' isQuad(mesh)
+#'
+#' @export
+isQuad <- function(x) {
+  checkedMesh <- checkMesh(x[["vertices"]],
+                           x[["faces"]],
+                           aslist = TRUE)
+
+  checkedMesh[["isQuad"]]
+}
+
 #' @title Does mesh bound a volume?
 #' @description Does mesh bound a volume?
 #'
@@ -659,5 +684,43 @@ assignNormals <- function(x) {
   }
   meshCPP <- fromR(x)
   mesh    <- addVNormals_cpp(meshCPP)
+  fromCPP(mesh)
+}
+
+#' @title Triangulate mesh
+#' @description Triangulate mesh.
+#'
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param normals Boolean: Whether to return vertex normals.
+#' @returns A \code{CGALmesh} object.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' library(rgl)
+#' f_mesh   <- system.file("extdata", "corner.off", package="MeshUtils")
+#' mesh_vf  <- readMeshFile(f_mesh)
+#' mesh     <- makeMesh(mesh_vf[["vertices"]], mesh_vf[["faces"]])
+#' mesh_rgl <- toRGL(mesh)
+#' isTriangle(mesh)
+#'
+#' mesh_tri     <- triangulateMesh(mesh)
+#' mesh_tri_rgl <- toRGL(mesh_tri)
+#'
+#' open3d(windowRect=50 + c(0, 0, 800, 400))
+#' mfrow3d(1, 2)
+#' wire3d(mesh_rgl)
+#' next3d()
+#' wire3d(mesh_tri_rgl)
+#'
+#' @export
+triangulateMesh <- function(x, normals = FALSE) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
+  stopifnot(isBoolean(normals))
+  meshCPP <- fromR(x)
+  mesh    <- triangulateMesh_cpp(meshCPP, normals)
   fromCPP(mesh)
 }

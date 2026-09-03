@@ -82,34 +82,6 @@ bool is_small_hole(typename boost::graph_traits<MeshT>::halfedge_descriptor h,
 template bool is_small_hole<Mesh3,  Point3>(typename  boost::graph_traits<Mesh3>::halfedge_descriptor,  const Mesh3&,  const double, const int);
 template bool is_small_hole<EMesh3, EPoint3>(typename boost::graph_traits<EMesh3>::halfedge_descriptor, const EMesh3&, const double, const int);
 
-
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-// mesh passed by const reference, then uses a polygon soup
-// as container as the output will most likely be non-manifold
-template <typename KernelT, typename MeshT, typename PointT>
-MeshT removeSelfIntMesh(const MeshT &mesh, const int method) {
-  std::vector<PointT> points;
-  std::vector<std::vector<std::size_t>> polygons;
-  PMP::polygon_mesh_to_polygon_soup(mesh, points, polygons);
-  const bool success = removeSelfIntSoup<KernelT, PointT>(points, polygons, method);
-  MeshT mesh_out;
-  if(PMP::is_polygon_soup_a_polygon_mesh(polygons)) {
-    PMP::orient_polygon_soup(points, polygons);
-    PMP::polygon_soup_to_polygon_mesh(points, polygons, mesh_out);
-  } else {
-    Message("Polygon soup not a polygon mesh after removing intersections. Nothing done.");
-    return mesh;
-  }
-  if(PMP::does_self_intersect(mesh_out)) {
-    Message("Mesh self-intersections could not be removed.");
-  }
-  return mesh_out;
-}
-
-template Mesh3  removeSelfIntMesh<K,  Mesh3,  Point3>(const Mesh3&,   const int);
-template EMesh3 removeSelfIntMesh<EK, EMesh3, EPoint3>(const EMesh3&, const int);
-
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 Rcpp::NumericVector defaultNormal() {

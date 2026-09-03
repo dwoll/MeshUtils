@@ -46,8 +46,8 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
   }
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh_0 = Rcpp::as<Rcpp::List>(rmeshes(0));
-  Message("Processing mesh1");
-  MeshT mesh_0 = makeSurfMesh<KernelT, MeshT, PointT>(
+  rmessage("Processing mesh1");
+  MeshT mesh_0 = make_surf_mesh<KernelT, MeshT, PointT>(
       rmesh_0,
       true,           // triangulate - must be triangle
       repairSoup,     // repair_soup
@@ -66,8 +66,8 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
     }
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
-    Message("Processing mesh" + meshnum);
-    MeshT mesh_i = makeSurfMesh<KernelT, MeshT, PointT>(
+    rmessage("Processing mesh" + meshnum);
+    MeshT mesh_i = make_surf_mesh<KernelT, MeshT, PointT>(
         rmesh_i,
         true,           // triangulate - must be triangle
         repairSoup,     // repair_soup
@@ -91,7 +91,7 @@ Rcpp::List boolIntersectionEK_cpp(const Rcpp::List rmeshes,
                                   const bool repairSoup,
                                   const bool normals) {
   EMesh3 mesh = boolIntersection<EK, EMesh3, EPoint3>(rmeshes, repairSoup);
-  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+  return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -99,8 +99,8 @@ template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolDifference(const Rcpp::List &rmesh1,
                      const Rcpp::List &rmesh2,
                      const bool repairSoup) {
-  Message("Processing mesh1");
-  MeshT smesh1 = makeSurfMesh<KernelT, MeshT, PointT>(
+  rmessage("Processing mesh1");
+  MeshT smesh1 = make_surf_mesh<KernelT, MeshT, PointT>(
       rmesh1,
       true,           // triangulate - must be triangle
       repairSoup,     // repair_soup
@@ -110,8 +110,8 @@ MeshT boolDifference(const Rcpp::List &rmesh1,
       false,          // fair hole
       0);             // max_num_holes
   checkMesh1<MeshT>(smesh1, 1);
-  Message("Processing mesh2");
-  MeshT smesh2 = makeSurfMesh<KernelT, MeshT, PointT>(
+  rmessage("Processing mesh2");
+  MeshT smesh2 = make_surf_mesh<KernelT, MeshT, PointT>(
       rmesh2,
       true,           // triangulate - must be triangle
       repairSoup,     // repair_soup
@@ -135,7 +135,7 @@ Rcpp::List boolDifferenceEK_cpp(const Rcpp::List rmesh1,
                                 const bool repairSoup,
                                 const bool normals) {
   EMesh3 mesh = boolDifference<EK, EMesh3, EPoint3>(rmesh1, rmesh2, repairSoup);
-  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+  return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -148,8 +148,8 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
   }
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
-  Message("Processing mesh1");
-  MeshT mesh_0 = makeSurfMesh<KernelT, MeshT, PointT>(
+  rmessage("Processing mesh1");
+  MeshT mesh_0 = make_surf_mesh<KernelT, MeshT, PointT>(
       rmesh,
       true,           // triangulate - must be triangle
       repairSoup,     // repair_soup
@@ -167,8 +167,8 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
     }
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
-    Message("Processing mesh" + meshnum);
-    MeshT mesh_i = makeSurfMesh<KernelT, MeshT, PointT>(
+    rmessage("Processing mesh" + meshnum);
+    MeshT mesh_i = make_surf_mesh<KernelT, MeshT, PointT>(
         rmesh_i,
         true,           // triangulate - must be triangle
         repairSoup,     // repair_soup
@@ -193,5 +193,5 @@ Rcpp::List boolUnionEK_cpp(const Rcpp::List rmeshes,
                            const bool repairSoup,
                            const bool normals) {
   EMesh3 mesh = boolUnion<EK, EMesh3, EPoint3>(rmeshes, repairSoup);
-  return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+  return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }

@@ -9,6 +9,11 @@
       * Removing self intersections
   * Boolean mesh operations: union, difference, intersection
   * Isotropic remeshing
+  * Subdivision
+      * Catmull-Clark
+      * Doo-Sabin
+      * Sqrt3
+      * Loop
   * Surface reconstruction
       * AFS
       * SSS
@@ -18,10 +23,10 @@
       * Axis-parallel bounding box
       * Optimal (oriented) bounding box
   * Hausdorff distance between two meshes
+  * Distance from points to mesh
   * Centroid
   * Area
   * Volume
-  * Distance from points to mesh
   * Vertex normals
 
 For an application, see package [MeshAgreement](https://github.com/dwoll/MeshAgreement/) that calculates various distance and similarity metrics for two given 3D meshes.

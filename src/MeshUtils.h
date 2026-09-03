@@ -18,19 +18,10 @@
 // ----------------------------------------------------------------------- //
 #include "MeshUtils_types.h"
 
-#include <CGAL/Kernel/global_functions.h>
 #include <CGAL/Vector_3.h>
 #include <CGAL/property_map.h>
-
 #include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
-#include <CGAL/Polygon_mesh_processing/orientation.h>
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
-#include <CGAL/Polygon_mesh_processing/repair_polygon_soup.h>
-#include <CGAL/Polygon_mesh_processing/self_intersections.h>
-#include <CGAL/Polygon_mesh_processing/polygon_soup_self_intersections.h>
-#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
-#include <CGAL/Polygon_mesh_processing/measure.h>
-#include <CGAL/Polygon_mesh_processing/distance.h>
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;
@@ -61,7 +52,7 @@ MeshT soup_to_mesh(
     const unsigned int);                    // max_num_holes
 
 template <typename KernelT, typename MeshT, typename PointT>
-MeshT makeSurfMesh(
+MeshT make_surf_mesh(
     const Rcpp::List&,
     const bool,
     const bool,
@@ -73,7 +64,7 @@ MeshT makeSurfMesh(
 
 // no bool triangulate as triangle mesh assumed
 template <typename MeshT, typename PointT>
-MeshT makeSurfTMesh(
+MeshT make_surf_tmesh(
     const Rcpp::List&,
     const bool,
     const bool,
@@ -83,28 +74,27 @@ MeshT makeSurfTMesh(
     const unsigned int);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfMesh1(const MeshT&, const bool);
+Rcpp::List make_rmesh1(const MeshT&, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfMesh2(const MeshT&, const bool, const std::size_t);
+Rcpp::List make_rmesh2(const MeshT&, const bool, const std::size_t);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List getRmesh(MeshT&, const bool, const bool);
+Rcpp::List get_rmesh(MeshT&, const bool, const bool);
 
-template <typename KernelT, typename PointT>
-bool removeSelfIntSoup(
-    std::vector<PointT>&, std::vector<std::vector<std::size_t>>&, const int);
+template <typename KernelT, typename MeshT, typename PointT>
+MeshT remove_selfint_mesh(const MeshT&, const int);
 
 template <typename MeshT, typename PointT>
-MeshT fillBoundaryHoles(
+MeshT fill_boundary_holes(
     MeshT&, const bool, const double, const int, const unsigned int);
 
 template <typename MeshT, typename VectorT>
-void removeProperties(MeshT&, const std::vector<std::string>&);
+void remove_properties(MeshT&, const std::vector<std::string>&);
 
 // -------------------------------------------------------------------------- //
 // no template
-void Message(std::string);
+void rmessage(std::string);
 bool is_triangle_soup(const std::vector<std::vector<std::size_t>>&);
 
           std::vector<std::vector<std::size_t>>        list_to_faces1(const Rcpp::List&);

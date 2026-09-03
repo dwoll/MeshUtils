@@ -106,15 +106,18 @@ getVFT <- function(x, beforeCheck = FALSE) {
 fromR <- function(x) {
   vertices <- t(x[["vertices"]])
   stopifnot(is.numeric(vertices))
-  storage.mode(vertices) <- "double"
 
+  ## create list of faces, reduce index by 1 for C++ counting
   faces <- if(is.matrix(x[["faces"]])) {
+    stopifnot(is.numeric(x[["faces"]]))
     n_faces <- nrow(x[["faces"]])
-    lapply(seq_len(n_faces), function(i) { x[["faces"]][i, ] - 1L })
+    lapply(seq_len(n_faces), function(i) { as.integer(x[["faces"]][i, ] - 1L) })
   } else {
-    lapply(x[["faces"]], function(face) { face - 1L })
+    stopifnot(all(vapply(x[["faces"]], is.numeric, logical(1))))
+    lapply(x[["faces"]], function(face) { as.integer(face - 1L) })
   }
 
+  storage.mode(vertices) <- "double"
   list("vertices"=vertices, "faces"=faces)
 }
 
@@ -176,6 +179,7 @@ checkMesh <- function(vertices, faces, aslist) {
 
   homogeneousFaces <- FALSE
   isTriangle       <- FALSE
+  isQuad           <- FALSE
   toRGL            <- FALSE
   if(is.matrix(faces)) {
     if(ncol(faces) < 3L) {
@@ -195,6 +199,7 @@ checkMesh <- function(vertices, faces, aslist) {
     homogeneousFaces <- ncol(faces)
     if(homogeneousFaces %in% c(3L, 4L)) {
       isTriangle <- homogeneousFaces == 3L
+      isQuad     <- homogeneousFaces == 4L
       toRGL      <- homogeneousFaces
     }
 
@@ -231,6 +236,7 @@ checkMesh <- function(vertices, faces, aslist) {
     if(usizes == 1L) {
       homogeneousFaces <- sizes[1L]
       isTriangle <- homogeneousFaces == 3L
+      isQuad     <- homogeneousFaces == 4L
       if(homogeneousFaces %in% c(3L, 4L)) {
         toRGL <- homogeneousFaces
       }
@@ -244,5 +250,6 @@ checkMesh <- function(vertices, faces, aslist) {
        "faces"           =faces,
        "homogeneousFaces"=homogeneousFaces,
        "isTriangle"      =isTriangle,
+       "isQuad"          =isQuad,
        "toRGL"           =toRGL)
 }

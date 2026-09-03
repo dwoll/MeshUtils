@@ -24,7 +24,7 @@ Rcpp::List subdivideCatmullClark_cpp(
   const Rcpp::List rmesh,
   const unsigned int nIter,
   const bool normals) {
-    EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
+    EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
         rmesh,
         true,        // triangulate - must be triangle
         false,       // repair_soup
@@ -33,12 +33,12 @@ Rcpp::List subdivideCatmullClark_cpp(
         false,       // fill_holes
         false,       // fair hole
         0);          // max_num_holes
-    removeProperties<EMesh3, EVector3>(mesh, {"v:normal"});
+    remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::CatmullClark_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
     // subdivision creates triangle mesh
-    return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+    return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -50,7 +50,7 @@ Rcpp::List subdivideDooSabin_cpp(
   const unsigned int nIter,
   const bool triangulate,
   const bool normals) {
-    EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
+    EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
         rmesh,
         true,        // triangulate - must be triangle
         false,       // repair_soup
@@ -59,12 +59,12 @@ Rcpp::List subdivideDooSabin_cpp(
         false,       // fill_holes
         false,       // fair hole
         0);          // max_num_holes
-    removeProperties<EMesh3, EVector3>(mesh, {"v:normal"});
+    remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::DooSabin_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
     // subdivision result may not be triangle
-    return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, triangulate, normals);
+    return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, triangulate, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -75,7 +75,7 @@ Rcpp::List subdivideSqrt3_cpp(
   const Rcpp::List rmesh,
   const unsigned int nIter,
   const bool normals) {
-    EMesh3 mesh = makeSurfMesh<EK, EMesh3, EPoint3>(
+    EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
         rmesh,
         true,        // triangulate - must be triangle
         false,       // repair_soup
@@ -84,10 +84,35 @@ Rcpp::List subdivideSqrt3_cpp(
         false,       // fill_holes
         false,       // fair hole
         0);          // max_num_holes
-    removeProperties<EMesh3, EVector3>(mesh, {"v:normal"});
+    remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::Sqrt3_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
     mesh.collect_garbage();
     // subdivision creates triangle mesh
-    return getRmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+    return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+}
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+// use EPEC kernel here
+// [[Rcpp::export]]
+Rcpp::List subdivideLoop_cpp(
+  const Rcpp::List rmesh,
+  const unsigned int nIter,
+  const bool normals) {
+    EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
+        rmesh,
+        true,        // triangulate - must be triangle
+        false,       // repair_soup
+        false,       // remove_intersections
+        1,           // remove_method
+        false,       // fill_holes
+        false,       // fair hole
+        0);          // max_num_holes
+    remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
+    CGAL::Subdivision_method_3::Loop_subdivision(
+      mesh, CGAL::parameters::number_of_iterations(nIter));
+    mesh.collect_garbage();
+    // subdivision creates triangle mesh
+    return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }

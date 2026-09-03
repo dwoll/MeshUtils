@@ -300,6 +300,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// triangulateMesh_cpp
+Rcpp::List triangulateMesh_cpp(const Rcpp::List rmesh, const bool normals);
+RcppExport SEXP _MeshUtils_triangulateMesh_cpp(SEXP rmeshSEXP, SEXP normalsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    rcpp_result_gen = Rcpp::wrap(triangulateMesh_cpp(rmesh, normals));
+    return rcpp_result_gen;
+END_RCPP
+}
 // jet_pca_normals_cpp
 Rcpp::NumericMatrix jet_pca_normals_cpp(const Rcpp::NumericMatrix pts, const unsigned int nbNeighbors, const unsigned int method);
 RcppExport SEXP _MeshUtils_jet_pca_normals_cpp(SEXP ptsSEXP, SEXP nbNeighborsSEXP, SEXP methodSEXP) {
@@ -489,6 +501,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// subdivideLoop_cpp
+Rcpp::List subdivideLoop_cpp(const Rcpp::List rmesh, const unsigned int nIter, const bool normals);
+RcppExport SEXP _MeshUtils_subdivideLoop_cpp(SEXP rmeshSEXP, SEXP nIterSEXP, SEXP normalsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type nIter(nIterSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    rcpp_result_gen = Rcpp::wrap(subdivideLoop_cpp(rmesh, nIter, normals));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_alphaWrapPoints_cpp", (DL_FUNC) &_MeshUtils_alphaWrapPoints_cpp, 4},
@@ -514,6 +539,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_boundingBox_cpp", (DL_FUNC) &_MeshUtils_boundingBox_cpp, 1},
     {"_MeshUtils_getDistance_cpp", (DL_FUNC) &_MeshUtils_getDistance_cpp, 2},
     {"_MeshUtils_addVNormals_cpp", (DL_FUNC) &_MeshUtils_addVNormals_cpp, 1},
+    {"_MeshUtils_triangulateMesh_cpp", (DL_FUNC) &_MeshUtils_triangulateMesh_cpp, 2},
     {"_MeshUtils_jet_pca_normals_cpp", (DL_FUNC) &_MeshUtils_jet_pca_normals_cpp, 3},
     {"_MeshUtils_readFileSoup_cpp", (DL_FUNC) &_MeshUtils_readFileSoup_cpp, 2},
     {"_MeshUtils_readFileMesh_cpp", (DL_FUNC) &_MeshUtils_readFileMesh_cpp, 3},
@@ -527,6 +553,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_subdivideCatmullClark_cpp", (DL_FUNC) &_MeshUtils_subdivideCatmullClark_cpp, 3},
     {"_MeshUtils_subdivideDooSabin_cpp", (DL_FUNC) &_MeshUtils_subdivideDooSabin_cpp, 4},
     {"_MeshUtils_subdivideSqrt3_cpp", (DL_FUNC) &_MeshUtils_subdivideSqrt3_cpp, 3},
+    {"_MeshUtils_subdivideLoop_cpp", (DL_FUNC) &_MeshUtils_subdivideLoop_cpp, 3},
     {NULL, NULL, 0}
 };
 

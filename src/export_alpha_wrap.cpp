@@ -32,7 +32,7 @@ Rcpp::List alphaWrapPoints_cpp(
   const double offset = diag_len / offset_rel;
   Mesh3 mesh_wrap;
   CGAL::alpha_wrap_3(points, alpha, offset, mesh_wrap);
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh_wrap, false, normals);
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh_wrap, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -42,7 +42,7 @@ Rcpp::List alphaWrapMesh_cpp(
     const double alpha_rel,
     const double offset_rel,
     const bool normals) {
-  Mesh3 mesh = makeSurfMesh<K, Mesh3, Point3>(
+  Mesh3 mesh = make_surf_mesh<K, Mesh3, Point3>(
       rmesh,
       true,           // triangulate - must be triangle
       false,          // repair_soup
@@ -60,5 +60,5 @@ Rcpp::List alphaWrapMesh_cpp(
   const double offset = diag_len / offset_rel;
   Mesh3 mesh_wrap;
   CGAL::alpha_wrap_3(mesh, alpha, offset, mesh_wrap);
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh_wrap, false, normals);
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh_wrap, false, normals);
 }

@@ -15,6 +15,7 @@
 #endif
 
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -146,7 +147,7 @@ template <typename KernelT, typename MeshT, typename VectorT>
 Rcpp::NumericMatrix computeVNormals(MeshT mesh) {
     using vertex_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;
     Rcpp::NumericMatrix normals_mat(3, mesh.number_of_vertices());
-    removeProperties<MeshT, VectorT>(mesh, {"v:normal"});
+    remove_properties<MeshT, VectorT>(mesh, {"v:normal"});
     auto vnormals = mesh.template add_property_map<vertex_descriptor, VectorT>(
                             "v:normal", CGAL::NULL_VECTOR).first;
     // PMP::compute_normals(mesh, vnormals, fnormals);
@@ -171,7 +172,7 @@ template Rcpp::NumericMatrix computeVNormals<EK, EMesh3, EVector3>(EMesh3);
 // ----------------------------------------------------------------------- //
 // for possibly heterogeneous faces -> list
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfMesh1(const MeshT &mesh, const bool normals) {
+Rcpp::List make_rmesh1(const MeshT &mesh, const bool normals) {
   Rcpp::DataFrame     Edges    = getEdges<KernelT, MeshT, PointT>(mesh);
   Rcpp::NumericMatrix Vertices = getVertices<KernelT, MeshT, PointT>(mesh);
   Rcpp::List          Faces    = getFaces1<MeshT>(mesh);
@@ -185,14 +186,14 @@ Rcpp::List RSurfMesh1(const MeshT &mesh, const bool normals) {
   return out;
 }
 
-template Rcpp::List RSurfMesh1<K,  Mesh3,  Point3,  Vector3>(const Mesh3&,   const bool);
-template Rcpp::List RSurfMesh1<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, const bool);
+template Rcpp::List make_rmesh1<K,  Mesh3,  Point3,  Vector3>(const Mesh3&,   const bool);
+template Rcpp::List make_rmesh1<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, const bool);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // for homogeneous faces -> matrix
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List RSurfMesh2(const MeshT &mesh, const bool normals, const std::size_t nSides) {
+Rcpp::List make_rmesh2(const MeshT &mesh, const bool normals, const std::size_t nSides) {
   Rcpp::DataFrame     Edges    = getEdges<KernelT, MeshT, PointT>(mesh);
   Rcpp::NumericMatrix Vertices = getVertices<KernelT, MeshT, PointT>(mesh);
   Rcpp::IntegerMatrix Faces    = getFaces2<MeshT>(mesh, nSides);
@@ -206,38 +207,38 @@ Rcpp::List RSurfMesh2(const MeshT &mesh, const bool normals, const std::size_t n
   return out;
 }
 
-template Rcpp::List RSurfMesh2<K,  Mesh3,  Point3,  Vector3>(const Mesh3&,   const bool, const std::size_t);
-template Rcpp::List RSurfMesh2<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, const bool, const std::size_t);
+template Rcpp::List make_rmesh2<K,  Mesh3,  Point3,  Vector3>(const Mesh3&,   const bool, const std::size_t);
+template Rcpp::List make_rmesh2<EK, EMesh3, EPoint3, EVector3>(const EMesh3&, const bool, const std::size_t);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // PMP::triangulate_faces() modifies -> mesh not const
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
-Rcpp::List getRmesh(MeshT &mesh, const bool triangulate, const bool normals) {
+Rcpp::List get_rmesh(MeshT &mesh, const bool triangulate, const bool normals) {
   bool is_triangle = CGAL::is_triangle_mesh(mesh);
   if(triangulate && !is_triangle) {
     is_triangle = PMP::triangulate_faces(mesh);
   }
   Rcpp::List rmesh;
   if(is_triangle) {
-    rmesh = RSurfMesh2<KernelT, MeshT, PointT, VectorT>(mesh, normals, 3);
+    rmesh = make_rmesh2<KernelT, MeshT, PointT, VectorT>(mesh, normals, 3);
   } else if(CGAL::is_quad_mesh(mesh)) {
-    rmesh = RSurfMesh2<KernelT, MeshT, PointT, VectorT>(mesh, normals, 4);
+    rmesh = make_rmesh2<KernelT, MeshT, PointT, VectorT>(mesh, normals, 4);
   } else {
-    rmesh = RSurfMesh1<KernelT, MeshT, PointT, VectorT>(mesh, normals);
+    rmesh = make_rmesh1<KernelT, MeshT, PointT, VectorT>(mesh, normals);
   }
 
   return rmesh;
 }
 
-template Rcpp::List getRmesh<K,  Mesh3,  Point3,  Vector3>(Mesh3&,   const bool, const bool);
-template Rcpp::List getRmesh<EK, EMesh3, EPoint3, EVector3>(EMesh3&, const bool, const bool);
+template Rcpp::List get_rmesh<K,  Mesh3,  Point3,  Vector3>(Mesh3&,   const bool, const bool);
+template Rcpp::List get_rmesh<EK, EMesh3, EPoint3, EVector3>(EMesh3&, const bool, const bool);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // CAVE: pass by reference, modifies mesh
 template <typename MeshT, typename VectorT>
-void removeProperties(MeshT &mesh, const std::vector<std::string> &props) {
+void remove_properties(MeshT &mesh, const std::vector<std::string> &props) {
   using vertex_descriptor  = typename boost::graph_traits<MeshT>::vertex_descriptor;
   using face_descriptor    = typename boost::graph_traits<MeshT>::face_descriptor;
   using vertex_colors_map  = typename MeshT::template Property_map<vertex_descriptor, std::string>;
@@ -283,5 +284,5 @@ void removeProperties(MeshT &mesh, const std::vector<std::string> &props) {
   }
 }
 
-template void removeProperties<Mesh3,  Vector3>(Mesh3&,   const std::vector<std::string>&);
-template void removeProperties<EMesh3, EVector3>(EMesh3&, const std::vector<std::string>&);
+template void remove_properties<Mesh3,  Vector3>(Mesh3&,   const std::vector<std::string>&);
+template void remove_properties<EMesh3, EVector3>(EMesh3&, const std::vector<std::string>&);

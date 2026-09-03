@@ -42,7 +42,7 @@
 #'
 #' mesh            <- dataHeart1
 #' mesh_rgl        <- toRGL(mesh)
-#' mesh_alwrap     <- alphaWrap(mesh[["vertices"]],
+#' mesh_alwrap     <- alphaWrap(mesh,
 #'                              alphaRel =5,
 #'                              offsetRel=300)
 #' mesh_alwrap_rgl <- toRGL(mesh_alwrap)

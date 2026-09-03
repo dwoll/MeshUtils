@@ -93,6 +93,10 @@ addVNormals_cpp <- function(rmesh) {
     .Call(`_MeshUtils_addVNormals_cpp`, rmesh)
 }
 
+triangulateMesh_cpp <- function(rmesh, normals) {
+    .Call(`_MeshUtils_triangulateMesh_cpp`, rmesh, normals)
+}
+
 jet_pca_normals_cpp <- function(pts, nbNeighbors, method) {
     .Call(`_MeshUtils_jet_pca_normals_cpp`, pts, nbNeighbors, method)
 }
@@ -143,5 +147,9 @@ subdivideDooSabin_cpp <- function(rmesh, nIter, triangulate, normals) {
 
 subdivideSqrt3_cpp <- function(rmesh, nIter, normals) {
     .Call(`_MeshUtils_subdivideSqrt3_cpp`, rmesh, nIter, normals)
+}
+
+subdivideLoop_cpp <- function(rmesh, nIter, normals) {
+    .Call(`_MeshUtils_subdivideLoop_cpp`, rmesh, nIter, normals)
 }
 

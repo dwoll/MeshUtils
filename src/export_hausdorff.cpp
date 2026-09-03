@@ -14,13 +14,15 @@
 #include "MeshUtils.h"
 #endif
 
+#include <CGAL/Polygon_mesh_processing/distance.h>
+
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 double getHausdorffApprox_cpp(
     const Rcpp::List rmesh1,
     const Rcpp::List rmesh2,
     const bool symmetric) {
-  Mesh3 mesh1 = makeSurfMesh<K, Mesh3, Point3>(
+  Mesh3 mesh1 = make_surf_mesh<K, Mesh3, Point3>(
       rmesh1,
       true,         // triangulate
       false,        // repair_soup
@@ -29,7 +31,7 @@ double getHausdorffApprox_cpp(
       false,        // fill_holes
       false,        // fair hole
       0);           // max_num_holes
-  Mesh3 mesh2 = makeSurfMesh<K, Mesh3, Point3>(
+  Mesh3 mesh2 = make_surf_mesh<K, Mesh3, Point3>(
       rmesh2,
       true,         // triangulate
       false,        // repair_soup
@@ -39,19 +41,19 @@ double getHausdorffApprox_cpp(
       false,        // fair hole
       0);           // max_num_holes
   if(CGAL::is_empty(mesh1)) {
-    Message("Mesh 1 is empty.");
+    rmessage("Mesh 1 is empty.");
     return Rcpp::NumericVector::get_na();
   }
   if(CGAL::is_empty(mesh2)) {
-    Message("Mesh 2 is empty.");
+    rmessage("Mesh 2 is empty.");
     return Rcpp::NumericVector::get_na();
   }
   if(!CGAL::is_triangle_mesh(mesh1)) {
-    Message("Mesh 1 is not triangle.");
+    rmessage("Mesh 1 is not triangle.");
     return Rcpp::NumericVector::get_na();
   }
   if(!CGAL::is_triangle_mesh(mesh2)) {
-    Message("Mesh 2 is not triangle.");
+    rmessage("Mesh 2 is not triangle.");
     return Rcpp::NumericVector::get_na();
   }
   double d;
@@ -70,7 +72,7 @@ double getHausdorffEst_cpp(
     const Rcpp::List rmesh2,
     const bool symmetric,
     const double error_bound) {
-    Mesh3 mesh1 = makeSurfMesh<K, Mesh3, Point3>(
+    Mesh3 mesh1 = make_surf_mesh<K, Mesh3, Point3>(
         rmesh1,
         true,         // triangulate
         false,        // repair_soup
@@ -79,7 +81,7 @@ double getHausdorffEst_cpp(
         false,        // fill_holes
         false,        // fair hole
         0);           // max_num_holes
-    Mesh3 mesh2 = makeSurfMesh<K, Mesh3, Point3>(
+    Mesh3 mesh2 = make_surf_mesh<K, Mesh3, Point3>(
         rmesh2,
         true,         // triangulate
         false,        // repair_soup

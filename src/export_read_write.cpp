@@ -113,14 +113,14 @@ Rcpp::List readFileMesh_cpp(
     Rcpp::stop("Reading failure.");
   }
   if(!comments.empty()) {
-    Message("Comments found in " + filename + ":");
-    Message(comments);
+    rmessage("Comments found in " + filename + ":");
+    rmessage(comments);
   }
   const bool valid = mesh.is_valid(false);
   if(!valid) {
     Rcpp::warning("The mesh is not valid.");
   }
-  return getRmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
