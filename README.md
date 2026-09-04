@@ -7,8 +7,12 @@
   * Mesh repair
       * Filling holes
       * Removing self intersections
-  * Boolean mesh operations: union, difference, intersection
+  * Boolean mesh operations
+      * Union
+      * Dfference
+      * Intersection
   * Isotropic remeshing
+  * Smoothing
   * Subdivision
       * Catmull-Clark
       * Doo-Sabin
