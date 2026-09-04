@@ -11,10 +11,10 @@
 ## ----------------------------------------------------------------------- //
 
 #' @title Isotropic remeshing
-#' @description Isotropic remeshing.
+#' @description Isotropic remeshing of a triangular surface mesh.
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param method \code{character}: Either \code{"uniform"} for uniform sizing field
-#'    or \code{"adaptive"} for adapative sizing field.
+#'    or \code{"adaptive"} for adaptive sizing field.
 #' @param targetEdgeLen Positive number for \code{method="uniform"}:
 #'   The target edge length of the remeshed mesh.
 #' @param tol Positive number for \code{method="adaptive"}:

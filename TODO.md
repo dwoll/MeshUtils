@@ -2,12 +2,13 @@
 
   * `fill_boundary_hole()`
       * pass more parameters (small holes)
-    * `remeshIsotropic()`
+  * `remeshIsotropic()`
       * does not work well for pentagrammic prism - why? (`Rvcg::vcgIsotropicRemeshing()` works)
+      * `PMP::remesh_planar_patches()`
   * `readFile_cpp()` STL filename instead of `infile`?
   * use of `MeshT::Vertex_index` vs. `vertex_descriptor`? (and face)
 
-  # Wishlist
+# Wishlist
 
   * silent option to remove output during processing
   * fewer checks than in `soup_to_mesh()` when not required
@@ -23,3 +24,7 @@
   * bounding meshes
       * approximate bounding ellipsoid
       * bounding spheres
+
+# CRAN
+
+  * `cran-comments.md` file

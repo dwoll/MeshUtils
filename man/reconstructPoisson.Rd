@@ -41,7 +41,7 @@ A \code{CGALmesh} object.
 Poisson reconstruction of a surface, from a cloud of 3D points.
 }
 \details{
-See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/index.html}{Poisson Surface Reconstruction}.
+See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/}{Poisson Surface Reconstruction}.
 }
 \examples{
 library(MeshUtils)

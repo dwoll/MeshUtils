@@ -35,8 +35,8 @@ Rcpp::List remeshIsotropicUniform_cpp(
         false,       // fair hole
         0);          // max_num_holes
     std::vector<hlfdg_dscrptr> borderHalfEdges;
-    // PMP::border_halfedges(faces(mesh), mesh, std::back_inserter(borderHalfEdges));
     CGAL::border_halfedges(faces(mesh), mesh, std::back_inserter(borderHalfEdges));  // requires CGAL 6.2
+    // PMP::border_halfedges(faces(mesh), mesh, std::back_inserter(borderHalfEdges));
     std::vector<dg_dscrptr> border;
     std::size_t nheBorder = borderHalfEdges.size();
     border.reserve(nheBorder);

@@ -44,7 +44,7 @@ The target edge length of the remeshed mesh.}
 A \code{CGALmesh} object.
 }
 \description{
-Isotropic remeshing.
+Isotropic remeshing of a triangular surface mesh.
 }
 \details{
 See \url{https://doc.cgal.org/latest/PMP_Remeshing/} for details.

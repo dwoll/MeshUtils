@@ -33,7 +33,9 @@ For an application, see package [MeshAgreement](https://github.com/dwoll/MeshAgr
 
 ## CAVE
 
-Note that this package requires CGAL headers version 6.2. As of August 2026, `RcppCGAL` provides CGAL version 6.1, but it is possible to update as explained in the [`RcppCGAL::set_cgal()` documentation](https://cloud.r-project.org/web/packages/RcppCGAL/refman/RcppCGAL.html#set_cgal).
+Note that this package requires CGAL headers version 6.2. As of August 2026, `RcppCGAL` provides CGAL version 6.1, but it is possible to update as explained in the [`RcppCGAL::set_cgal()` documentation](https://ericdunipace.r-universe.dev/RcppCGAL/doc/manual.html#set_cgal).
+
+See package [`Rmpfr`](https://cran.r-project.org/package=Rmpfr) for a note on how to install system requirements [MPFR](https://www.mpfr.org/) and [GMP](https://gmplib.org/).
 
 ## Implementation
 

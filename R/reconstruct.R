@@ -24,7 +24,7 @@
 #'
 #' @returns A \code{CGALmesh} object.
 #'
-#' @details See \href{https://doc.cgal.org/latest/Advancing_front_surface_reconstruction/index.html#Chapter_Advancing_Front_Surface_Reconstruction}{Advancing Front Surface Reconstruction}.
+#' @details See \href{https://doc.cgal.org/latest/Advancing_front_surface_reconstruction/}{Advancing Front Surface Reconstruction}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -97,7 +97,7 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE, normals=FALSE)
 #'
 #' @returns A \code{CGALmesh} object.
 #'
-#' @details See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/index.html}{Poisson Surface Reconstruction}.
+#' @details See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/}{Poisson Surface Reconstruction}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
@@ -183,7 +183,7 @@ reconstructPoisson <- function(
 #'
 #' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
-#' @details See \href{https://doc.cgal.org/latest/Scale_space_reconstruction_3/index.html}{Scale-space Surface Reconstruction}.
+#' @details See \href{https://doc.cgal.org/latest/Scale_space_reconstruction_3/}{Scale-space Surface Reconstruction}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
