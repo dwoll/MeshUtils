@@ -126,6 +126,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// makeMeshValid_cpp
+Rcpp::List makeMeshValid_cpp(const Rcpp::List rmesh, const bool soup, const bool triangulate, const bool repairSoup, const bool normals);
+RcppExport SEXP _MeshUtils_makeMeshValid_cpp(SEXP rmeshSEXP, SEXP soupSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    Rcpp::traits::input_parameter< const bool >::type soup(soupSEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    rcpp_result_gen = Rcpp::wrap(makeMeshValid_cpp(rmesh, soup, triangulate, repairSoup, normals));
+    return rcpp_result_gen;
+END_RCPP
+}
 // isValid_cpp
 bool isValid_cpp(const Rcpp::List rmesh);
 RcppExport SEXP _MeshUtils_isValid_cpp(SEXP rmeshSEXP) {
@@ -524,6 +539,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 3},
     {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 4},
     {"_MeshUtils_makeMesh_cpp", (DL_FUNC) &_MeshUtils_makeMesh_cpp, 9},
+    {"_MeshUtils_makeMeshValid_cpp", (DL_FUNC) &_MeshUtils_makeMeshValid_cpp, 5},
     {"_MeshUtils_isValid_cpp", (DL_FUNC) &_MeshUtils_isValid_cpp, 1},
     {"_MeshUtils_hasGarbage_cpp", (DL_FUNC) &_MeshUtils_hasGarbage_cpp, 1},
     {"_MeshUtils_doesBoundVolume_cpp", (DL_FUNC) &_MeshUtils_doesBoundVolume_cpp, 1},

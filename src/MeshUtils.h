@@ -22,6 +22,7 @@
 #include <CGAL/property_map.h>
 #include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
+#include <CGAL/Polygon_mesh_processing/self_intersections.h>
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;
@@ -62,16 +63,9 @@ MeshT make_surf_mesh(
     const bool,
     const unsigned int);
 
-// no bool triangulate as triangle mesh assumed
 template <typename MeshT, typename PointT>
-MeshT make_surf_tmesh(
-    const Rcpp::List&,
-    const bool,
-    const bool,
-    const int,
-    const bool,
-    const bool,
-    const unsigned int);
+MeshT make_surf_mesh_valid(
+    const Rcpp::List&, const bool, const bool, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List make_rmesh1(const MeshT&, const bool);

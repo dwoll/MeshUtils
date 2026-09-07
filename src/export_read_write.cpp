@@ -66,7 +66,6 @@ Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary) {
   if(!ok) {
     Rcpp::stop("Reading failure.");
   }
-  Rcpp::List out;
   const std::size_t nPts = points.size();
   Rcpp::NumericMatrix vertex_mat(3, nPts);
   for(std::size_t i = 0; i < nPts; i++) {
@@ -82,6 +81,7 @@ Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary) {
     Rcpp::IntegerVector col_i(face_i.begin(), face_i.end());
     face_list(i) = col_i + 1;
   }
+  Rcpp::List out;
   out["vertices"] = Rcpp::transpose(vertex_mat);
   out["faces"]    = face_list;
   return out;

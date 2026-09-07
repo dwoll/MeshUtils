@@ -33,6 +33,10 @@ makeMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, re
     .Call(`_MeshUtils_makeMesh_cpp`, rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals)
 }
 
+makeMeshValid_cpp <- function(rmesh, soup, triangulate, repairSoup, normals) {
+    .Call(`_MeshUtils_makeMeshValid_cpp`, rmesh, soup, triangulate, repairSoup, normals)
+}
+
 isValid_cpp <- function(rmesh) {
     .Call(`_MeshUtils_isValid_cpp`, rmesh)
 }

@@ -18,7 +18,6 @@
 #include <CGAL/Polygon_mesh_processing/polygon_mesh_to_polygon_soup.h>
 #include <CGAL/make_conforming_constrained_Delaunay_triangulation_3.h>
 #include <CGAL/Polygon_mesh_processing/repair_polygon_soup.h>
-#include <CGAL/Polygon_mesh_processing/self_intersections.h>
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -42,8 +41,8 @@ MeshT fill_boundary_holes(
   std::vector<halfedge_descriptor> border_cycles;
   unsigned int nb_holes_ok   = 0;
   unsigned int nb_holes_fail = 0;
-  CGAL::extract_boundary_cycles(mesh, std::back_inserter(border_cycles)); // requires CGAL 6.2
-  // PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
+  // requires CGAL 6.2 (was PMP::extract_...)
+  CGAL::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
   size_t n_border = border_cycles.size();
   if(n_border == 0) {
     rmessage("There's no border in this mesh. Nothing done.");
@@ -89,8 +88,8 @@ MeshT fill_boundary_holes(
   PMP::merge_duplicate_polygons_in_polygon_soup(
       points, polygons,
       // without the following option, self-intersections are created
-      CGAL::parameters::erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD) // requires CGAL 6.2
-  );
+      // requires CGAL 6.2
+      CGAL::parameters::erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD));
   PMP::remove_isolated_points_in_polygon_soup(points, polygons);
   MeshT mesh_out;
   const bool orient_ok = PMP::orient_polygon_soup(points, polygons);
@@ -133,16 +132,16 @@ bool remove_selfint_soup(std::vector<PointT> &points,
         msg_method = "";
         success = PMP::autorefine_triangle_soup(points, polygons,
             CGAL::parameters::concurrency_tag(CGAL::Parallel_if_available_tag())
-                .erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD)  // requires CGAL version 6.2
-        );
+                // requires CGAL version 6.2
+                .erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD));
     } else if(method == 2) {
         msg_method=" with snap rounding";
         // TODO .snap_grid_size(grid_size).number_of_iterations(15));
         success = PMP::autorefine_triangle_soup(points, polygons,
             CGAL::parameters::concurrency_tag(CGAL::Parallel_if_available_tag())
                 .apply_iterative_snap_rounding(true)
-                .erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD)  // requires CGAL version 6.2
-        );
+                // requires CGAL version 6.2
+                .erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD));
     } else {
         msg_method = "";
         rmessage("Wrong method. Needs to be 1 or 2. Nothing done.");
@@ -160,12 +159,14 @@ bool remove_selfint_soup(std::vector<PointT> &points,
     // PMP::repair_polygon_soup(points, polygons);
     PMP::merge_duplicate_points_in_polygon_soup(points, polygons,
         // without the following option, self-intersections are created
-        CGAL::parameters::erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD) // requires CGAL 6.2
+        // requires CGAL 6.2
+        CGAL::parameters::erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD)
     );
     PMP::merge_duplicate_polygons_in_polygon_soup(
         points, polygons,
         // without the following option, self-intersections are created
-        CGAL::parameters::erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD) // requires CGAL 6.2
+        // requires CGAL 6.2
+        CGAL::parameters::erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD)
     );
     PMP::remove_isolated_points_in_polygon_soup(points, polygons);
     if(PMP::does_polygon_soup_self_intersect(points, polygons)) {

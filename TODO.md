@@ -1,26 +1,33 @@
 # TODO
 
+  * `getVFT()` calls `checkMesh()`, then `makeMesh()` does again -> redundant
+  * fewer checks on R side in `makeMeshValid()`
+  * use `make_surf_mesh_valid()` instead of `make_surf_mesh()` wherever reasonable
   * `fill_boundary_hole()`
       * pass more parameters (small holes)
   * `remeshIsotropic()`
       * does not work well for pentagrammic prism - why? (`Rvcg::vcgIsotropicRemeshing()` works)
-      * `PMP::remesh_planar_patches()`
   * `readFile_cpp()` STL filename instead of `infile`?
   * use of `MeshT::Vertex_index` vs. `vertex_descriptor`? (and face)
 
 # Wishlist
 
-  * silent option to remove output during processing
-  * fewer checks than in `soup_to_mesh()` when not required
-      * use `vf_to_mesh()`, `csoup_to_mesh()`?
-      * all conversions from existing `CGALmesh`
+  * `readMeshFile()` and `makeMesh()` in one step - via `filename` option
+  * messages
+      * silent option to remove output during processing
+      * `rmessage()` vs. `Rcpp::warning()`
+  * triangulated surface mesh simplification
+      * `edge_collapse()`
   * remeshing
       * https://www.cgal.org/2025/05/22/Surface_remeshing/
-      * https://doc.cgal.org/6.1/Polygon_mesh_processing/index.html#mesh3rem
+      * https://doc.cgal.org/latest/PMP_Remeshing/index.html#Chapter_PMPRemeshing
+      * `approximated_centroidal_Voronoi_diagram_remeshing()`
+      * `surface_Delaunay_remeshing()`
+      * `PMP::remesh_planar_patches()`
+      * `PMP::remesh_almost_planar_patches()`
   * smoothing
       * `PMP::angle_and_area_smoothing()`
       * `PMP::tangential_relaxation()`
-  * triangulated surface mesh simplification
   * bounding meshes
       * approximate bounding ellipsoid
       * bounding spheres

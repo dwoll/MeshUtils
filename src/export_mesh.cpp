@@ -17,7 +17,6 @@
 #include <CGAL/optimal_bounding_box.h>
 #include <CGAL/Polygon_mesh_processing/distance.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
-#include <CGAL/Polygon_mesh_processing/self_intersections.h>
 #include <CGAL/Polygon_mesh_processing/orientation.h>
 
 // ----------------------------------------------------------------------- //
@@ -42,6 +41,23 @@ Rcpp::List makeMesh_cpp(const Rcpp::List rmesh,
       fillHoles,           // fill_holes
       fairHole,            // fair hole
       maxNumHoles);        // max_num_holes
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+}
+
+// ----------------------------------------------------------------------- //
+// initial mesh generation assuming valid input - EPIC kernel - TODO make parameter
+// [[Rcpp::export]]
+Rcpp::List makeMeshValid_cpp(const Rcpp::List rmesh,
+                             const bool soup,
+                             const bool triangulate,
+                             const bool repairSoup,
+                             const bool normals) {
+  rmessage("Processing mesh...");
+  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
+      rmesh,
+      soup,
+      triangulate,
+      repairSoup);
   return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
@@ -87,6 +103,14 @@ bool doesBoundVolume_cpp(const Rcpp::List rmesh) {
       false,       // fill_holes
       false,       // fair hole
       0);          // max_num_holes
+  if(!CGAL::is_closed(mesh)) {
+      rmessage("Mesh is not closed.");
+      return false;
+  }
+  if(PMP::does_self_intersect(mesh)) {
+      rmessage("Mesh has self-intersections.");
+      return false;
+  }
   return PMP::does_bound_a_volume(mesh);
 }
 

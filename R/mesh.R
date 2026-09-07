@@ -36,10 +36,10 @@ print.CGALmesh <- function(x, ...) {
 }
 
 #' @title Make a 3D mesh
-#' @description Make a 3D mesh from given vertices and faces; the returned
-#'   faces are coherently oriented, normals are computed if desired, and
-#'   triangulation is performed if desired. The mesh is also cleaned:
+#' @description Make a 3D mesh from given vertices and faces. The mesh is optionally cleaned:
 #'   duplicated vertices or faces are merged, and isolated vertices are removed.
+#'   The returned faces are coherently oriented, normals are computed if desired, and
+#'   triangulation is performed if desired.
 #'
 #' @param vertices A numeric matrix with three columns.
 #' @param faces Either an integer matrix (each row provides the vertex indices
@@ -60,13 +60,14 @@ print.CGALmesh <- function(x, ...) {
 #' @param maxNumHoles \code{integer}: Maximum number of holes to be filled. May be 0.
 #' @param normals Boolean: Whether to compute the normals.
 #'
-#' @returns A list with two components: \code{vertices}, a numeric matrix with three
-#'   columns, and \code{faces}, either a list of integer vectors or, in the
-#'   case if all faces have the same number of sides, an integer matrix.A list of class \code{CGALmesh} giving the vertices, the edges, the faces
+#' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 #'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.
 #'
 #' @seealso See \code{\link[MeshUtils]{plotEdges}} for more details about the edges
-#'   returned by this function. See \code{\link[MeshUtils]{toRGL}} for conversion to class
+#'   returned by this function.
+#'   See \code{\link[MeshUtils]{makeMeshValid}} for a similar function that assumes
+#'   that the input defines a valid mesh, and does not perform mesh repair.
+#'   See \code{\link[MeshUtils]{toRGL}} for conversion to class
 #'   \code{\link[rgl]{mesh3d}} from package \strong{rgl}.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -143,25 +144,86 @@ makeMesh <- function(vertices,
 		vertices <- mesh[["vertices"]]
 		faces    <- mesh[["faces"]]
 	}
+	## ensure 0-based indexing, transposed vertices
 	checkedMesh <- checkMesh(vertices, faces, aslist = TRUE)
-	vertices    <- checkedMesh[["vertices"]]
-	faces       <- checkedMesh[["faces"]]
-	isTriangle  <- checkedMesh[["isTriangle"]]
-	if(triangulate && isTriangle) {
-		message("Ignored option `triangulate` as mesh is already triangle")
-		triangulate <- FALSE
-	}
+	mesh_cpp    <- makeMesh_cpp(mesh_r,
+                              triangulate,
+	                            repairSoup,
+	                            removeIntersections,
+												      removeMethodInt,
+	                            fillHoles,
+	                            fairHole,
+													    maxNumHoles,
+											        normals)
+	fromCPP(mesh_cpp)
+}
 
-	mesh_r   <- list("vertices"=vertices, "faces"=faces)
-	mesh_cpp <- makeMesh_cpp(mesh_r,
-                           triangulate,
-	                         repairSoup,
-	                         removeIntersections,
-													 removeMethodInt,
-	                         fillHoles,
-	                         fairHole,
-													 maxNumHoles,
-											     normals)
+#' @title Make a 3D mesh assuming valid input
+#' @description Make a 3D mesh from given vertices and faces, assuming
+#'   the input defines a valid mesh. The mesh is optionally cleaned:
+#'   Duplicated vertices or faces are merged, and isolated vertices are removed.
+#'   The returned faces are coherently oriented, normals are computed if desired,
+#'   and triangulation is performed if desired.
+#'
+#' @param vertices A numeric matrix with three columns.
+#' @param faces Either an integer matrix (each row provides the vertex indices
+#'   of the corresponding face) or a list of integer vectors, each one
+#'   providing the vertex indices of the corresponding face.
+#' @param mesh If not \code{NULL}, this argument takes precedence over \code{vertices}
+#'   and \code{faces}, and must be either a list containing the components \code{vertices}
+#'   and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
+#'   (i.e. a \code{\link[rgl]{mesh3d}} object).
+#' @param soup Boolean: Whether to assume a polygon soup
+#'   (as opposed to correcty ordered faces).
+#' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
+#'   are already triangle.
+#' @param repairSoup Boolean: Whether to do some mesh cleaning.
+#' @param normals Boolean: Whether to compute the normals.
+#'
+#' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
+#'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.
+#'
+#' @seealso See \code{\link[MeshUtils]{plotEdges}} for more details about the edges
+#'   returned by this function.
+#'   See \code{\link[MeshUtils]{makeMesh}} for a similar function that does not assume
+#'   that the input defines a valid mesh, and performs mesh repair.
+#'   See \code{\link[MeshUtils]{toRGL}} for conversion to class
+#'   \code{\link[rgl]{mesh3d}} from package \strong{rgl}.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' library(rgl)
+#' mesh <- makeMeshValid(mesh=dataPentaPrism, soup=TRUE, triangulate=TRUE)
+#' mesh_rgl <- toRGL(mesh)
+#'
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' wire3d(mesh_rgl)
+#'
+#' @export
+makeMeshValid <- function(vertices,
+                          faces,
+                          mesh       =NULL,
+                          soup       =FALSE,
+                          triangulate=FALSE,
+                          repairSoup =FALSE,
+                          normals    =FALSE) {
+  stopifnot(isBoolean(soup))
+  stopifnot(isBoolean(triangulate))
+  stopifnot(isBoolean(repairSoup))
+	stopifnot(isBoolean(normals))
+	if(!is.null(mesh)) {
+		if(inherits(mesh, "mesh3d")) {
+			vft  <- getVFT(mesh, beforeCheck = TRUE)
+			mesh <- vft[["rmesh"]]
+		}
+		vertices <- mesh[["vertices"]]
+		faces    <- mesh[["faces"]]
+	}
+	## ensure 0-based indexing, transposed vertices
+	checkedMesh <- checkMeshValid(vertices, faces, aslist = TRUE)
+	mesh_cpp    <- makeMeshValid_cpp(checkedMesh, soup, triangulate, repairSoup, normals)
 	fromCPP(mesh_cpp)
 }
 
