@@ -169,7 +169,7 @@ fromCPP <- function(x) {
 
 #' @noRd
 checkMesh <- function(vertices, faces, aslist) {
-  if(!is.matrix(vertices) || (ncol(vertices) != 3L) || is.numeric(vertices)) {
+  if(!is.matrix(vertices) || (ncol(vertices) != 3L) || !is.numeric(vertices)) {
     stop("The `vertices` argument must be a numeric matrix with three columns.")
   }
   storage.mode(vertices) <- "double"
@@ -260,6 +260,9 @@ checkMesh <- function(vertices, faces, aslist) {
 # no missings
 #' @noRd
 checkMeshValid <- function(vertices, faces, aslist) {
+  if(!is.matrix(vertices) || (ncol(vertices) != 3L) || !is.numeric(vertices)) {
+    stop("The `vertices` argument must be a numeric matrix with three columns.")
+  }
   storage.mode(vertices) <- "double"
 
   homogeneousFaces <- FALSE
