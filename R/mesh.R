@@ -145,16 +145,16 @@ makeMesh <- function(vertices,
 		faces    <- mesh[["faces"]]
 	}
 	## ensure 0-based indexing, transposed vertices
-	checkedMesh <- checkMesh(vertices, faces, aslist = TRUE)
-	mesh_cpp    <- makeMesh_cpp(mesh_r,
-                              triangulate,
-	                            repairSoup,
-	                            removeIntersections,
-												      removeMethodInt,
-	                            fillHoles,
-	                            fairHole,
-													    maxNumHoles,
-											        normals)
+	mesh_r   <- checkMesh(vertices, faces, aslist = TRUE)
+	mesh_cpp <- makeMesh_cpp(mesh_r,
+                           triangulate,
+	                         repairSoup,
+	                         removeIntersections,
+												   removeMethodInt,
+	                         fillHoles,
+	                         fairHole,
+													 maxNumHoles,
+											     normals)
 	fromCPP(mesh_cpp)
 }
 
@@ -222,8 +222,8 @@ makeMeshValid <- function(vertices,
 		faces    <- mesh[["faces"]]
 	}
 	## ensure 0-based indexing, transposed vertices
-	checkedMesh <- checkMeshValid(vertices, faces, aslist = TRUE)
-	mesh_cpp    <- makeMeshValid_cpp(checkedMesh, soup, triangulate, repairSoup, normals)
+	mesh_r   <- checkMeshValid(vertices, faces, aslist = TRUE)
+	mesh_cpp <- makeMeshValid_cpp(mesh_r, soup, triangulate, repairSoup, normals)
 	fromCPP(mesh_cpp)
 }
 

@@ -1,20 +1,16 @@
 # TODO
 
-  * `getVFT()` calls `checkMesh()`, then `makeMesh()` does again -> redundant
-  * fewer checks on R side in `makeMeshValid()`
   * use `make_surf_mesh_valid()` instead of `make_surf_mesh()` wherever reasonable
+  * `readMeshFile()` and `makeMesh()` in one step - via `filename` option
   * `fill_boundary_hole()`
       * pass more parameters (small holes)
   * `remeshIsotropic()`
       * does not work well for pentagrammic prism - why? (`Rvcg::vcgIsotropicRemeshing()` works)
-  * `readFile_cpp()` STL filename instead of `infile`?
-  * use of `MeshT::Vertex_index` vs. `vertex_descriptor`? (and face)
 
 # Wishlist
 
-  * `readMeshFile()` and `makeMesh()` in one step - via `filename` option
   * messages
-      * silent option to remove output during processing
+      * verbose/silent option to remove output during processing except for warnings()
       * `rmessage()` vs. `Rcpp::warning()`
   * triangulated surface mesh simplification
       * `edge_collapse()`
