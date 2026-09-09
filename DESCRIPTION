@@ -6,14 +6,17 @@ Authors@R:
   c(person("Daniel", "Wollschlaeger", role=c("aut", "cre"), email="wollschlaeger@uni-mainz.de"),
     person("Stephane", "Laurent", role=c("aut")))
 Maintainer: Daniel Wollschlaeger <wollschlaeger@uni-mainz.de>
-Description: An adaptation of code from packages 'Boov', 'PolygonSoup',
-    and 'cgalMeshes' developed by Stephane Laurent. Uses the 'C++'
-    library 'CGAL' <https://www.cgal.org/>. Supports basic processing
-    of 3D meshes as well as mesh repair, remeshing, smoothing,
+Description: Basic processing of 3D meshes based on the 'C++'
+    library 'CGAL' <https://www.cgal.org/>.
+    Reads and writes typical file formats with meshes or
+    polygon soups.
+    Supports mesh repair, remeshing, smoothing,
     subdivision ('Catmull-Clark', 'Doo-Sabin', 'Sqrt3', 'Loop'),
     Boolean operations (union, difference, intersection),
     surface reconstruction ('AFS', 'SSS', Poisson),
     (optimal) bounding box, and Hausdorff distance.
+    An adaptation of code from packages 'Boov', 'PolygonSoup',
+    and 'cgalMeshes' developed by Stephane Laurent.
 License: GPL-3
 URL: https://github.com/dwoll/MeshUtils/
 BugReports: https://github.com/dwoll/MeshUtils/issues/
