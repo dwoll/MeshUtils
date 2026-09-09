@@ -4,7 +4,7 @@
 \alias{boolIntersection}
 \title{Meshes intersection}
 \usage{
-boolIntersection(x, repairSoup = TRUE, normals = FALSE)
+boolIntersection(x, repairSoup = TRUE, normals = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A list of meshes, each being either a \code{\link[rgl]{mesh3d}} object
@@ -18,6 +18,7 @@ gain some speed.}
 
 \item{normals}{Boolean, whether to return the per-vertex normals of the
 output mesh.}
+\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
 }
 \value{
 A \code{CGALmesh} object.
@@ -33,13 +34,13 @@ library(MeshUtils)
 library(rgl)
 
 # mesh one: truncated icosahedron; we triangulate it
-mesh1 <- makeMesh(mesh       =dataTruncIcosahedron,
+mesh1 <- makeMesh(dataTruncIcosahedron,
                   triangulate=TRUE,
                   normals    = FALSE)
 
 # mesh two: a cube
 mesh2_rgl <- translate3d(cube3d(), 2, 0, 0)
-mesh2     <- makeMesh(mesh       =mesh2_rgl,
+mesh2     <- makeMesh(mesh2_rgl,
                       triangulate=TRUE,
                       normals    =FALSE)
 

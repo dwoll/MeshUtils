@@ -4,7 +4,7 @@
 \alias{boolUnion}
 \title{Meshes union}
 \usage{
-boolUnion(x, repairSoup = TRUE, normals = FALSE)
+boolUnion(x, repairSoup = TRUE, normals = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A list of meshes, each being either a \code{\link[rgl]{mesh3d}} object
@@ -18,6 +18,7 @@ gain some speed.}
 
 \item{normals}{Boolean, whether to return the per-vertex normals of the
 output mesh.}
+\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
 }
 \value{
 A \code{CGALmesh} object.

@@ -29,12 +29,14 @@ MeshT fill_boundary_holes(
     const bool fair_hole,
     const double max_hole_diam,
     const int max_num_hole_edges,
-    const unsigned int max_num_holes) {
+    const unsigned int max_num_holes,
+    const bool verbose) {
   using face_descriptor     = typename boost::graph_traits<MeshT>::face_descriptor;
   using vertex_descriptor   = typename boost::graph_traits<MeshT>::vertex_descriptor;
   using halfedge_descriptor = typename boost::graph_traits<MeshT>::halfedge_descriptor;
+  if(verbose) { rmessage("Trying to fill boundary holes."); }
   if(max_num_holes == 0) {
-    rmessage("'max_num_holes' is 0. Nothing done.");
+    if(verbose) { rmessage("'max_num_holes' is 0. Nothing done."); }
     return mesh;
   }
   // PMP::remove_almost_degenerate_faces(mesh);
@@ -45,7 +47,7 @@ MeshT fill_boundary_holes(
   CGAL::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
   size_t n_border = border_cycles.size();
   if(n_border == 0) {
-    rmessage("There's no border in this mesh. Nothing done.");
+    if(verbose) { rmessage("There's no border in this mesh. Nothing done."); }
     return mesh;
   }
 
@@ -74,11 +76,11 @@ MeshT fill_boundary_holes(
 
   std::string msg1;
   msg1 = "Filled " + std::to_string(nb_holes_ok) + " boundary hole(s).";
-  rmessage(msg1);
+  if(verbose) { rmessage(msg1); }
   if(nb_holes_fail > 0) {
       std::string msg2;
       msg2 = "Failed to fill " + std::to_string(nb_holes_fail) + " boundary hole(s).";
-      rmessage(msg2);
+      if(verbose) { rmessage(msg2); }
   }
 
   std::vector<PointT> points;
@@ -94,10 +96,10 @@ MeshT fill_boundary_holes(
   MeshT mesh_out;
   const bool orient_ok = PMP::orient_polygon_soup(points, polygons);
   if(!orient_ok) {
-      rmessage("Polygon orientation after filling holes failed.");
+      Rcpp::warning("Polygon orientation after filling holes failed.");
   }
   if(!PMP::is_polygon_soup_a_polygon_mesh(polygons)) {
-      rmessage("Polygon soup not a mesh - non-manifold vertex? - need PMP::autorefine_triangle_soup()?");
+      Rcpp::warning("Polygon soup not a mesh - non-manifold vertex? - need PMP::autorefine_triangle_soup()?");
   }
   PMP::polygon_soup_to_polygon_mesh(points, polygons, mesh_out);
   // PMP::merge_duplicated_vertices_in_boundary_cycles(mesh);
@@ -114,8 +116,8 @@ MeshT fill_boundary_holes(
   return mesh_out;
 }
 
-template Mesh3  fill_boundary_holes<Mesh3,  Point3>(Mesh3&,   const bool, const double, const int, const unsigned int);
-template EMesh3 fill_boundary_holes<EMesh3, EPoint3>(EMesh3&, const bool, const double, const int, const unsigned int);
+template Mesh3  fill_boundary_holes<Mesh3,  Point3>(Mesh3&,   const bool, const double, const int, const unsigned int, const bool);
+template EMesh3 fill_boundary_holes<EMesh3, EPoint3>(EMesh3&, const bool, const double, const int, const unsigned int, const bool);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -124,10 +126,12 @@ template EMesh3 fill_boundary_holes<EMesh3, EPoint3>(EMesh3&, const bool, const 
 template <typename KernelT, typename PointT>
 bool remove_selfint_soup(std::vector<PointT> &points,
                        std::vector<std::vector<std::size_t>> &polygons,
-                       const int method) {
+                       const int method,
+                       const bool verbose) {
     bool success;
     std::string msg;
     std::string msg_method;
+    if(verbose) { rmessage("Trying to remove self-intersections."); }
     if(method == 1) {
         msg_method = "";
         success = PMP::autorefine_triangle_soup(points, polygons,
@@ -144,15 +148,13 @@ bool remove_selfint_soup(std::vector<PointT> &points,
                 .erase_policy(PMP::Duplicate_polygon_erase_policy::KEEP_ONE_IF_ODD));
     } else {
         msg_method = "";
-        rmessage("Wrong method. Needs to be 1 or 2. Nothing done.");
+        Rcpp::warning("Wrong method. Needs to be 1 (`auto`) or 2 (`auto_snap`). Nothing done.");
         return false;
     }
-    if(success) {
-        msg = "Autorefine" + msg_method + " successful.";
-    } else {
+    if(!success) {
         msg = "Autorefine " + msg_method + " not successful.";
+        Rcpp::warning(msg);
     }
-    rmessage(msg);
 
     // autorefine_triangle_soup() can remove edges, put isolated vertices may remain
     // result may be non-manifold
@@ -170,7 +172,7 @@ bool remove_selfint_soup(std::vector<PointT> &points,
     );
     PMP::remove_isolated_points_in_polygon_soup(points, polygons);
     if(PMP::does_polygon_soup_self_intersect(points, polygons)) {
-        rmessage("Polygon soup still self-intersects after autorefine.");
+        Rcpp::warning("Polygon soup still self-intersects after autorefine.");
     }
     // TODO what to do with this?
     // CGAL::Conforming_constrained_Delaunay_triangulation_3<KernelT> ccdt;
@@ -179,27 +181,27 @@ bool remove_selfint_soup(std::vector<PointT> &points,
 }
 
 template bool remove_selfint_soup<K, Point3>(
-    std::vector<Point3>&, std::vector<std::vector<std::size_t>>&, const int);
+    std::vector<Point3>&, std::vector<std::vector<std::size_t>>&, const int, const bool);
 
 template bool remove_selfint_soup<EK, EPoint3>(
-    std::vector<EPoint3>&, std::vector<std::vector<std::size_t>>&, const int);
+    std::vector<EPoint3>&, std::vector<std::vector<std::size_t>>&, const int, const bool);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 // mesh passed by const reference, then uses a polygon soup
 // as container as the output will most likely be non-manifold
 template <typename KernelT, typename MeshT, typename PointT>
-MeshT remove_selfint_mesh(const MeshT &mesh, const int method) {
+MeshT remove_selfint_mesh(const MeshT &mesh, const int method, const bool verbose) {
   std::vector<PointT> points;
   std::vector<std::vector<std::size_t>> polygons;
   PMP::polygon_mesh_to_polygon_soup(mesh, points, polygons);
-  const bool success = remove_selfint_soup<KernelT, PointT>(points, polygons, method);
+  const bool success = remove_selfint_soup<KernelT, PointT>(points, polygons, method, verbose);
   MeshT mesh_out;
   PMP::orient_polygon_soup(points, polygons);
   if(PMP::is_polygon_soup_a_polygon_mesh(polygons)) {
     PMP::polygon_soup_to_polygon_mesh(points, polygons, mesh_out);
   } else {
-    rmessage("Polygon soup not a polygon mesh after removing intersections. Nothing done.");
+    Rcpp::warning("Polygon soup not a polygon mesh after removing intersections. Nothing done.");
     // PMP::polygon_soup_to_polygon_mesh(points, polygons, mesh_out);
     // PMP::merge_duplicated_vertices_in_boundary_cycles(mesh_out);
     // PMP::duplicate_non_manifold_vertices(mesh_out);
@@ -207,13 +209,13 @@ MeshT remove_selfint_mesh(const MeshT &mesh, const int method) {
     return mesh;
   }
   if(!mesh_out.is_valid()) {
-      rmessage("Mesh not valid after removing intersections.");
+      Rcpp::warning("Mesh not valid after removing intersections.");
   }
   if(PMP::does_self_intersect(mesh_out)) {
-    rmessage("Mesh self-intersections could not be removed.");
+    Rcpp::warning("Mesh self-intersections could not be removed.");
   }
   return mesh_out;
 }
 
-template Mesh3  remove_selfint_mesh<K,  Mesh3,  Point3>(const Mesh3&,   const int);
-template EMesh3 remove_selfint_mesh<EK, EMesh3, EPoint3>(const EMesh3&, const int);
+template Mesh3  remove_selfint_mesh<K,  Mesh3,  Point3>(const Mesh3&,   const int, const bool);
+template EMesh3 remove_selfint_mesh<EK, EMesh3, EPoint3>(const EMesh3&, const int, const bool);

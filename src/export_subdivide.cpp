@@ -32,7 +32,8 @@ Rcpp::List subdivideCatmullClark_cpp(
         1,           // remove_method
         false,       // fill_holes
         false,       // fair hole
-        0);          // max_num_holes
+        0,           // max_num_holes
+        false);      // verbose
     remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::CatmullClark_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
@@ -58,7 +59,8 @@ Rcpp::List subdivideDooSabin_cpp(
         1,           // remove_method
         false,       // fill_holes
         false,       // fair hole
-        0);          // max_num_holes
+        0,           // max_num_holes
+        false);      // verbose
     remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::DooSabin_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
@@ -83,7 +85,8 @@ Rcpp::List subdivideSqrt3_cpp(
         1,           // remove_method
         false,       // fill_holes
         false,       // fair hole
-        0);          // max_num_holes
+        0,           // max_num_holes
+        false);      // verbose
     remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::Sqrt3_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));
@@ -108,7 +111,8 @@ Rcpp::List subdivideLoop_cpp(
         1,           // remove_method
         false,       // fill_holes
         false,       // fair hole
-        0);          // max_num_holes
+        0,           // max_num_holes
+        false);      // verbose
     remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::Loop_subdivision(
       mesh, CGAL::parameters::number_of_iterations(nIter));

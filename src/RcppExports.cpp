@@ -41,21 +41,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // boolIntersectionEK_cpp
-Rcpp::List boolIntersectionEK_cpp(const Rcpp::List rmeshes, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_boolIntersectionEK_cpp(SEXP rmeshesSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+Rcpp::List boolIntersectionEK_cpp(const Rcpp::List rmeshes, const bool repairSoup, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_boolIntersectionEK_cpp(SEXP rmeshesSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshes(rmeshesSEXP);
     Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(boolIntersectionEK_cpp(rmeshes, repairSoup, normals));
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(boolIntersectionEK_cpp(rmeshes, repairSoup, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // boolDifferenceEK_cpp
-Rcpp::List boolDifferenceEK_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_boolDifferenceEK_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+Rcpp::List boolDifferenceEK_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool repairSoup, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_boolDifferenceEK_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP repairSoupSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -63,20 +64,22 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
     Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(boolDifferenceEK_cpp(rmesh1, rmesh2, repairSoup, normals));
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(boolDifferenceEK_cpp(rmesh1, rmesh2, repairSoup, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // boolUnionEK_cpp
-Rcpp::List boolUnionEK_cpp(const Rcpp::List rmeshes, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_boolUnionEK_cpp(SEXP rmeshesSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+Rcpp::List boolUnionEK_cpp(const Rcpp::List rmeshes, const bool repairSoup, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_boolUnionEK_cpp(SEXP rmeshesSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshes(rmeshesSEXP);
     Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(boolUnionEK_cpp(rmeshes, repairSoup, normals));
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(boolUnionEK_cpp(rmeshes, repairSoup, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -108,8 +111,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // makeMesh_cpp
-Rcpp::List makeMesh_cpp(const Rcpp::List rmesh, const bool triangulate, const bool repairSoup, const bool removeIntersections, const int removeMethod, const bool fillHoles, const bool fairHole, const unsigned int maxNumHoles, const bool normals);
-RcppExport SEXP _MeshUtils_makeMesh_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP removeIntersectionsSEXP, SEXP removeMethodSEXP, SEXP fillHolesSEXP, SEXP fairHoleSEXP, SEXP maxNumHolesSEXP, SEXP normalsSEXP) {
+Rcpp::List makeMesh_cpp(const Rcpp::List rmesh, const bool triangulate, const bool repairSoup, const bool removeIntersections, const int removeMethod, const bool fillHoles, const bool fairHole, const unsigned int maxNumHoles, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_makeMesh_cpp(SEXP rmeshSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP removeIntersectionsSEXP, SEXP removeMethodSEXP, SEXP fillHolesSEXP, SEXP fairHoleSEXP, SEXP maxNumHolesSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -122,22 +125,58 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type fairHole(fairHoleSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type maxNumHoles(maxNumHolesSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(makeMesh_cpp(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals));
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(makeMesh_cpp(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// makeMeshFF_cpp
+Rcpp::List makeMeshFF_cpp(const Rcpp::String filename, const bool triangulate, const bool repairSoup, const bool removeIntersections, const int removeMethod, const bool fillHoles, const bool fairHole, const unsigned int maxNumHoles, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_makeMeshFF_cpp(SEXP filenameSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP removeIntersectionsSEXP, SEXP removeMethodSEXP, SEXP fillHolesSEXP, SEXP fairHoleSEXP, SEXP maxNumHolesSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::String >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
+    Rcpp::traits::input_parameter< const bool >::type removeIntersections(removeIntersectionsSEXP);
+    Rcpp::traits::input_parameter< const int >::type removeMethod(removeMethodSEXP);
+    Rcpp::traits::input_parameter< const bool >::type fillHoles(fillHolesSEXP);
+    Rcpp::traits::input_parameter< const bool >::type fairHole(fairHoleSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type maxNumHoles(maxNumHolesSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(makeMeshFF_cpp(filename, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // makeMeshValid_cpp
-Rcpp::List makeMeshValid_cpp(const Rcpp::List rmesh, const bool soup, const bool triangulate, const bool repairSoup, const bool normals);
-RcppExport SEXP _MeshUtils_makeMeshValid_cpp(SEXP rmeshSEXP, SEXP soupSEXP, SEXP triangulateSEXP, SEXP repairSoupSEXP, SEXP normalsSEXP) {
+Rcpp::List makeMeshValid_cpp(const Rcpp::List rmesh, const bool soup, const bool triangulate, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_makeMeshValid_cpp(SEXP rmeshSEXP, SEXP soupSEXP, SEXP triangulateSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
     Rcpp::traits::input_parameter< const bool >::type soup(soupSEXP);
     Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
-    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(makeMeshValid_cpp(rmesh, soup, triangulate, repairSoup, normals));
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(makeMeshValid_cpp(rmesh, soup, triangulate, normals, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// makeMeshValidFF_cpp
+Rcpp::List makeMeshValidFF_cpp(const Rcpp::String filename, const bool soup, const bool triangulate, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_makeMeshValidFF_cpp(SEXP filenameSEXP, SEXP soupSEXP, SEXP triangulateSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::String >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< const bool >::type soup(soupSEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(makeMeshValidFF_cpp(filename, soup, triangulate, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -209,21 +248,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // removeSelfIntersections_cpp
-Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh, const int method, const bool normals);
-RcppExport SEXP _MeshUtils_removeSelfIntersections_cpp(SEXP rmeshSEXP, SEXP methodSEXP, SEXP normalsSEXP) {
+Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh, const int method, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_removeSelfIntersections_cpp(SEXP rmeshSEXP, SEXP methodSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
     Rcpp::traits::input_parameter< const int >::type method(methodSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(removeSelfIntersections_cpp(rmesh, method, normals));
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(removeSelfIntersections_cpp(rmesh, method, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // fillBoundaryHoles_cpp
-Rcpp::List fillBoundaryHoles_cpp(const Rcpp::List rmesh, const bool fairHole, const unsigned int maxNumHoles, const bool normals);
-RcppExport SEXP _MeshUtils_fillBoundaryHoles_cpp(SEXP rmeshSEXP, SEXP fairHoleSEXP, SEXP maxNumHolesSEXP, SEXP normalsSEXP) {
+Rcpp::List fillBoundaryHoles_cpp(const Rcpp::List rmesh, const bool fairHole, const unsigned int maxNumHoles, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_fillBoundaryHoles_cpp(SEXP rmeshSEXP, SEXP fairHoleSEXP, SEXP maxNumHolesSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -231,7 +271,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type fairHole(fairHoleSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type maxNumHoles(maxNumHolesSEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(fillBoundaryHoles_cpp(rmesh, fairHole, maxNumHoles, normals));
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(fillBoundaryHoles_cpp(rmesh, fairHole, maxNumHoles, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -533,21 +574,23 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_alphaWrapPoints_cpp", (DL_FUNC) &_MeshUtils_alphaWrapPoints_cpp, 4},
     {"_MeshUtils_alphaWrapMesh_cpp", (DL_FUNC) &_MeshUtils_alphaWrapMesh_cpp, 4},
-    {"_MeshUtils_boolIntersectionEK_cpp", (DL_FUNC) &_MeshUtils_boolIntersectionEK_cpp, 3},
-    {"_MeshUtils_boolDifferenceEK_cpp", (DL_FUNC) &_MeshUtils_boolDifferenceEK_cpp, 4},
-    {"_MeshUtils_boolUnionEK_cpp", (DL_FUNC) &_MeshUtils_boolUnionEK_cpp, 3},
+    {"_MeshUtils_boolIntersectionEK_cpp", (DL_FUNC) &_MeshUtils_boolIntersectionEK_cpp, 4},
+    {"_MeshUtils_boolDifferenceEK_cpp", (DL_FUNC) &_MeshUtils_boolDifferenceEK_cpp, 5},
+    {"_MeshUtils_boolUnionEK_cpp", (DL_FUNC) &_MeshUtils_boolUnionEK_cpp, 4},
     {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 3},
     {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 4},
-    {"_MeshUtils_makeMesh_cpp", (DL_FUNC) &_MeshUtils_makeMesh_cpp, 9},
+    {"_MeshUtils_makeMesh_cpp", (DL_FUNC) &_MeshUtils_makeMesh_cpp, 10},
+    {"_MeshUtils_makeMeshFF_cpp", (DL_FUNC) &_MeshUtils_makeMeshFF_cpp, 10},
     {"_MeshUtils_makeMeshValid_cpp", (DL_FUNC) &_MeshUtils_makeMeshValid_cpp, 5},
+    {"_MeshUtils_makeMeshValidFF_cpp", (DL_FUNC) &_MeshUtils_makeMeshValidFF_cpp, 5},
     {"_MeshUtils_isValid_cpp", (DL_FUNC) &_MeshUtils_isValid_cpp, 1},
     {"_MeshUtils_hasGarbage_cpp", (DL_FUNC) &_MeshUtils_hasGarbage_cpp, 1},
     {"_MeshUtils_doesBoundVolume_cpp", (DL_FUNC) &_MeshUtils_doesBoundVolume_cpp, 1},
     {"_MeshUtils_doesSelfIntersect_cpp", (DL_FUNC) &_MeshUtils_doesSelfIntersect_cpp, 1},
     {"_MeshUtils_isClosed_cpp", (DL_FUNC) &_MeshUtils_isClosed_cpp, 1},
     {"_MeshUtils_orientToBoundVolume_cpp", (DL_FUNC) &_MeshUtils_orientToBoundVolume_cpp, 2},
-    {"_MeshUtils_removeSelfIntersections_cpp", (DL_FUNC) &_MeshUtils_removeSelfIntersections_cpp, 3},
-    {"_MeshUtils_fillBoundaryHoles_cpp", (DL_FUNC) &_MeshUtils_fillBoundaryHoles_cpp, 4},
+    {"_MeshUtils_removeSelfIntersections_cpp", (DL_FUNC) &_MeshUtils_removeSelfIntersections_cpp, 4},
+    {"_MeshUtils_fillBoundaryHoles_cpp", (DL_FUNC) &_MeshUtils_fillBoundaryHoles_cpp, 5},
     {"_MeshUtils_getArea_cpp", (DL_FUNC) &_MeshUtils_getArea_cpp, 1},
     {"_MeshUtils_getVolume_cpp", (DL_FUNC) &_MeshUtils_getVolume_cpp, 1},
     {"_MeshUtils_getCentroid_cpp", (DL_FUNC) &_MeshUtils_getCentroid_cpp, 1},

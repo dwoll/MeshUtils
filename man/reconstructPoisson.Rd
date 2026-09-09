@@ -47,7 +47,7 @@ See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/}{Poisson
 library(MeshUtils)
 library(rgl)
 
-mesh     <- makeMesh(mesh=dataHopfTorus)
+mesh     <- makeMesh(dataHopfTorus)
 mesh_rgl <- toRGL(mesh)
 mesh_psr <- reconstructPoisson(mesh[["vertices"]],
                                normalsFun=getNormalsFun(6L),

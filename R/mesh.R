@@ -41,14 +41,15 @@ print.CGALmesh <- function(x, ...) {
 #'   The returned faces are coherently oriented, normals are computed if desired, and
 #'   triangulation is performed if desired.
 #'
-#' @param vertices A numeric matrix with three columns.
-#' @param faces Either an integer matrix (each row provides the vertex indices
+#' @param x One of three options: 1) A numeric matrix with three columns providing the
+#'   coordinates of the vertices of the mesh. 2) Either a list containing the components
+#'   \code{vertices} and \code{faces}, or a
+#'   \strong{rgl} mesh (i.e. a \code{\link[rgl]{mesh3d}} object). 3) A filename to read a
+#'   mesh file as in \code{\link[rgl]{readMeshFile}}.
+#' @param faces When \code{x} is a numeric matrix with the vertices: Either an integer
+#'   matrix (each row provides the vertex indices
 #'   of the corresponding face) or a list of integer vectors, each one
 #'   providing the vertex indices of the corresponding face.
-#' @param mesh If not \code{NULL}, this argument takes precedence over \code{vertices}
-#'   and \code{faces}, and must be either a list containing the components \code{vertices}
-#'   and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
-#'   (i.e. a \code{\link[rgl]{mesh3d}} object).
 #' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
 #' @param repairSoup Boolean: Whether to do some mesh cleaning.
@@ -59,6 +60,7 @@ print.CGALmesh <- function(x, ...) {
 #'     or `triangulate_and_refine_hole()` (\code{FALSE})?
 #' @param maxNumHoles \code{integer}: Maximum number of holes to be filled. May be 0.
 #' @param normals Boolean: Whether to compute the normals.
+#' @param verbose Boolean: Whether to print out messages about mesh processing.
 #'
 #' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 #'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.
@@ -109,15 +111,14 @@ print.CGALmesh <- function(x, ...) {
 #' ## the faces of the truncated icosahedron are hexagonal or pentagonal:
 #' dataTruncIcosahedron[["faces"]]
 #' # so we triangulate them:
-#' mesh2     <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
+#' mesh2     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
 #' mesh2_rgl <- toRGL(mesh2)
 #' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
 #' shade3d(mesh2_rgl, color="orange")
 #'
 #' @export
-makeMesh <- function(vertices,
+makeMesh <- function(x,
                      faces,
-                     mesh               =NULL,
                      triangulate        =FALSE,
                      repairSoup         =TRUE,
                      removeIntersections=FALSE,
@@ -125,60 +126,84 @@ makeMesh <- function(vertices,
                      fillHoles          =FALSE,
                      fairHole           =FALSE,
                      maxNumHoles        =5L,
-                     normals            =FALSE) {
-  stopifnot(isBoolean(triangulate))
-	stopifnot(isBoolean(repairSoup))
-	stopifnot(isBoolean(removeIntersections))
-	method_choices  <- c("auto", "auto_snap")
-  removeMethod    <- match.arg(removeMethod, choices=method_choices)
-  removeMethodInt <- match(removeMethod, method_choices)
-	stopifnot(isBoolean(fillHoles))
-	stopifnot(isBoolean(fairHole))
-	stopifnot(isPositiveInteger(maxNumHoles))
-	stopifnot(isBoolean(normals))
-	if(!is.null(mesh)) {
-		if(inherits(mesh, "mesh3d")) {
-			vft  <- getVFT(mesh, beforeCheck = TRUE)
-			mesh <- vft[["rmesh"]]
-		}
-		vertices <- mesh[["vertices"]]
-		faces    <- mesh[["faces"]]
-	}
-	## ensure 0-based indexing, transposed vertices
-	mesh_r   <- checkMesh(vertices, faces, aslist = TRUE)
-	mesh_cpp <- makeMesh_cpp(mesh_r,
-                           triangulate,
-	                         repairSoup,
-	                         removeIntersections,
-												   removeMethodInt,
-	                         fillHoles,
-	                         fairHole,
-													 maxNumHoles,
-											     normals)
-	fromCPP(mesh_cpp)
+                     normals            =FALSE,
+                     verbose            =FALSE) {
+    stopifnot(isBoolean(triangulate))
+    stopifnot(isBoolean(repairSoup))
+    stopifnot(isBoolean(removeIntersections))
+    method_choices  <- c("auto", "auto_snap")
+    removeMethod    <- match.arg(removeMethod, choices=method_choices)
+    removeMethodInt <- match(removeMethod, method_choices)
+    stopifnot(isBoolean(fillHoles))
+    stopifnot(isBoolean(fairHole))
+    stopifnot(isPositiveInteger(maxNumHoles))
+    stopifnot(isBoolean(normals))
+    stopifnot(isBoolean(verbose))
+    mesh_cpp <- if(is.character(x)) { # filename
+        stopifnot(length(x) == 1L, file.exists(x))
+        makeMeshFF_cpp(x,
+                       triangulate,
+                       repairSoup,
+                       removeIntersections,
+                       removeMethodInt,
+                       fillHoles,
+                       fairHole,
+                       maxNumHoles,
+                       normals,
+                       verbose)
+    } else {
+	      if(is.matrix(x)) {
+		        vertices <- x
+		        stopifnot(!missing(faces))
+	      } else if(inherits(x, "mesh3d")) {
+		    	  vft      <- getVFT(mesh, beforeCheck = TRUE)
+		    	  mesh     <- vft[["rmesh"]]
+		    	  vertices <- mesh[["vertices"]]
+		    	  faces    <- mesh[["faces"]]
+	      } else if(is.list(x)) {
+		    	  stopifnot(hasName(x, "vertices"), hasName(x, "faces"))
+		        vertices <- x[["vertices"]]
+		        faces    <- x[["faces"]]
+	      } else {
+		        stop("`x` needs to be a matrix with vertex coords,\n or a `mesh3d` object, or a filename.")
+	      }
+		    ## ensure 0-based indexing, transposed vertices
+		    mesh_r <- checkMesh(vertices, faces, aslist = TRUE)
+		    makeMesh_cpp(mesh_r,
+                     triangulate,
+                     repairSoup,
+                     removeIntersections,
+                     removeMethodInt,
+                     fillHoles,
+                     fairHole,
+                     maxNumHoles,
+                     normals,
+                     verbose)
+	  }
+		fromCPP(mesh_cpp)
 }
 
 #' @title Make a 3D mesh assuming valid input
-#' @description Make a 3D mesh from given vertices and faces, assuming
-#'   the input defines a valid mesh. The mesh is optionally cleaned:
-#'   Duplicated vertices or faces are merged, and isolated vertices are removed.
-#'   The returned faces are coherently oriented, normals are computed if desired,
-#'   and triangulation is performed if desired.
+#' @description Make a 3D mesh from given vertices and faces - assuming
+#'   the input defines a valid mesh. Omitted validity checks save some
+#'   processing time.
+#'   The returned faces are coherently oriented (if possible),
+#'   normals are computed if requested, triangulation is performed if requested
 #'
-#' @param vertices A numeric matrix with three columns.
+#' @param x One of three options: 1) A numeric matrix with three columns providing the
+#'   coordinates of the vertices of the mesh. 2) Either a list containing the components
+#'   \code{vertices} and \code{faces}, or a
+#'   \strong{rgl} mesh (i.e. a \code{\link[rgl]{mesh3d}} object). 3) A filename to read a
+#'   mesh file as in \code{\link[rgl]{readMeshFile}}.
 #' @param faces Either an integer matrix (each row provides the vertex indices
 #'   of the corresponding face) or a list of integer vectors, each one
 #'   providing the vertex indices of the corresponding face.
-#' @param mesh If not \code{NULL}, this argument takes precedence over \code{vertices}
-#'   and \code{faces}, and must be either a list containing the components \code{vertices}
-#'   and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
-#'   (i.e. a \code{\link[rgl]{mesh3d}} object).
-#' @param soup Boolean: Whether to assume a polygon soup
-#'   (as opposed to correcty ordered faces).
+#' @param soup Boolean: Whether to assume a polygon soup. If \code{FALSE}, assume
+#'   correctly oriented faces (faster).
 #' @param triangulate Boolean: Whether to triangulate the faces. Ignored if faces
 #'   are already triangle.
-#' @param repairSoup Boolean: Whether to do some mesh cleaning.
 #' @param normals Boolean: Whether to compute the normals.
+#' @param verbose Boolean: Whether to print out messages about mesh processing.
 #'
 #' @returns A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 #'   of the mesh, the exterior edges, the exterior vertices and optionally the normals.
@@ -195,36 +220,55 @@ makeMesh <- function(vertices,
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' mesh <- makeMeshValid(mesh=dataPentaPrism, soup=TRUE, triangulate=TRUE)
+#' mesh <- makeMeshValid(dataPentaPrism, soup=TRUE, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #'
 #' open3d(windowRect=c(50, 50, 562, 562))
 #' wire3d(mesh_rgl)
 #'
 #' @export
-makeMeshValid <- function(vertices,
+makeMeshValid <- function(x,
                           faces,
-                          mesh       =NULL,
                           soup       =FALSE,
                           triangulate=FALSE,
-                          repairSoup =FALSE,
-                          normals    =FALSE) {
-  stopifnot(isBoolean(soup))
-  stopifnot(isBoolean(triangulate))
-  stopifnot(isBoolean(repairSoup))
-	stopifnot(isBoolean(normals))
-	if(!is.null(mesh)) {
-		if(inherits(mesh, "mesh3d")) {
-			vft  <- getVFT(mesh, beforeCheck = TRUE)
-			mesh <- vft[["rmesh"]]
-		}
-		vertices <- mesh[["vertices"]]
-		faces    <- mesh[["faces"]]
-	}
-	## ensure 0-based indexing, transposed vertices
-	mesh_r   <- checkMeshValid(vertices, faces, aslist = TRUE)
-	mesh_cpp <- makeMeshValid_cpp(mesh_r, soup, triangulate, repairSoup, normals)
-	fromCPP(mesh_cpp)
+                          normals    =FALSE,
+                          verbose    =FALSE) {
+    stopifnot(isBoolean(soup))
+    stopifnot(isBoolean(triangulate))
+    stopifnot(isBoolean(normals))
+    stopifnot(isBoolean(verbose))
+    mesh_cpp <- if(is.character(x)) { # filename
+        stopifnot(length(x) == 1L, file.exists(x))
+        makeMeshValidFF_cpp(x,
+                            soup,
+                            triangulate,
+                            normals,
+                            verbose)
+    } else {
+        if(is.matrix(x)) {
+          vertices <- x
+          stopifnot(!missing(faces))
+        } else if(inherits(x, "mesh3d")) {
+   	      vft      <- getVFT(mesh, beforeCheck = TRUE)
+   	      mesh     <- vft[["rmesh"]]
+   	      vertices <- mesh[["vertices"]]
+   	      faces    <- mesh[["faces"]]
+        } else if(is.list(x)) {
+   	      stopifnot(hasName(x, "vertices"), hasName(x, "faces"))
+          vertices <- x[["vertices"]]
+          faces    <- x[["faces"]]
+        } else {
+          stop("`x` needs to be a matrix with vertex coords,\n or a `mesh3d` object, or a filename.")
+        }
+        ## ensure 0-based indexing, transposed vertices
+        mesh_r <- checkMeshValid(vertices, faces, aslist = TRUE)
+        makeMeshValid_cpp(mesh_r,
+                          soup,
+                          triangulate,
+                          normals,
+                          verbose)
+    }
+    fromCPP(mesh_cpp)
 }
 
 #' @title Conversion to 'rgl' mesh
@@ -243,7 +287,7 @@ makeMeshValid <- function(vertices,
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' mesh     <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
+#' mesh     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh, segments=t(mesh[["edges"]]))
 #' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
 #' wire3d(mesh_rgl, color="darkred")
@@ -307,7 +351,7 @@ toRGL <- function(x, ...) {
 #' library(rgl)
 #'
 #' # triangulate and plot the pentagrammic prism mesh
-#' mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh     <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
 #' shade3d(mesh_rgl, color="navy")
@@ -360,7 +404,7 @@ plotEdges <- function(
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=dataPentaPrism)
+#' mesh <- makeMesh(dataPentaPrism)
 #' isValid(mesh)
 #'
 #' @export
@@ -383,7 +427,7 @@ isValid <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=dataPentaPrism)
+#' mesh <- makeMesh(dataPentaPrism)
 #' hasGarbage(mesh)
 #'
 #' @export
@@ -407,7 +451,7 @@ hasGarbage <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=FALSE)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=FALSE)
 #' isTriangle(mesh)
 #'
 #' @export
@@ -454,7 +498,7 @@ isQuad <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' doesBoundVolume(mesh)
 #'
 #' @export
@@ -475,7 +519,7 @@ doesBoundVolume <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' doesSelfIntersect(mesh)
 #'
 #' @export
@@ -497,7 +541,7 @@ doesSelfIntersect <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' isClosed(mesh)
 #'
 #' @export
@@ -520,7 +564,7 @@ isClosed <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh   <- makeMesh(mesh=dataPentaPrism)
+#' mesh   <- makeMesh(dataPentaPrism)
 #' mesh_o <- orientToBoundVolume(mesh)
 #' getVolume(mesh_o)
 #'
@@ -545,7 +589,7 @@ orientToBoundVolume <- function(x, normals = FALSE) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' getArea(mesh)
 #'
 #' @export
@@ -567,7 +611,7 @@ getArea <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' getVolume(mesh)
 #'
 #' @export
@@ -590,7 +634,7 @@ getVolume <- function(x) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' getCentroid(mesh)
 #'
 #' @export
@@ -653,7 +697,7 @@ getOptimalBoundingBox <- function(x, triangulate = FALSE, normals = FALSE) {
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh     <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #' bb       <- getBoundingBox(mesh)
 #' bb_rgl   <- toRGL(bb)
@@ -681,7 +725,7 @@ getBoundingBox <- function(x, triangulate = FALSE, normals = FALSE) {
   m_rgl <- translate3d(scale3d(cube3d(), ax/2, ay/2, az/2),
                        center[1L], center[2L], center[3L])
 
-  makeMesh(mesh=m_rgl, repairSoup=FALSE, triangulate=triangulate, normals=normals)
+  makeMesh(m_rgl, repairSoup=FALSE, triangulate=triangulate, normals=normals)
 }
 
 #' @title Get distance from points to a mesh
@@ -696,7 +740,7 @@ getBoundingBox <- function(x, triangulate = FALSE, normals = FALSE) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh   <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' points <- matrix(2*runif(3*4), ncol=3)
 #' getDistance(mesh, points)
 #'
@@ -732,7 +776,7 @@ getDistance <- function(x, points) {
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' mesh    <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh    <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' mesh_vn <- assignNormals(mesh)
 #' mesh_vn_rgl <- toRGL(mesh_vn)
 #' open3d(windowRect=c(50, 50, 562, 562))

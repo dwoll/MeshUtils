@@ -5,35 +5,28 @@
 \title{Make a 3D mesh}
 \usage{
 makeMeshValid(
-  vertices,
+  x,
   faces,
-  mesh = NULL,
   soup = FALSE,
   triangulate = FALSE,
-  repairSoup = FALSE,
-  normals = FALSE
+  normals = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
-\item{vertices}{A numeric matrix with three columns.}
+\item{x}{A numeric matrix with three columns.}
 
 \item{faces}{Either an integer matrix (each row provides the vertex indices
 of the corresponding face) or a list of integer vectors, each one
 providing the vertex indices of the corresponding face.}
-
-\item{mesh}{If not \code{NULL}, this argument takes precedence over \code{vertices}
-and \code{faces}, and must be either a list containing the components \code{vertices}
-and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
-(i.e. a \code{\link[rgl]{mesh3d}} object).}
 
 \item{soup}{Boolean: Whether to assume a polygon soup (as opposed to correctly ordered faces).}
 
 \item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
 are already triangle.}
 
-\item{repairSoup}{Boolean: Whether to do some mesh cleaning.}
-
 \item{normals}{Boolean: Whether to compute the normals.}
+\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
 }
 \value{
 A list of class \code{CGALmesh} giving the vertices, the edges, the faces
@@ -50,7 +43,7 @@ and triangulation is performed if desired.
 library(MeshUtils)
 library(rgl)
 
-mesh     <- makeMeshValid(mesh=dataPentaPrism, soup=TRUE, triangulate=TRUE)
+mesh     <- makeMeshValid(dataPentaPrism, soup=TRUE, triangulate=TRUE)
 mesh_rgl <- toRGL(mesh)
 open3d(windowRect=c(50, 50, 562, 562))
 wire3d(mesh_rgl)

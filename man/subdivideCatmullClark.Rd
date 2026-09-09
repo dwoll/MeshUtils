@@ -28,7 +28,7 @@ See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
 library(MeshUtils)
 library(rgl)
 
-mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh        <- makeMesh(dataPentaPrism, triangulate=TRUE)
 mesh_rgl    <- toRGL(mesh)
 mesh_sd     <- subdivideCatmullClark(mesh, nIter=2)
 mesh_sd_rgl <- toRGL(mesh_sd)

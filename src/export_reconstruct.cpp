@@ -96,7 +96,8 @@ Rcpp::List reconstructAFS_cpp(const Rcpp::NumericMatrix pts,
       1,          // remove_method
       false,      // fill_holes
       false,      // fair hole
-      0);         // max_num_holes
+      0,          // max_num_holes
+      false);     // verbose
   // surface reconstruction makes triangle mesh
   if(CGAL::is_closed(mesh)) {
       if(!PMP::is_outward_oriented(mesh)) {

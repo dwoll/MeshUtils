@@ -24,7 +24,7 @@ library(rgl)
 
 f_mesh   <- system.file("extdata", "corner.off", package="MeshUtils")
 mesh_vf  <- readMeshFile(f_mesh)
-mesh     <- makeMesh(mesh_vf[["vertices"]], mesh_vf[["faces"]])
+mesh     <- makeMesh(mesh_vf)
 mesh_rgl <- toRGL(mesh)
 isTriangle(mesh)
 

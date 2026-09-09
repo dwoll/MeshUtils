@@ -30,8 +30,9 @@ Rcpp::List makeMesh_cpp(const Rcpp::List rmesh,
                         const bool fillHoles,
                         const bool fairHole,
                         const unsigned int maxNumHoles,
-                        const bool normals) {
-  rmessage("Processing mesh...");
+                        const bool normals,
+                        const bool verbose) {
+  if(verbose) { rmessage("Processing mesh..."); }
   Mesh3 mesh = make_surf_mesh<K, Mesh3, Point3>(
       rmesh,
       triangulate,         // triangulate
@@ -40,7 +41,35 @@ Rcpp::List makeMesh_cpp(const Rcpp::List rmesh,
       removeMethod,        // remove_method
       fillHoles,           // fill_holes
       fairHole,            // fair hole
-      maxNumHoles);        // max_num_holes
+      maxNumHoles,         // max_num_holes
+      verbose);            // verbose
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+}
+
+// ----------------------------------------------------------------------- //
+// initial mesh generation assuming valid input - EPIC kernel - TODO make parameter
+// [[Rcpp::export]]
+Rcpp::List makeMeshFF_cpp(const Rcpp::String filename,
+                          const bool triangulate,
+                          const bool repairSoup,
+                          const bool removeIntersections,
+                          const int removeMethod,
+                          const bool fillHoles,
+                          const bool fairHole,
+                          const unsigned int maxNumHoles,
+                          const bool normals,
+                          const bool verbose) {
+  if(verbose) { rmessage("Processing mesh..."); }
+  Mesh3 mesh = make_surf_mesh_ff<K, Mesh3, Point3>(
+      filename,
+      triangulate,         // triangulate
+      repairSoup,          // repair_soup
+      removeIntersections, // remove_intersections
+      removeMethod,        // remove_method
+      fillHoles,           // fill_holes
+      fairHole,            // fair hole
+      maxNumHoles,         // max_num_holes
+      verbose);            // verbose
   return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
@@ -50,14 +79,33 @@ Rcpp::List makeMesh_cpp(const Rcpp::List rmesh,
 Rcpp::List makeMeshValid_cpp(const Rcpp::List rmesh,
                              const bool soup,
                              const bool triangulate,
-                             const bool repairSoup,
-                             const bool normals) {
-  rmessage("Processing mesh...");
+                             const bool normals,
+                             const bool verbose) {
+  if(verbose) { rmessage("Processing mesh..."); }
   Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
       rmesh,
       soup,
       triangulate,
-      repairSoup);
+      false,       // repairSoup
+      verbose);
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+}
+
+// ----------------------------------------------------------------------- //
+// initial mesh generation assuming valid input - EPIC kernel - TODO make parameter
+// [[Rcpp::export]]
+Rcpp::List makeMeshValidFF_cpp(const Rcpp::String filename,
+                               const bool soup,
+                               const bool triangulate,
+                               const bool normals,
+                               const bool verbose) {
+  if(verbose) { rmessage("Processing mesh..."); }
+  Mesh3 mesh = make_surf_mesh_valid_ff<Mesh3, Point3>(
+      filename,
+      soup,
+      triangulate,
+      false,     // repair_soup
+      verbose);
   return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
 
@@ -72,7 +120,8 @@ bool isValid_cpp(const Rcpp::List rmesh) {
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
+      0,           // max_num_holes
+      false);      // verbose
   return mesh.is_valid(false);
 }
 
@@ -87,8 +136,9 @@ bool hasGarbage_cpp(const Rcpp::List rmesh) {
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  return mesh.has_garbage();
+      0,           // max_num_holes
+      false);      // verbose
+   return mesh.has_garbage();
 }
 
 // ----------------------------------------------------------------------- //
@@ -102,13 +152,14 @@ bool doesBoundVolume_cpp(const Rcpp::List rmesh) {
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  if(!CGAL::is_closed(mesh)) {
-      rmessage("Mesh is not closed.");
+      0,           // max_num_holes
+      false);      // verbose
+   if(!CGAL::is_closed(mesh)) {
+      Rcpp::warning("Mesh is not closed.");
       return false;
   }
   if(PMP::does_self_intersect(mesh)) {
-      rmessage("Mesh has self-intersections.");
+      Rcpp::warning("Mesh has self-intersections.");
       return false;
   }
   return PMP::does_bound_a_volume(mesh);
@@ -126,8 +177,9 @@ bool doesSelfIntersect_cpp(
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  return PMP::does_self_intersect(mesh);
+      0,           // max_num_holes
+      false);      // verbose
+   return PMP::does_self_intersect(mesh);
 }
 
 // ----------------------------------------------------------------------- //
@@ -141,8 +193,9 @@ bool isClosed_cpp(const Rcpp::List rmesh) {
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  return CGAL::is_closed(mesh);
+      0,           // max_num_holes
+      false);      // verbose
+   return CGAL::is_closed(mesh);
 }
 
 // ----------------------------------------------------------------------- //
@@ -157,8 +210,9 @@ Rcpp::List orientToBoundVolume_cpp(
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  if(!CGAL::is_triangle_mesh(mesh)) {
+      0,           // max_num_holes
+      false);      // verbose
+   if(!CGAL::is_triangle_mesh(mesh)) {
     Rcpp::stop("The mesh is not triangle.");
   }
   PMP::orient_to_bound_a_volume(mesh);
@@ -171,7 +225,8 @@ Rcpp::List orientToBoundVolume_cpp(
 Rcpp::List removeSelfIntersections_cpp(
   const Rcpp::List rmesh,
   const int method,
-  const bool normals) {
+  const bool normals,
+  const bool verbose) {
   EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
       rmesh,
       true,        // triangulate - must be triangle
@@ -180,8 +235,9 @@ Rcpp::List removeSelfIntersections_cpp(
       method,      // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+      0,           // max_num_holes
+      verbose);    // verbose
+   return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -191,7 +247,8 @@ Rcpp::List fillBoundaryHoles_cpp(
   const Rcpp::List rmesh,
   const bool fairHole,
   const unsigned int maxNumHoles,
-  const bool normals) {
+  const bool normals,
+  const bool verbose) {
   EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
       rmesh,
       true,         // triangulate - must be triangle
@@ -200,8 +257,9 @@ Rcpp::List fillBoundaryHoles_cpp(
       1,            // remove_method
       true,         // fill_holes
       fairHole,     // fair hole
-      maxNumHoles); // max_num_holes
-  return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+      0,            // max_num_holes
+      verbose);     // verbose
+   return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -215,8 +273,9 @@ double getArea_cpp(const Rcpp::List rmesh) {
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  if(PMP::does_self_intersect(mesh)) {
+      0,           // max_num_holes
+      false);      // verbose
+   if(PMP::does_self_intersect(mesh)) {
     Rcpp::warning("The mesh self-intersects.");
     return Rcpp::NumericVector::get_na();
   }
@@ -235,13 +294,14 @@ double getVolume_cpp(const Rcpp::List rmesh) {
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  if(!CGAL::is_closed(mesh)) {
-    rmessage("The mesh is not closed.");
+      0,           // max_num_holes
+      false);      // verbose
+   if(!CGAL::is_closed(mesh)) {
+    Rcpp::warning("The mesh is not closed.");
     return Rcpp::NumericVector::get_na();
   }
   if(PMP::does_self_intersect(mesh)) {
-    rmessage("The mesh self-intersects.");
+    Rcpp::warning("The mesh self-intersects.");
     return Rcpp::NumericVector::get_na();
   }
   const K::FT vol = PMP::volume(mesh);
@@ -259,10 +319,11 @@ Rcpp::NumericVector getCentroid_cpp(const Rcpp::List rmesh) {
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  Rcpp::NumericVector ctr(3);
+      0,           // max_num_holes
+      false);      // verbose
+   Rcpp::NumericVector ctr(3);
   if(!CGAL::is_triangle_mesh(mesh)) {
-      rmessage("The mesh is not triangle.");
+      Rcpp::warning("The mesh is not triangle.");
       ctr(0) = Rcpp::NumericVector::get_na();
       ctr(1) = Rcpp::NumericVector::get_na();
       ctr(2) = Rcpp::NumericVector::get_na();
@@ -287,8 +348,9 @@ Rcpp::List optimalBoundingBox_cpp(
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  std::array<Point3, 8> obb_pts;
+      0,           // max_num_holes
+      false);      // verbose
+   std::array<Point3, 8> obb_pts;
   CGAL::oriented_bounding_box(mesh, obb_pts,
                               CGAL::parameters::use_convex_hull(true));
   // make mesh out of oriented bounding box
@@ -323,8 +385,9 @@ Rcpp::List boundingBox_cpp(const Rcpp::List rmesh) {
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  CGAL::Bbox_3 bbox = PMP::bbox(mesh);
+      0,           // max_num_holes
+      false);      // verbose
+   CGAL::Bbox_3 bbox = PMP::bbox(mesh);
   Rcpp::NumericVector lcorner = { bbox.xmin(), bbox.ymin(), bbox.zmin() };
   Rcpp::NumericVector ucorner = { bbox.xmax(), bbox.ymax(), bbox.zmax() };
   return Rcpp::List::create(
@@ -345,11 +408,12 @@ Rcpp::NumericVector getDistance_cpp(
       1,           // remove_method
       false,       // fill_holes
       false,       // fair hole
-      0);          // max_num_holes
-  const std::size_t nPts = points.ncol();
+      0,           // max_num_holes
+      false);      // verbose
+   const std::size_t nPts = points.ncol();
   Rcpp::NumericVector distances(nPts);
   if(!CGAL::is_triangle_mesh(mesh)) {
-      rmessage("The mesh is not triangle.");
+      Rcpp::warning("The mesh is not triangle.");
       for(std::size_t i = 0; i < nPts; i++) {
           distances(i) = Rcpp::NumericVector::get_na();
       }
@@ -374,8 +438,9 @@ Rcpp::List addVNormals_cpp(const Rcpp::List rmesh) {
     1,           // remove_method
     false,       // fill_holes
     false,       // fair hole
-    0);          // max_num_holes
-  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, true);
+    0,           // max_num_holes
+    false);      // verbose
+ return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, true);
 }
 
 // ----------------------------------------------------------------------- //
@@ -389,6 +454,7 @@ Rcpp::List triangulateMesh_cpp(const Rcpp::List rmesh, const bool normals) {
     1,           // remove_method
     false,       // fill_holes
     false,       // fair hole
-    0);          // max_num_holes
-  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+    0,           // max_num_holes
+    false);      // verbose
+ return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }

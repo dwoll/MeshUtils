@@ -17,7 +17,7 @@ Does mesh bound a volume?
 }
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 doesBoundVolume(mesh)
 
 }

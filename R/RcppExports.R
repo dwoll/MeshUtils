@@ -9,16 +9,16 @@ alphaWrapMesh_cpp <- function(rmesh, alpha_rel, offset_rel, normals) {
     .Call(`_MeshUtils_alphaWrapMesh_cpp`, rmesh, alpha_rel, offset_rel, normals)
 }
 
-boolIntersectionEK_cpp <- function(rmeshes, repairSoup, normals) {
-    .Call(`_MeshUtils_boolIntersectionEK_cpp`, rmeshes, repairSoup, normals)
+boolIntersectionEK_cpp <- function(rmeshes, repairSoup, normals, verbose) {
+    .Call(`_MeshUtils_boolIntersectionEK_cpp`, rmeshes, repairSoup, normals, verbose)
 }
 
-boolDifferenceEK_cpp <- function(rmesh1, rmesh2, repairSoup, normals) {
-    .Call(`_MeshUtils_boolDifferenceEK_cpp`, rmesh1, rmesh2, repairSoup, normals)
+boolDifferenceEK_cpp <- function(rmesh1, rmesh2, repairSoup, normals, verbose) {
+    .Call(`_MeshUtils_boolDifferenceEK_cpp`, rmesh1, rmesh2, repairSoup, normals, verbose)
 }
 
-boolUnionEK_cpp <- function(rmeshes, repairSoup, normals) {
-    .Call(`_MeshUtils_boolUnionEK_cpp`, rmeshes, repairSoup, normals)
+boolUnionEK_cpp <- function(rmeshes, repairSoup, normals, verbose) {
+    .Call(`_MeshUtils_boolUnionEK_cpp`, rmeshes, repairSoup, normals, verbose)
 }
 
 getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric) {
@@ -29,12 +29,20 @@ getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, error_bound) {
     .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, error_bound)
 }
 
-makeMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals) {
-    .Call(`_MeshUtils_makeMesh_cpp`, rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals)
+makeMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals, verbose) {
+    .Call(`_MeshUtils_makeMesh_cpp`, rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals, verbose)
 }
 
-makeMeshValid_cpp <- function(rmesh, soup, triangulate, repairSoup, normals) {
-    .Call(`_MeshUtils_makeMeshValid_cpp`, rmesh, soup, triangulate, repairSoup, normals)
+makeMeshFF_cpp <- function(filename, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals, verbose) {
+    .Call(`_MeshUtils_makeMeshFF_cpp`, filename, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals, verbose)
+}
+
+makeMeshValid_cpp <- function(rmesh, soup, triangulate, normals, verbose) {
+    .Call(`_MeshUtils_makeMeshValid_cpp`, rmesh, soup, triangulate, normals, verbose)
+}
+
+makeMeshValidFF_cpp <- function(filename, soup, triangulate, normals, verbose) {
+    .Call(`_MeshUtils_makeMeshValidFF_cpp`, filename, soup, triangulate, normals, verbose)
 }
 
 isValid_cpp <- function(rmesh) {
@@ -61,12 +69,12 @@ orientToBoundVolume_cpp <- function(rmesh, normals) {
     .Call(`_MeshUtils_orientToBoundVolume_cpp`, rmesh, normals)
 }
 
-removeSelfIntersections_cpp <- function(rmesh, method, normals) {
-    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmesh, method, normals)
+removeSelfIntersections_cpp <- function(rmesh, method, normals, verbose) {
+    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmesh, method, normals, verbose)
 }
 
-fillBoundaryHoles_cpp <- function(rmesh, fairHole, maxNumHoles, normals) {
-    .Call(`_MeshUtils_fillBoundaryHoles_cpp`, rmesh, fairHole, maxNumHoles, normals)
+fillBoundaryHoles_cpp <- function(rmesh, fairHole, maxNumHoles, normals, verbose) {
+    .Call(`_MeshUtils_fillBoundaryHoles_cpp`, rmesh, fairHole, maxNumHoles, normals, verbose)
 }
 
 getArea_cpp <- function(rmesh) {

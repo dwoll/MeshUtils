@@ -30,7 +30,7 @@ See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
 library(MeshUtils)
 library(rgl)
 
-mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh        <- makeMesh(dataPentaPrism, triangulate=TRUE)
 mesh_rgl    <- toRGL(mesh)
 mesh_ds     <- subdivideDooSabin(mesh, nIter=2, triangulate=TRUE)
 mesh_ds_rgl <- toRGL(mesh_ds)

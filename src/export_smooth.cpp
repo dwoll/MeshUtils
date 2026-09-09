@@ -33,7 +33,8 @@ Rcpp::List smoothShape_cpp(
         1,           // remove_method
         false,       // fill_holes
         false,       // fair hole
-        0);          // max_num_holes
+        0,           // max_num_holes
+        false);      // verbose
     std::set<Mesh3::Vertex_index> constrained_vertices;
     for(Mesh3::Vertex_index v : vertices(mesh)) {
       if(is_border(v, mesh)) {

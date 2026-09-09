@@ -17,7 +17,7 @@ Does the given surface mesh have garbage?
 }
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=dataPentaPrism)
+mesh <- makeMesh(dataPentaPrism)
 hasGarbage(mesh)
 
 }

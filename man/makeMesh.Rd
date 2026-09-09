@@ -5,9 +5,8 @@
 \title{Make a 3D mesh}
 \usage{
 makeMesh(
-  vertices,
+  x,
   faces,
-  mesh = NULL,
   triangulate = FALSE,
   repairSoup = TRUE,
   removeIntersections = FALSE,
@@ -15,20 +14,16 @@ makeMesh(
   fillHoles = FALSE,
   fairHole = FALSE,
   maxNumHoles = 5L,
-  normals = FALSE
+  normals = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
-\item{vertices}{A numeric matrix with three columns.}
+\item{x}{A numeric matrix with three columns.}
 
 \item{faces}{Either an integer matrix (each row provides the vertex indices
 of the corresponding face) or a list of integer vectors, each one
 providing the vertex indices of the corresponding face.}
-
-\item{mesh}{If not \code{NULL}, this argument takes precedence over \code{vertices}
-and \code{faces}, and must be either a list containing the components \code{vertices}
-and \code{faces} (objects as described above), otherwise a \strong{rgl} mesh
-(i.e. a \code{\link[rgl]{mesh3d}} object).}
 
 \item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
 are already triangle.}
@@ -47,6 +42,8 @@ or \code{triangulate_and_refine_hole()} (\code{FALSE})?}
 \item{maxNumHoles}{\code{integer}: Maximum number of holes to be filled. May be 0.}
 
 \item{normals}{Boolean: Whether to compute the normals.}
+
+\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
 }
 \value{
 A list of class \code{CGALmesh} giving the vertices, the edges, the faces
@@ -95,7 +92,7 @@ shade3d(mesh1_rgl_b, color="blue", back="cull")
 ## the faces of the truncated icosahedron are hexagonal or pentagonal:
 dataTruncIcosahedron[["faces"]]
 # so we triangulate them:
-mesh2     <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
+mesh2     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
 mesh2_rgl <- toRGL(mesh2)
 open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
 shade3d(mesh2_rgl, color="orange")

@@ -4,7 +4,7 @@
 \alias{fillBoundaryHoles}
 \title{Fill boundary holes}
 \usage{
-fillBoundaryHoles(x, fairHole = TRUE, maxNumHoles = 10L, normals = FALSE)
+fillBoundaryHoles(x, fairHole = TRUE, maxNumHoles = 10L, normals = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
@@ -15,6 +15,7 @@ or \code{triangulate_and_refine_hole()} (\code{FALSE})?}
 \item{maxNumHoles}{\code{integer}: Maximum number of holes to be filled.}
 
 \item{normals}{Boolean: Whether to return vertex normals.}
+\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
 }
 \value{
 \code{CGALmesh} object.
@@ -28,7 +29,7 @@ If faces are not triangle, the mesh is triangulated.
 }
 \examples{
 library(MeshUtils)
-mesh      <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh      <- makeMesh(dataPentaPrism, triangulate=TRUE)
 mesh_fill <- fillBoundaryHoles(mesh)
 
 }

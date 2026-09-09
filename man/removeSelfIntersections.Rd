@@ -4,7 +4,7 @@
 \alias{removeSelfIntersections}
 \title{Remove self intersections}
 \usage{
-removeSelfIntersections(x, method = c("auto", "auto_snap"), normals = FALSE)
+removeSelfIntersections(x, method = c("auto", "auto_snap"), normals = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
@@ -12,6 +12,7 @@ removeSelfIntersections(x, method = c("auto", "auto_snap"), normals = FALSE)
 \item{method}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
 
 \item{normals}{Boolean: Whether to return vertex normals.}
+\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
 }
 \value{
 \code{CGALmesh} object.
@@ -25,7 +26,7 @@ If faces are not triangle, the mesh is triangulated.
 }
 \examples{
 library(MeshUtils)
-mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh     <- makeMesh(dataPentaPrism, triangulate=TRUE)
 mesh_nsi <- removeSelfIntersections(mesh)
 getVolume(mesh_nsi)
 

@@ -50,7 +50,8 @@ MeshT soup_to_mesh(
     const int,                              // remove_method
     const bool,                             // fill_holes
     const bool,                             // fair_hole
-    const unsigned int);                    // max_num_holes
+    const unsigned int,                     // max_num_holes
+    const bool);                            // verbose
 
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT make_surf_mesh(
@@ -61,11 +62,28 @@ MeshT make_surf_mesh(
     const int,
     const bool,
     const bool,
-    const unsigned int);
+    const unsigned int,
+    const bool);
+
+template <typename KernelT, typename MeshT, typename PointT>
+MeshT make_surf_mesh_ff(
+    const Rcpp::String,
+    const bool,
+    const bool,
+    const bool,
+    const int,
+    const bool,
+    const bool,
+    const unsigned int,
+    const bool);
 
 template <typename MeshT, typename PointT>
 MeshT make_surf_mesh_valid(
-    const Rcpp::List&, const bool, const bool, const bool);
+    const Rcpp::List&, const bool, const bool, const bool, const bool);
+
+template <typename MeshT, typename PointT>
+MeshT make_surf_mesh_valid_ff(
+    const Rcpp::String, const bool, const bool, const bool, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List make_rmesh1(const MeshT&, const bool);
@@ -77,18 +95,27 @@ template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List get_rmesh(MeshT&, const bool, const bool);
 
 template <typename KernelT, typename MeshT, typename PointT>
-MeshT remove_selfint_mesh(const MeshT&, const int);
+MeshT remove_selfint_mesh(const MeshT&, const int, const bool);
 
 template <typename MeshT, typename PointT>
 MeshT fill_boundary_holes(
-    MeshT&, const bool, const double, const int, const unsigned int);
+    MeshT&, const bool, const double, const int, const unsigned int, const bool);
 
 template <typename MeshT, typename VectorT>
 void remove_properties(MeshT&, const std::vector<std::string>&);
 
+template <typename MeshT>
+MeshT readFileSoup(const std::string);
+
+template <typename MeshT>
+MeshT readFileMesh(const std::string);
+
 // -------------------------------------------------------------------------- //
 // no template
+std::string toLower(std::string);
+
 void rmessage(std::string);
+
 bool is_triangle_soup(const std::vector<std::vector<std::size_t>>&);
 
           std::vector<std::vector<std::size_t>>        list_to_faces1(const Rcpp::List&);

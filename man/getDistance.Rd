@@ -21,7 +21,7 @@ to a 3D mesh.
 }
 \examples{
 library(MeshUtils)
-mesh   <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh   <- makeMesh(dataPentaPrism, triangulate=TRUE)
 points <- matrix(2*runif(3*4), ncol=3)
 getDistance(mesh, points)
 

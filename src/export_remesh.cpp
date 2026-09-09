@@ -33,7 +33,8 @@ Rcpp::List remeshIsotropicUniform_cpp(
         1,           // remove_method
         false,       // fill_holes
         false,       // fair hole
-        0);          // max_num_holes
+        0,           // max_num_holes
+        false);      // verbose
     std::vector<hlfdg_dscrptr> borderHalfEdges;
     // requires CGAL 6.2 (was PMP::border_...)
     CGAL::border_halfedges(faces(mesh), mesh, std::back_inserter(borderHalfEdges));
@@ -76,7 +77,8 @@ Rcpp::List remeshIsotropicAdapt_cpp(
         1,           // remove_method
         false,       // fill_holes
         false,       // fair hole
-        0);          // max_num_holes
+        0,           // max_num_holes
+        false);      // verbose
     const std::pair edge_min_max{ edgeMin, edgeMax };
     PMP::Adaptive_sizing_field<Mesh3> sizing_field(
         tol,

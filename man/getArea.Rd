@@ -17,7 +17,7 @@ Get the surface area of a 3D mesh.
 }
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 getArea(mesh)
 
 }

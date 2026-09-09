@@ -35,7 +35,7 @@
 #' library(rgl)
 #' ply  <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
 #' vf   <- readMeshFile(ply, method="soup")
-#' mesh <- makeMesh(mesh=vf, normals=TRUE)
+#' mesh <- makeMesh(vf, normals=TRUE)
 #'
 #' mesh_rgl <- toRGL(mesh)
 #' open3d(windowRect=c(50, 50, 562, 562))

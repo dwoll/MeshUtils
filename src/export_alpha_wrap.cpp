@@ -44,13 +44,14 @@ Rcpp::List alphaWrapMesh_cpp(
     const bool normals) {
   Mesh3 mesh = make_surf_mesh<K, Mesh3, Point3>(
       rmesh,
-      true,           // triangulate - must be triangle
-      false,          // repair_soup
-      false,          // remove_intersections
-      1,              // remove_method
-      false,          // fill_holes
-      false,          // fair hole
-      0);             // max_num_holes
+      true,        // triangulate - must be triangle
+      false,       // repair_soup
+      false,       // remove_intersections
+      1,           // remove_method
+      false,       // fill_holes
+      false,       // fair hole
+      0,           // max_num_holes
+      false);      // verbose
 
   CGAL::Bbox_3 bbox = PMP::bbox(mesh);
   const double diag_len = std::sqrt(CGAL::square(bbox.xmax() - bbox.xmin()) +

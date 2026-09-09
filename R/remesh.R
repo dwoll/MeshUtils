@@ -34,7 +34,7 @@
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh         <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
+#' mesh         <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
 #' mesh_rgl     <- toRGL(mesh)
 #' mesh_rem     <- remeshIsotropic(mesh, targetEdgeLen=1)
 #' mesh_rem_rgl <- toRGL(mesh_rem)

@@ -18,7 +18,7 @@ Add normal vectors to a mesh. Currently, only vertex normals are supported.
 \examples{
 library(MeshUtils)
 library(rgl)
-mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh        <- makeMesh(dataPentaPrism, triangulate=TRUE)
 mesh_vn     <- assignNormals(mesh)
 mesh_vn_rgl <- toRGL(mesh_vn)
 open3d(windowRect=c(50, 50, 562, 562))

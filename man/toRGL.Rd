@@ -23,7 +23,7 @@ function) to a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 \examples{
 library(MeshUtils)
 library(rgl)
-mesh     <- makeMesh(mesh=dataTruncIcosahedron, triangulate=TRUE)
+mesh     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
 mesh_rgl <- toRGL(mesh, segments=t(mesh[["edges"]]))
 open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
 wire3d(mesh_rgl, color="darkred")

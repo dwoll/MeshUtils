@@ -108,7 +108,7 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE, normals=FALSE)
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh     <- makeMesh(mesh=dataHopfTorus)
+#' mesh     <- makeMesh(dataHopfTorus)
 #' mesh_rgl <- toRGL(mesh)
 #' mesh_psr <- reconstructPoisson(mesh[["vertices"]],
 #'                                normalsFun=getNormalsFun(6L),

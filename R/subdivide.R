@@ -26,7 +26,7 @@
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh        <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl    <- toRGL(mesh)
 #' mesh_sd     <- subdivideCatmullClark(mesh, nIter=2)
 #' mesh_sd_rgl <- toRGL(mesh_sd)
@@ -68,7 +68,7 @@ subdivideCatmullClark <- function(x, nIter = 1, normals = FALSE) {
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh        <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl    <- toRGL(mesh)
 #' mesh_ds     <- subdivideDooSabin(mesh, nIter=2)
 #' mesh_ds_rgl <- toRGL(mesh_ds)
@@ -110,7 +110,7 @@ subdivideDooSabin <- function(x, nIter = 1, triangulate = TRUE, normals = FALSE)
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh        <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh        <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl    <- toRGL(mesh)
 #' mesh_s3     <- subdivideSqrt3(mesh, nIter=2)
 #' mesh_s3_rgl <- toRGL(mesh_s3)
@@ -151,7 +151,7 @@ subdivideSqrt3 <- function(x, nIter = 1, normals = FALSE) {
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' mesh       <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+#' mesh       <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl   <- toRGL(mesh)
 #' mesh_l     <- subdivideLoop(mesh, nIter=2)
 #' mesh_l_rgl <- toRGL(mesh_s3)

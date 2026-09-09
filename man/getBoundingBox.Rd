@@ -23,7 +23,7 @@ Get axis-parallel bounding box
 library(MeshUtils)
 library(rgl)
 
-mesh     <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh     <- makeMesh(dataPentaPrism, triangulate=TRUE)
 mesh_rgl <- toRGL(mesh)
 bb       <- getBoundingBox(mesh)
 bb_rgl   <- toRGL(bb)

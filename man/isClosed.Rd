@@ -17,7 +17,7 @@ Is mesh closed?
 }
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=dataPentaPrism, triangulate=TRUE)
+mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 isClosed(mesh)
 
 }

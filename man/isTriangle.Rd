@@ -18,7 +18,7 @@ Is the given surface mesh a triangle mesh?
 }
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=dataPentaPrism, triangulate=FALSE)
+mesh <- makeMesh(dataPentaPrism, triangulate=FALSE)
 isTriangle(mesh)
 
 }

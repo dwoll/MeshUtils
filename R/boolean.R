@@ -22,6 +22,7 @@
 #'   gain some speed.
 #' @param normals Boolean, whether to return the per-vertex normals of the
 #'   output mesh.
+#' @param verbose Boolean: Whether to print out messages about mesh processing.
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -60,11 +61,12 @@
 #'           verticesAsSpheres=FALSE)
 #'
 #' @export
-boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE) {
+boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE, verbose=FALSE) {
   stopifnot(is.list(x))
   stopifnot(length(x) >= 2L)
   stopifnot(isBoolean(repairSoup))
   stopifnot(isBoolean(normals))
+  stopifnot(isBoolean(verbose))
   checkMeshes <- lapply(x, function(mesh) {
     if(inherits(mesh, "mesh3d")) {
       vft  <- getVFT(mesh, beforeCheck = TRUE)
@@ -73,7 +75,7 @@ boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE) {
     checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
   })
   meshes <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  inter  <- boolIntersectionEK_cpp(meshes, repairSoup, normals)
+  inter  <- boolIntersectionEK_cpp(meshes, repairSoup, normals, verbose)
   fromCPP(inter)
 }
 
@@ -91,6 +93,7 @@ boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE) {
 #'   \code{FALSE} if you know your meshes are clean.
 #' @param normals Boolean, whether to return the per-vertex normals of the
 #'   output mesh.
+#' @param verbose Boolean: Whether to print out messages about mesh processing.
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -122,10 +125,11 @@ boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE) {
 #'           verticesAsSpheres=TRUE)
 #'
 #' @export
-boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE) {
+boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE, verbose=FALSE) {
   stopifnot(is.list(mesh1), is.list(mesh2))
   stopifnot(isBoolean(repairSoup))
   stopifnot(isBoolean(normals))
+  stopifnot(isBoolean(verbose))
 
   if(inherits(mesh1, "mesh3d")) {
     vft   <- getVFT(mesh1, beforeCheck = TRUE)
@@ -142,7 +146,7 @@ boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE) {
   mesh1  <- checkMesh1[c("vertices", "faces")]
   mesh2  <- checkMesh2[c("vertices", "faces")]
   differ <- boolDifferenceEK_cpp(
-    mesh1, mesh2, repairSoup, normals)
+    mesh1, mesh2, repairSoup, normals, verbose)
   fromCPP(differ)
 }
 
@@ -158,6 +162,7 @@ boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE) {
 #'   gain some speed.
 #' @param normals Boolean, whether to return the per-vertex normals of the
 #'   output mesh.
+#' @param verbose Boolean: Whether to print out messages about mesh processing.
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -187,11 +192,12 @@ boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE) {
 #'           verticesAsSpheres=TRUE)
 #'
 #' @export
-boolUnion <- function(x, repairSoup = TRUE, normals = FALSE) {
+boolUnion <- function(x, repairSoup = TRUE, normals = FALSE, verbose = FALSE) {
   stopifnot(is.list(x))
   stopifnot(length(x) >= 2L)
   stopifnot(isBoolean(repairSoup))
   stopifnot(isBoolean(normals))
+  stopifnot(isBoolean(verbose))
 
   checkMeshes <- lapply(x, function(mesh) {
     if(inherits(mesh, "mesh3d")) {
@@ -202,6 +208,6 @@ boolUnion <- function(x, repairSoup = TRUE, normals = FALSE) {
   })
 
   meshes <- lapply(checkMeshes, `[`, c("vertices", "faces"))
-  umesh  <- boolUnionEK_cpp(meshes, repairSoup, normals)
+  umesh  <- boolUnionEK_cpp(meshes, repairSoup, normals, verbose)
   fromCPP(umesh)
 }

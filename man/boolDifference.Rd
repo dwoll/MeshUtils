@@ -4,7 +4,7 @@
 \alias{boolDifference}
 \title{Mesh difference}
 \usage{
-boolDifference(mesh1, mesh2, repairSoup = TRUE, normals = FALSE)
+boolDifference(mesh1, mesh2, repairSoup = TRUE, normals = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{mesh1}{A mesh, either being given a \code{\link[rgl]{mesh3d}} object
@@ -21,6 +21,8 @@ vertices, duplicated faces, removing isolated vertices). Set to
 
 \item{normals}{Boolean, whether to return the per-vertex normals of the
 output mesh.}
+
+\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
 }
 \value{
 A \code{CGALmesh} object.

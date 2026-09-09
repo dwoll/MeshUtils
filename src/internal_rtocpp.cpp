@@ -17,6 +17,8 @@
 #include <CGAL/Polygon_mesh_processing/repair_polygon_soup.h>
 #include <CGAL/Polygon_mesh_processing/orientation.h>
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
+#include <CGAL/IO/io.h>
+#include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -120,13 +122,14 @@ MeshT soup_to_mesh(std::vector<PointT> points,
                    const int remove_method,
                    const bool fill_holes,
                    const bool fair_hole,
-                   const unsigned int max_num_holes) {
+                   const unsigned int max_num_holes,
+                   const bool verbose) {
     if(repair_soup) {
         PMP::repair_polygon_soup(points, faces);
     }
     const bool is_oriented = PMP::orient_polygon_soup(points, faces);
     if(!is_oriented) {
-        rmessage("Polygon soup orientation failed. Remove holes / self-intersections if present.");
+        Rcpp::warning("Polygon soup orientation failed.\n  Remove holes / self-intersections if present.");
     }
     // triangulate if necessary
     bool is_triangle = is_triangle_soup(faces);
@@ -139,10 +142,7 @@ MeshT soup_to_mesh(std::vector<PointT> points,
     // const bool soup_has_self_int = PMP::does_polygon_soup_self_intersect(points, faces);
     // remove self-intersections if necessary and possible
     // if(soup_has_self_int && remove_intersections && is_triangle) {
-    //     rmessage("Polygon soup has self-intersections, attempt to remove.");
     //     remove_selfint_soup<KernelT, PointT>(points, faces, remove_method);
-    // } else if(soup_has_self_int) {
-    //     rmessage("Polygon soup has self-intersections, but no attempt to remove.");
     // }
     // create mesh from polygon soup
     MeshT mesh;
@@ -150,16 +150,14 @@ MeshT soup_to_mesh(std::vector<PointT> points,
     PMP::polygon_soup_to_polygon_mesh(points, faces, mesh);
     // filling boundary holes if necessary, requested, and possible
     if(!CGAL::is_closed(mesh) && fill_holes && (max_num_holes > 0)) {
-        rmessage("Mesh is not closed. Attempt to fill hole(s).");
         // mesh is passed by reference and modified in fill_boundary_holes()
         // TODO also pass parameters related to hole size
-        MeshT mesh_tmp = fill_boundary_holes<MeshT, PointT>(mesh, fair_hole, -1, -1, max_num_holes);
+        MeshT mesh_tmp = fill_boundary_holes<MeshT, PointT>(mesh, fair_hole, -1, -1, max_num_holes, verbose);
         mesh = std::move(mesh_tmp);
     }
     // remove self-intersections if necessary, requested, and possible
     if(PMP::does_self_intersect(mesh) && remove_intersections && is_triangle) {
-        rmessage("Mesh has self-intersections, attempt to remove.");
-        remove_selfint_mesh<KernelT, MeshT, PointT>(mesh, remove_method);
+        remove_selfint_mesh<KernelT, MeshT, PointT>(mesh, remove_method, verbose);
     }
     return mesh;
 }
@@ -173,7 +171,8 @@ template Mesh3 soup_to_mesh<K, Mesh3, Point3>(
     const int,
     const bool,
     const bool,
-    const unsigned int);
+    const unsigned int,
+    const bool);
 
 template EMesh3 soup_to_mesh<EK, EMesh3, EPoint3>(
     std::vector<EPoint3>,
@@ -184,7 +183,8 @@ template EMesh3 soup_to_mesh<EK, EMesh3, EPoint3>(
     const int,
     const bool,
     const bool,
-    const unsigned int);
+    const unsigned int,
+    const bool);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -194,10 +194,10 @@ template <typename MeshT, typename PointT>
 MeshT soup_to_mesh_valid(std::vector<PointT> points,
                          std::vector<std::vector<std::size_t>> faces,
                          const bool triangulate,
-                         const bool repair_soup) {
-  if(repair_soup) {
-      PMP::repair_polygon_soup(points, faces);
-  }
+                         const bool repair_soup) {  // repair_soup_currently ignored (performance)
+  // if(repair_soup) {
+  //     PMP::repair_polygon_soup(points, faces);
+  // }
   // triangulate if necessary
   const bool is_triangle = is_triangle_soup(faces);
   if(triangulate && !is_triangle) {
@@ -205,7 +205,7 @@ MeshT soup_to_mesh_valid(std::vector<PointT> points,
   }
   const bool is_oriented = PMP::orient_polygon_soup(points, faces);
   if(!is_oriented) {
-      rmessage("Polygon soup orientation failed. Remove holes / self-intersections if present.");
+      Rcpp::warning("Polygon soup orientation failed.\n  Remove holes / self-intersections if present.");
   }
   MeshT mesh;
   PMP::polygon_soup_to_polygon_mesh(points, faces, mesh);
@@ -316,7 +316,8 @@ MeshT make_surf_mesh(
   const int remove_method,
   const bool fill_holes,
   const bool fair_hole,
-  const unsigned int max_num_holes) {
+  const unsigned int max_num_holes,
+  const bool verbose) {
   const Rcpp::NumericMatrix             rvertices = Rcpp::as<Rcpp::NumericMatrix>(rmesh["vertices"]);
   const Rcpp::List                      rfaces    = Rcpp::as<Rcpp::List>(rmesh["faces"]);
   std::vector<PointT>                   points    = matrix_to_points3<PointT>(rvertices);
@@ -330,9 +331,12 @@ MeshT make_surf_mesh(
       remove_method,
       fill_holes,
       fair_hole,
-      max_num_holes);
+      max_num_holes,
+      verbose);
 
-  run_mesh_checks<MeshT>(mesh);
+  if(verbose) {
+    run_mesh_checks<MeshT>(mesh);
+  }
   return mesh;
 }
 
@@ -344,7 +348,8 @@ template Mesh3 make_surf_mesh<K, Mesh3, Point3>(
     const int,
     const bool,
     const bool,
-    const unsigned int);
+    const unsigned int,
+    const bool);
 
 template EMesh3 make_surf_mesh<EK, EMesh3, EPoint3>(
     const Rcpp::List&,
@@ -354,7 +359,69 @@ template EMesh3 make_surf_mesh<EK, EMesh3, EPoint3>(
     const int,
     const bool,
     const bool,
-    const unsigned int);
+    const unsigned int,
+    const bool);
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+// read mesh file (polygon soup) and convert to Surface_mesh_3
+// faces may not be triangle -> list
+template <typename KernelT, typename MeshT, typename PointT>
+MeshT make_surf_mesh_ff(
+  const Rcpp::String filename,
+  const bool triangulate,
+  const bool repair_soup,
+  const bool remove_intersections,
+  const int remove_method,
+  const bool fill_holes,
+  const bool fair_hole,
+  const unsigned int max_num_holes,
+  const bool verbose) {
+  std::vector<PointT> points;
+  std::vector<std::vector<std::size_t>> polygons;
+  const bool ok = CGAL::IO::read_polygon_soup(
+      filename, points, polygons, CGAL::parameters::verbose(verbose));
+  if(!ok) {
+    Rcpp::stop("Reading failure.");
+  }
+  MeshT mesh = soup_to_mesh<KernelT, MeshT, PointT>(
+      points,
+      polygons,
+      triangulate,
+      repair_soup,
+      remove_intersections,
+      remove_method,
+      fill_holes,
+      fair_hole,
+      max_num_holes,
+      verbose);
+  if(verbose) {
+    run_mesh_checks<MeshT>(mesh);
+  }
+  return mesh;
+}
+
+template Mesh3 make_surf_mesh_ff<K, Mesh3, Point3>(
+    const Rcpp::String,
+    const bool,
+    const bool,
+    const bool,
+    const int,
+    const bool,
+    const bool,
+    const unsigned int,
+    const bool);
+
+template EMesh3 make_surf_mesh_ff<EK, EMesh3, EPoint3>(
+    const Rcpp::String,
+    const bool,
+    const bool,
+    const bool,
+    const int,
+    const bool,
+    const bool,
+    const unsigned int,
+    const bool);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -369,7 +436,8 @@ template <typename MeshT, typename PointT>
 MeshT make_surf_mesh_valid(const Rcpp::List &rmesh,
                            const bool soup,
                            const bool triangulate,
-                           const bool repair_soup) {
+                           const bool repair_soup,
+                           const bool verbose) {
     const Rcpp::NumericMatrix rvertices = Rcpp::as<Rcpp::NumericMatrix>(rmesh["vertices"]);
     const Rcpp::List          rfaces    = Rcpp::as<Rcpp::List>(rmesh["faces"]);
     MeshT mesh;
@@ -385,12 +453,54 @@ MeshT make_surf_mesh_valid(const Rcpp::List &rmesh,
         mesh = std::move(mesh_tmp);
     }
 
-    run_mesh_checks<MeshT>(mesh);
+    if(verbose) {
+      run_mesh_checks<MeshT>(mesh);
+    }
     return mesh;
 }
 
 template Mesh3 make_surf_mesh_valid<Mesh3,  Point3>(
-    const Rcpp::List&, const bool, const bool, const bool);
+    const Rcpp::List&, const bool, const bool, const bool, const bool);
 
 template EMesh3 make_surf_mesh_valid<EMesh3, EPoint3>(
-    const Rcpp::List&, const bool, const bool, const bool);
+    const Rcpp::List&, const bool, const bool, const bool, const bool);
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+template <typename MeshT, typename PointT>
+MeshT make_surf_mesh_valid_ff(const Rcpp::String filename,
+                              const bool soup,
+                              const bool triangulate,
+                              const bool repair_soup,
+                              const bool verbose) {
+    MeshT mesh;
+    if(soup) {
+      std::vector<PointT> points;
+      std::vector<std::vector<std::size_t>> polygons;
+      const bool ok = CGAL::IO::read_polygon_soup(
+          filename, points, polygons, CGAL::parameters::verbose(verbose));
+      if(!ok) {
+        Rcpp::stop("Reading failure.");
+      }
+      MeshT mesh_tmp = soup_to_mesh_valid<MeshT, PointT>(
+          points, polygons, triangulate, repair_soup);
+      mesh = std::move(mesh_tmp);
+    } else {
+      MeshT mesh_tmp;
+      const bool ok = PMP::IO::read_polygon_mesh(filename, mesh_tmp);
+      if(!ok) {
+        Rcpp::stop("Reading failure.");
+      }
+      mesh = std::move(mesh_tmp);
+    }
+    if(verbose) {
+      run_mesh_checks<MeshT>(mesh);
+    }
+    return mesh;
+}
+
+template Mesh3 make_surf_mesh_valid_ff<Mesh3,  Point3>(
+    const Rcpp::String, const bool, const bool, const bool, const bool);
+
+template EMesh3 make_surf_mesh_valid_ff<EMesh3, EPoint3>(
+    const Rcpp::String, const bool, const bool, const bool, const bool);

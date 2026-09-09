@@ -17,7 +17,7 @@ Is the given mesh a valid surface mesh?
 }
 \examples{
 library(MeshUtils)
-mesh <- makeMesh(mesh=dataPentaPrism)
+mesh <- makeMesh(dataPentaPrism)
 isValid(mesh)
 
 }
