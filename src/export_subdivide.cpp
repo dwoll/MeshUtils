@@ -24,15 +24,11 @@ Rcpp::List subdivideCatmullClark_cpp(
   const Rcpp::List rmesh,
   const unsigned int nIter,
   const bool normals) {
-    EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
+    EMesh3 mesh = make_surf_mesh_valid<EMesh3, EPoint3>(
         rmesh,
+        true,        // soup
         true,        // triangulate - must be triangle
         false,       // repair_soup
-        false,       // remove_intersections
-        1,           // remove_method
-        false,       // fill_holes
-        false,       // fair hole
-        0,           // max_num_holes
         false);      // verbose
     remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::CatmullClark_subdivision(
@@ -51,15 +47,11 @@ Rcpp::List subdivideDooSabin_cpp(
   const unsigned int nIter,
   const bool triangulate,
   const bool normals) {
-    EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
+    EMesh3 mesh = make_surf_mesh_valid<EMesh3, EPoint3>(
         rmesh,
+        true,        // soup
         true,        // triangulate - must be triangle
         false,       // repair_soup
-        false,       // remove_intersections
-        1,           // remove_method
-        false,       // fill_holes
-        false,       // fair hole
-        0,           // max_num_holes
         false);      // verbose
     remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::DooSabin_subdivision(
@@ -77,15 +69,11 @@ Rcpp::List subdivideSqrt3_cpp(
   const Rcpp::List rmesh,
   const unsigned int nIter,
   const bool normals) {
-    EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
+    EMesh3 mesh = make_surf_mesh_valid<EMesh3, EPoint3>(
         rmesh,
+        true,        // soup
         true,        // triangulate - must be triangle
         false,       // repair_soup
-        false,       // remove_intersections
-        1,           // remove_method
-        false,       // fill_holes
-        false,       // fair hole
-        0,           // max_num_holes
         false);      // verbose
     remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::Sqrt3_subdivision(
@@ -103,15 +91,11 @@ Rcpp::List subdivideLoop_cpp(
   const Rcpp::List rmesh,
   const unsigned int nIter,
   const bool normals) {
-    EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
+    EMesh3 mesh = make_surf_mesh_valid<EMesh3, EPoint3>(
         rmesh,
+        true,        // soup
         true,        // triangulate - must be triangle
         false,       // repair_soup
-        false,       // remove_intersections
-        1,           // remove_method
-        false,       // fill_holes
-        false,       // fair hole
-        0,           // max_num_holes
         false);      // verbose
     remove_properties<EMesh3, EVector3>(mesh, {"v:normal"});
     CGAL::Subdivision_method_3::Loop_subdivision(

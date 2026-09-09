@@ -48,16 +48,12 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh_0 = Rcpp::as<Rcpp::List>(rmeshes(0));
   if(verbose) { rmessage("Processing mesh1"); }
-  MeshT mesh_0 = make_surf_mesh<KernelT, MeshT, PointT>(
+  MeshT mesh_0 = make_surf_mesh_valid<MeshT, PointT>(
       rmesh_0,
-      true,           // triangulate - must be triangle
-      repairSoup,     // repair_soup
-      false,          // remove_intersections
-      1,              // remove_method
-      false,          // fill_holes
-      false,          // fair hole
-      0,              // max_num_holes
-      verbose);       // verbose
+      true,        // soup
+      true,        // triangulate - must be triangle
+      repairSoup,  // repair_soup
+      verbose);    // verbose
 
   meshes[0] = std::move(mesh_0);
   for(std::size_t i = 1; i < nMeshes; i++) {
@@ -69,16 +65,12 @@ MeshT boolIntersection(const Rcpp::List &rmeshes,
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
     if(verbose) { rmessage("Processing mesh" + meshnum); }
-    MeshT mesh_i = make_surf_mesh<KernelT, MeshT, PointT>(
+    MeshT mesh_i = make_surf_mesh_valid<MeshT, PointT>(
         rmesh_i,
-        true,           // triangulate - must be triangle
-        repairSoup,     // repair_soup
-        false,          // remove_intersections
-        1,              // remove_method
-        false,          // fill_holes
-        false,          // fair hole
-        0,              // max_num_holes
-        verbose);       // verbose
+        true,        // soup
+        true,        // triangulate - must be triangle
+        repairSoup,  // repair_soup
+        verbose);    // verbose
     checkMesh1<MeshT>(mesh_i, i + 1);
     const bool ok = PMP::corefine_and_compute_intersection(
       meshes[i - 1], mesh_i, meshes[i]);
@@ -105,28 +97,20 @@ MeshT boolDifference(const Rcpp::List &rmesh1,
                      const bool repairSoup,
                      const bool verbose) {
   if(verbose) { rmessage("Processing mesh1"); }
-  MeshT smesh1 = make_surf_mesh<KernelT, MeshT, PointT>(
+  MeshT smesh1 = make_surf_mesh_valid<MeshT, PointT>(
       rmesh1,
-      true,           // triangulate - must be triangle
-      repairSoup,     // repair_soup
-      false,          // remove_intersections
-      1,              // remove_method
-      false,          // fill_holes
-      false,          // fair hole
-      0,              // max_num_holes
-      verbose);       // verbose
+      true,        // soup
+      true,        // triangulate - must be triangle
+      repairSoup,  // repair_soup
+      verbose);    // verbose
   checkMesh1<MeshT>(smesh1, 1);
   if(verbose) { rmessage("Processing mesh2"); }
-  MeshT smesh2 = make_surf_mesh<KernelT, MeshT, PointT>(
+  MeshT smesh2 = make_surf_mesh_valid<MeshT, PointT>(
       rmesh2,
-      true,           // triangulate - must be triangle
-      repairSoup,     // repair_soup
-      false,          // remove_intersections
-      1,              // remove_method
-      false,          // fill_holes
-      false,          // fair hole
-      0,              // max_num_holes
-      verbose);       // verbose
+      true,        // soup
+      true,        // triangulate - must be triangle
+      repairSoup,  // repair_soup
+      verbose);    // verbose
   checkMesh1<MeshT>(smesh2, 2);
   MeshT mesh_d;
   bool ok = PMP::corefine_and_compute_difference(smesh1, smesh2, mesh_d);
@@ -158,16 +142,12 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
   std::vector<MeshT> meshes(nMeshes);
   Rcpp::List rmesh = Rcpp::as<Rcpp::List>(rmeshes(0));
   if(verbose) { rmessage("Processing mesh1"); }
-  MeshT mesh_0 = make_surf_mesh<KernelT, MeshT, PointT>(
+  MeshT mesh_0 = make_surf_mesh_valid<MeshT, PointT>(
       rmesh,
-      true,           // triangulate - must be triangle
-      repairSoup,     // repair_soup
-      false,          // remove_intersections
-      1,              // remove_method
-      false,          // fill_holes
-      false,          // fair hole
-      0,              // max_num_holes
-      verbose);       // verbose
+      true,        // soup
+      true,        // triangulate - must be triangle
+      repairSoup,  // repair_soup
+      verbose);    // verbose
   meshes[0] = std::move(mesh_0);
   for(std::size_t i = 1; i < nMeshes; i++) {
     if(i == 1) {
@@ -178,16 +158,12 @@ MeshT boolUnion(const Rcpp::List &rmeshes,
     const std::string meshnum = std::to_string(i + 1);
     Rcpp::List rmesh_i = Rcpp::as<Rcpp::List>(rmeshes(i));
     if(verbose) { rmessage("Processing mesh" + meshnum); }
-    MeshT mesh_i = make_surf_mesh<KernelT, MeshT, PointT>(
+    MeshT mesh_i = make_surf_mesh_valid<MeshT, PointT>(
         rmesh_i,
-        true,           // triangulate - must be triangle
-        repairSoup,     // repair_soup
-        false,          // remove_intersections
-        1,              // remove_method
-        false,          // fill_holes
-        false,          // fair_hole
-        0,              // max_num_holes
-        verbose);       // verbose
+        true,        // soup
+        true,        // triangulate - must be triangle
+        repairSoup,  // repair_soup
+        verbose);    // verbose
     checkMesh1<MeshT>(mesh_i, i + 1);
     const bool ok =
         PMP::corefine_and_compute_union(meshes[i - 1], mesh_i, meshes[i]);

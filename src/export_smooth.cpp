@@ -25,15 +25,11 @@ Rcpp::List smoothShape_cpp(
   const unsigned int nIter,
   const double time,
   const bool normals) {
-    Mesh3 mesh = make_surf_mesh<K, Mesh3, Point3>(
+    Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
         rmesh,
+        true,        // soup
         true,        // triangulate - must be triangle
         false,       // repair_soup
-        false,       // remove_intersections
-        1,           // remove_method
-        false,       // fill_holes
-        false,       // fair hole
-        0,           // max_num_holes
         false);      // verbose
     std::set<Mesh3::Vertex_index> constrained_vertices;
     for(Mesh3::Vertex_index v : vertices(mesh)) {

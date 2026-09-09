@@ -22,26 +22,18 @@ double getHausdorffApprox_cpp(
     const Rcpp::List rmesh1,
     const Rcpp::List rmesh2,
     const bool symmetric) {
-  Mesh3 mesh1 = make_surf_mesh<K, Mesh3, Point3>(
+  Mesh3 mesh1 = make_surf_mesh_valid<Mesh3, Point3>(
       rmesh1,
-      true,         // triangulate
-      false,        // repair_soup
-      false,        // remove_intersections
-      1,            // remove_method
-      false,        // fill_holes
-      false,        // fair hole
-      0,            // max_num_holes
-      false);       // verbose
-  Mesh3 mesh2 = make_surf_mesh<K, Mesh3, Point3>(
+      true,        // soup
+      true,        // triangulate - must be triangle
+      false,       // repair_soup
+      false);      // verbose
+  Mesh3 mesh2 = make_surf_mesh_valid<Mesh3, Point3>(
       rmesh2,
-      true,         // triangulate
-      false,        // repair_soup
-      false,        // remove_intersections
-      1,            // remove_method
-      false,        // fill_holes
-      false,        // fair hole
-      0,            // max_num_holes
-      false);       // verbose
+      true,        // soup
+      true,        // triangulate - must be triangle
+      false,       // repair_soup
+      false);      // verbose
   if(CGAL::is_empty(mesh1)) {
     Rcpp::warning("Mesh 1 is empty.");
     return Rcpp::NumericVector::get_na();
@@ -74,26 +66,18 @@ double getHausdorffEst_cpp(
     const Rcpp::List rmesh2,
     const bool symmetric,
     const double error_bound) {
-    Mesh3 mesh1 = make_surf_mesh<K, Mesh3, Point3>(
+    Mesh3 mesh1 = make_surf_mesh_valid<Mesh3, Point3>(
         rmesh1,
-        true,         // triangulate
-        false,        // repair_soup
-        false,        // remove_intersections
-        1,            // remove_method
-        false,        // fill_holes
-        false,        // fair hole
-        0,            // max_num_holes
-        false);       // verbose
-    Mesh3 mesh2 = make_surf_mesh<K, Mesh3, Point3>(
+        true,        // soup
+        true,        // triangulate - must be triangle
+        false,       // repair_soup
+        false);      // verbose
+    Mesh3 mesh2 = make_surf_mesh_valid<Mesh3, Point3>(
         rmesh2,
-        true,         // triangulate
-        false,        // repair_soup
-        false,        // remove_intersections
-        1,            // remove_method
-        false,        // fill_holes
-        false,        // fair hole
-        0,            // max_num_holes
-        false);       // verbose
+        true,        // soup
+        true,        // triangulate - must be triangle
+        false,       // repair_soup
+        false);      // verbose
     if(CGAL::is_empty(mesh1)) {
       Rcpp::warning("Mesh 1 is empty.");
       return Rcpp::NumericVector::get_na();

@@ -154,7 +154,7 @@ makeMesh <- function(x,
 		        vertices <- x
 		        stopifnot(!missing(faces))
 	      } else if(inherits(x, "mesh3d")) {
-		    	  vft      <- getVFT(mesh, beforeCheck = TRUE)
+		    	  vft      <- getVFT(x, beforeCheck = TRUE)
 		    	  mesh     <- vft[["rmesh"]]
 		    	  vertices <- mesh[["vertices"]]
 		    	  faces    <- mesh[["faces"]]
@@ -258,7 +258,7 @@ makeMeshValid <- function(x,
           vertices <- x
           stopifnot(!missing(faces))
         } else if(inherits(x, "mesh3d")) {
-   	      vft      <- getVFT(mesh, beforeCheck = TRUE)
+   	      vft      <- getVFT(x, beforeCheck = TRUE)
    	      mesh     <- vft[["rmesh"]]
    	      vertices <- mesh[["vertices"]]
    	      faces    <- mesh[["faces"]]

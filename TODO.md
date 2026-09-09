@@ -1,6 +1,5 @@
 # TODO
 
-  * use `make_surf_mesh_valid()` instead of `make_surf_mesh()` wherever reasonable
   * `fill_boundary_hole()`
       * pass more parameters (small holes)
   * `remeshIsotropic()`

@@ -382,27 +382,27 @@ BEGIN_RCPP
 END_RCPP
 }
 // readFileSoup_cpp
-Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary);
-RcppExport SEXP _MeshUtils_readFileSoup_cpp(SEXP filenameSEXP, SEXP binarySEXP) {
+Rcpp::List readFileSoup_cpp(const std::string filename, const bool verbose);
+RcppExport SEXP _MeshUtils_readFileSoup_cpp(SEXP filenameSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< const bool >::type binary(binarySEXP);
-    rcpp_result_gen = Rcpp::wrap(readFileSoup_cpp(filename, binary));
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(readFileSoup_cpp(filename, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // readFileMesh_cpp
-Rcpp::List readFileMesh_cpp(const std::string filename, const bool binary, const bool normals);
-RcppExport SEXP _MeshUtils_readFileMesh_cpp(SEXP filenameSEXP, SEXP binarySEXP, SEXP normalsSEXP) {
+Rcpp::List readFileMesh_cpp(const std::string filename, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_readFileMesh_cpp(SEXP filenameSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< const bool >::type binary(binarySEXP);
     Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(readFileMesh_cpp(filename, binary, normals));
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(readFileMesh_cpp(filename, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }

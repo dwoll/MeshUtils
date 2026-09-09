@@ -25,15 +25,11 @@ Rcpp::List remeshIsotropicUniform_cpp(
     const unsigned int nIter,
     const unsigned int nRelaxSteps,
     const bool normals) {
-    Mesh3 mesh = make_surf_mesh<K, Mesh3, Point3>(
+    Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
         rmesh,
+        true,        // soup
         true,        // triangulate - must be triangle
         false,       // repair_soup
-        false,       // remove_intersections
-        1,           // remove_method
-        false,       // fill_holes
-        false,       // fair hole
-        0,           // max_num_holes
         false);      // verbose
     std::vector<hlfdg_dscrptr> borderHalfEdges;
     // requires CGAL 6.2 (was PMP::border_...)
@@ -69,15 +65,11 @@ Rcpp::List remeshIsotropicAdapt_cpp(
     const unsigned int nIter,
     const unsigned int nRelaxSteps,
     const bool normals) {
-    Mesh3 mesh = make_surf_mesh<K, Mesh3, Point3>(
+    Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
         rmesh,
+        true,        // soup
         true,        // triangulate - must be triangle
         false,       // repair_soup
-        false,       // remove_intersections
-        1,           // remove_method
-        false,       // fill_holes
-        false,       // fair hole
-        0,           // max_num_holes
         false);      // verbose
     const std::pair edge_min_max{ edgeMin, edgeMax };
     PMP::Adaptive_sizing_field<Mesh3> sizing_field(

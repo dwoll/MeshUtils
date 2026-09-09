@@ -71,7 +71,7 @@ Rcpp::List readFileMesh_cpp(
     Rcpp::stop("Reading failure.");
   }
   if(verbose) {
-    run_mesh_checks<MeshT>(mesh);
+    run_mesh_checks<Mesh3>(mesh);
   }
   return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
