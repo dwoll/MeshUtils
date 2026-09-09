@@ -11,16 +11,16 @@
 ## ----------------------------------------------------------------------- //
 
 #' @title Hausdorff distance between two meshes
-#' @description Hausdorff distance between two meshes. Either
-#'   approximate distance, or distance estimate with a given error bound.
+#' @description Hausdorff distance between two meshes. Either the
+#'   approximate distance, or the distance estimate with a given error bound.
 #' @param mesh1 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param mesh2 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param symmetric Boolean: Whether to consider the symmetric Hausdorff
+#' @param symmetric Boolean. Whether to consider the symmetric Hausdorff
 #'   distance.
-#' @param errorBound A positive number, a bound on the error of the
+#' @param errorBound A positive number. Upper bound on the error of the
 #'   estimate. If missing, the approximate distance is returned.
 #' @returns A number. For the apprixmate distance, the algorithm uses
-#'   some simulations and thus the result can vary.
+#'   simulation and thus the result can vary.
 #' @details See \url{https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#PMPDistance} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'

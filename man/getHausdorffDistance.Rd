@@ -11,19 +11,19 @@ getHausdorffDistance(mesh1, mesh2, symmetric = TRUE, errorBound)
 
 \item{mesh2}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{symmetric}{Boolean: Whether to consider the symmetric Hausdorff
+\item{symmetric}{Boolean. Whether to consider the symmetric Hausdorff
 distance.}
 
-\item{errorBound}{A positive number, a bound on the error of the
+\item{errorBound}{A positive number. Upper bound on the error of the
 estimate. If missing, the approximate distance is returned.}
 }
 \value{
 A number. For the apprixmate distance, the algorithm uses
-some simulations and thus the result can vary.
+simulation and thus the result can vary.
 }
 \description{
-Hausdorff distance between two meshes. Either
-approximate distance, or distance estimate with a given error bound.
+Hausdorff distance between two meshes. Either the
+approximate distance, or the distance estimate with a given error bound.
 }
 \details{
 See \url{https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#PMPDistance} for details.

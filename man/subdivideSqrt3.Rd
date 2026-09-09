@@ -12,7 +12,7 @@ The mesh must be triangle or be able to be made triangle.}
 
 \item{nIter}{Positive \code{integer}: Number of iterations.}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
+\item{normals}{Boolean. Whether to return vertex normals.}
 }
 \value{
 A \code{CGALmesh} object.

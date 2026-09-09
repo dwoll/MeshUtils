@@ -11,16 +11,17 @@
 ## ----------------------------------------------------------------------- //
 
 #' @title Advancing front surface reconstruction
-#' @description Reconstruction of a surface from a cloud of 3D points.
+#' @description Reconstruction of a surface mesh from a cloud of 3D points.
 #'
-#' @param x Numeric matrix which stores the points, one point per row.
-#' @param jetSmoothing If not \code{NULL}, must be an integer >= 2.
-#'   Then, the point cloud is smoothed before the reconstruction, using
+#' @param x Numeric matrix with 3 columns which stores the points, one point per row.
+#' @param jetSmoothing Optional integer >= 2. If specified,
+#'   the point cloud is smoothed before the reconstruction, using
 #'   this integer as the number of neighbors for the smoothing. Note that this
 #'   smoothing preprocessing relocates the points and then should not be used
 #'   if the points have been sampled without noise on the surface.
-#' @param repairSoup Boolean. Attempt to fix polygon soup?
-#' @param normals Boolean: Whether to return vertex normals.
+#' @param repairSoup Boolean. Whether to clean the mesh (merging
+#'   duplicated vertices, duplicated faces, removing isolated vertices).
+#' @param normals Boolean. Whether to return vertex normals.
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -55,7 +56,7 @@
 #' wire3d(mesh_afs2_rgl)
 #'
 #' @export
-reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE, normals=FALSE) {
+reconstructAFS <- function(x, jetSmoothing, repairSoup=TRUE, normals=FALSE) {
   if(!is.matrix(x) || !is.numeric(x)) {
     stop("The `x` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -69,7 +70,7 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE, normals=FALSE)
     stop("Points with missing values are not allowed.", call. = TRUE)
   }
   storage.mode(x) <- "double"
-  if(!is.null(jetSmoothing)) {
+  if(!missing(jetSmoothing)) {
     stopifnot(isPositiveInteger(jetSmoothing), jetSmoothing >= 2L)
   } else {
     jetSmoothing <- 0L
@@ -82,18 +83,17 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE, normals=FALSE)
 #' @title Poisson surface reconstruction
 #' @description Poisson reconstruction of a surface, from a cloud of 3D points.
 #'
-#' @param x Numeric matrix which stores the points, one point per row.
-#' @param normalsFun A function to generate normals as returned from
+#' @param x Numeric matrix with 3 columns which stores the points, one point per row.
+#' @param normalsFun A function to generate normals, e.g., as returned by
 #'   \code{\link[MeshUtils]{getNormalsFun}}.
-#' @param spacing Size parameter. Smaller values increase the precision of the
-#'   output mesh at the cost of higher computation time. Set to \code{NULL}
-#'   (the default) for a reasonable automatic value: an average spacing whose
-#'   value will be displayed in a message and that you can also get in the
+#' @param spacing Optional size parameter. Smaller values increase the precision
+#'   of the output mesh at the cost of higher computation time. If missing,
+#'   a reasonable default value: an average spacing that is stored in the
 #'   \code{"spacing"} attribute of the output.
 #' @param smAngle Bound for the minimum facet angle in degrees.
 #' @param smRadius Relative bound for the radius of the surface Delaunay balls.
 #' @param smDistance Relative bound for the center-center distances.
-#' @param normals Boolean: Whether to return vertex normals.
+#' @param normals Boolean. Whether to return vertex normals.
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -128,7 +128,7 @@ reconstructAFS <- function(x, jetSmoothing=NULL, repairSoup=TRUE, normals=FALSE)
 reconstructPoisson <- function(
   x,
   normalsFun= getNormalsFun(6L),
-  spacing   = NULL,
+  spacing,
   smAngle   = 20,
   smRadius  = 30,
   smDistance= 0.375,
@@ -154,7 +154,7 @@ reconstructPoisson <- function(
   # if(any(is.na(points)) || (!is.null(normalsIn) && any(is.na(normalsIn)))) {
   #   stop("Points or normalsIn with missing values are not allowed.", call. = TRUE)
   # }
-  if(is.null(spacing)) {
+  if(missing(spacing)) {
     spacing <- -1
   } else {
     stopifnot(isPositiveNumber(spacing))
@@ -171,15 +171,16 @@ reconstructPoisson <- function(
 #' @title Scale-space surface reconstruction
 #' @description Reconstruction of a surface from a cloud of 3D points.
 #'
-#' @param x Numeric matrix which stores the points, one point per row.
-#' @param scaleIterations Number of iterations used to increase the scale.
-#' @param neighbors Number of neighbors used to smooth the point cloud.
-#' @param samples Number of samples used to smooth the point cloud.
-#' @param separateShells Boolean, whether to separate the shells.
-#' @param forceManifold Boolean, whether to force a manifold output mesh.
+#' @param x Numeric matrix with 3 columns which stores the points, one point per row.
+#' @param scaleIterations Positive integer. Number of iterations used to increase the scale.
+#' @param neighbors Positive integer. Number of neighbors used to smooth the point cloud.
+#' @param samples Positive integer. Number of samples used to smooth the point cloud.
+#' @param separateShells Boolean. whether to separate the shells.
+#' @param forceManifold Boolean. whether to force a manifold output mesh.
 #' @param borderAngle Bound on the angle in degrees used to detect border edges.
-#' @param repairSoup Boolean. Attempt to fix polygon soup?
-#' @param normals Boolean: Whether to return vertex normals.
+#' @param repairSoup Boolean. Whether to clean the mesh (merging
+#'   duplicated vertices, duplicated faces, removing isolated vertices).
+#' @param normals Boolean. Whether to return vertex normals.
 #'
 #' @returns A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 #'
@@ -212,9 +213,9 @@ reconstructPoisson <- function(
 #' @export
 reconstructSSS <- function(
   x,
-  scaleIterations=1,
-  neighbors      =12,
-  samples        =300,
+  scaleIterations=1L,
+  neighbors      =12L,
+  samples        =300L,
   separateShells =FALSE,
   forceManifold  =TRUE,
   borderAngle    =45,
@@ -234,7 +235,8 @@ reconstructSSS <- function(
   }
   storage.mode(x) <- "double"
   stopifnot(isStrictPositiveInteger(scaleIterations))
-  stopifnot(isPositiveInteger(neighbors), neighbors >= 2)
+  stopifnot(isStrictPositiveInteger(neighbors), neighbors >= 2)
+  stopifnot(isStrictPositiveInteger(samples))
   stopifnot(isBoolean(separateShells))
   stopifnot(isBoolean(forceManifold))
   stopifnot(isNonNegativeNumber(borderAngle))

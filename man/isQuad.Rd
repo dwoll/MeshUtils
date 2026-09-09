@@ -11,16 +11,15 @@ isQuad(x)
 e.g., a \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
-TRUE or FALSE.
+\code{TRUE} or \code{FALSE}.
 }
 \description{
-Is the given surface mesh a triangle mesh?
+Is the given 3D surface mesh a quad mesh?
 }
 \examples{
 library(MeshUtils)
-f_mesh  <- system.file("extdata", "corner.off", package="MeshUtils")
-mesh_vf <- readMeshFile(f_mesh)
-mesh    <- makeMesh(mesh_vf[["vertices"]], mesh_vf[["faces"]])
+f_mesh <- system.file("extdata", "corner.off", package="MeshUtils")
+mesh   <- makeMesh(f_mesh)
 isQuad(mesh)
 
 }

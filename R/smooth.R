@@ -16,13 +16,13 @@
 #'   Includes triangulation if mesh is not already triangle.
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #'   The mesh must be triangle or be able to be made triangle.
-#' @param indices The indices of the faces to be smoothed. If missing, the whole mesh
-#'   is smoothed.
+#' @param indices Indices of the faces to be smoothed.
+#'   If missing, the whole mesh is smoothed.
 #' @param nIter Positive \code{integer}: Number of iterations.
 #' @param time Positive number: A time step that corresponds to the speed by
-#'   which the surface is smoothed (the larger the faster); typical values
-#'   lie between \code{1e-6} and \code{1}.
-#' @param normals Boolean: Whether to return vertex normals.
+#'   which the surface is smoothed (the larger the faster).
+#'   typical values lie between \code{1e-6} and \code{1}. See details.
+#' @param normals Boolean. Whether to return vertex normals.
 #' @returns A \code{CGALmesh} object.
 #'
 #' @details See \url{https://doc.cgal.org/latest/PMP_Remeshing/} for details.
@@ -46,7 +46,7 @@
 #' wire3d(mesh_s_rgl)
 #'
 #' @export
-smoothShape <- function(x, indices, nIter = 1, time = 0.0001, normals = FALSE) {
+smoothShape <- function(x, indices, nIter = 1, time = 0.001, normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
            " (i.e., the output of the `makeMesh()` function).")

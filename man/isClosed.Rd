@@ -10,16 +10,19 @@ isClosed(x)
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
-TRUE or FALSE.
+\code{TRUE} or \code{FALSE}.
 }
 \description{
-Is mesh closed?
+Is the given 3D surface mesh closed?
 }
 \examples{
 library(MeshUtils)
 mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 isClosed(mesh)
 
+}
+\seealso{
+See \code{\link[MeshUtils]{fillBoundaryHoles}} for a function to fill holes.
 }
 \author{
 Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

@@ -13,19 +13,19 @@
 #' @title Isotropic remeshing
 #' @description Isotropic remeshing of a triangular surface mesh.
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param method \code{character}: Either \code{"uniform"} for uniform sizing field
+#' @param method \code{character}. Either \code{"uniform"} for uniform sizing field
 #'    or \code{"adaptive"} for adaptive sizing field.
 #' @param targetEdgeLen Positive number for \code{method="uniform"}:
 #'   The target edge length of the remeshed mesh.
-#' @param tol Positive number for \code{method="adaptive"}:
-#'   Error tolerance. See details
-#' @param edgeMin Positive number for \code{method="adaptive"}:
+#' @param tol Positive number for \code{method="adaptive"}.
+#'   Error tolerance. See details.
+#' @param edgeMin Positive number for \code{method="adaptive"}.
 #'   Minimum edge length. See details.
-#' @param edgeMax Positive number for \code{method="adaptive"}:
+#' @param edgeMax Positive number for \code{method="adaptive"}.
 #'   Maximum edge length. See details.
 #' @param nIter Positive \code{integer}: Number of iterations.
 #' @param nRelaxSteps Positive \code{integer}: Number of relaxation steps.
-#' @param normals Boolean: Whether to return vertex normals.
+#' @param normals Boolean. Whether to return vertex normals.
 #' @return A \code{CGALmesh} object.
 #' @details See \url{https://doc.cgal.org/latest/PMP_Remeshing/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

@@ -7,19 +7,22 @@
 writeMeshFile(x, filename, precision = 17L, binary = FALSE)
 }
 \arguments{
-\item{x}{A mesh given either as a list containing (at least) the fields
-\code{vertices} and \code{faces}, otherwise a \strong{rgl} mesh
-(i.e. a \code{\link[rgl]{mesh3d}} object).}
+\item{x}{A mesh. Given as a list containing (at least) the components
+\code{vertices} and \code{faces}, or a \code{\link[rgl]{mesh3d}}
+from package \strong{rgl}, or a \code{CGALmesh} object, i.e.,
+the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{filename}{Name of the file to be written, with extension \code{stl},
-\code{ply}, \code{obj} or \code{off}}
+\item{filename}{Name of the output file, with extension \code{stl},
+\code{ply}, \code{obj} or \code{off}.}
 
-\item{precision}{Positive integer, number of decimal digits for the vertices.}
+\item{precision}{Positive integer. Number of decimal digits for the
+vertex coordinates.}
 
-\item{binary}{Boolean, whether to write a binary file or an ASCII file.}
+\item{binary}{Boolean. Whether to write a binary file (instead of
+an ASCII file).}
 }
 \value{
-No value, just generates the file.
+No value. Just generates the file.
 }
 \description{
 Export a mesh to a file.

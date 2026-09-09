@@ -16,7 +16,7 @@
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #'   The mesh must be triangle or be able to be made triangle.
 #' @param nIter Positive \code{integer}: Number of iterations.
-#' @param normals Boolean: Whether to return vertex normals.
+#' @param normals Boolean. Whether to return vertex normals.
 #' @returns A \code{CGALmesh} object.
 #'
 #' @details See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
@@ -58,8 +58,8 @@ subdivideCatmullClark <- function(x, nIter = 1, normals = FALSE) {
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #'   The mesh must be triangle or be able to be made triangle.
 #' @param nIter Positive \code{integer}: Number of iterations.
-#' @param triangulate Boolean: Whether to triangulate the resulting mesh.
-#' @param normals Boolean: Whether to return vertex normals.
+#' @param triangulate Boolean. Whether to triangulate the resulting mesh.
+#' @param normals Boolean. Whether to return vertex normals.
 #' @returns A \code{CGALmesh} object.
 #' @details See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -101,7 +101,7 @@ subdivideDooSabin <- function(x, nIter = 1, triangulate = TRUE, normals = FALSE)
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #'   The mesh must be triangle or be able to be made triangle.
 #' @param nIter Positive \code{integer}: Number of iterations.
-#' @param normals Boolean: Whether to return vertex normals.
+#' @param normals Boolean. Whether to return vertex normals.
 #' @returns A \code{CGALmesh} object.
 #' @details See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
@@ -142,7 +142,7 @@ subdivideSqrt3 <- function(x, nIter = 1, normals = FALSE) {
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #'   The mesh must be triangle or be able to be made triangle.
 #' @param nIter Positive \code{integer}: Number of iterations.
-#' @param normals Boolean: Whether to return vertex normals.
+#' @param normals Boolean. Whether to return vertex normals.
 #' @returns A \code{CGALmesh} object.
 #' @details See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

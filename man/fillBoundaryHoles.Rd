@@ -4,18 +4,25 @@
 \alias{fillBoundaryHoles}
 \title{Fill boundary holes}
 \usage{
-fillBoundaryHoles(x, fairHole = TRUE, maxNumHoles = 10L, normals = FALSE, verbose = FALSE)
+fillBoundaryHoles(
+  x,
+  fairHole = TRUE,
+  maxNumHoles = 10L,
+  normals = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{fairHole}{Boolean: Use CGAL \code{triangulate_refine_and_fair_hole()} (\code{TRUE})
+\item{fairHole}{Boolean. Use CGAL \code{triangulate_refine_and_fair_hole()} (\code{TRUE})
 or \code{triangulate_and_refine_hole()} (\code{FALSE})?}
 
-\item{maxNumHoles}{\code{integer}: Maximum number of holes to be filled.}
+\item{maxNumHoles}{\code{integer}. Maximum number of holes to be filled. May be 0.}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
-\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
+\item{normals}{Boolean. Whether to return vertex normals.}
+
+\item{verbose}{Boolean. Whether to print out messages about mesh processing.}
 }
 \value{
 \code{CGALmesh} object.
@@ -25,7 +32,7 @@ Fill boundary holes.
 }
 \details{
 See \url{https://www.cgal.org/2025/06/13/autorefine-and-snap/}.
-If faces are not triangle, the mesh is triangulated.
+If faces are not already triangle, the mesh is first triangulated.
 }
 \examples{
 library(MeshUtils)

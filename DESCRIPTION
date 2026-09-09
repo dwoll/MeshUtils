@@ -8,14 +8,14 @@ Authors@R:
 Maintainer: Daniel Wollschlaeger <wollschlaeger@uni-mainz.de>
 Description: Basic processing of 3D meshes based on the 'C++'
     library 'CGAL' <https://www.cgal.org/>.
-    Reads and writes common file formats with meshes or
+    Reads and writes common file formats for meshes and
     polygon soups.
     Supports mesh repair, remeshing, smoothing,
     subdivision ('Catmull-Clark', 'Doo-Sabin', 'Sqrt3', 'Loop'),
     Boolean operations (union, difference, intersection),
-    surface reconstruction ('AFS', 'SSS', Poisson, Alpha
+    surface reconstruction ('AFS', 'SSS', Poisson, alpha
     wrapping), (optimal) bounding box, and Hausdorff distance.
-    An adaptation of code from packages 'Boov', 'PolygonSoup',
+    Adapts code from packages 'Boov', 'PolygonSoup',
     and 'cgalMeshes' developed by Stephane Laurent.
 License: GPL-3
 URL: https://github.com/dwoll/MeshUtils/
@@ -28,7 +28,7 @@ Imports:
 LinkingTo:
     BH,
     Rcpp,
-    RcppCGAL,
+    RcppCGAL (>= 6.2.0),
     RcppEigen
 Encoding: UTF-8
 LazyData: true

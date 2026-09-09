@@ -12,41 +12,41 @@ plotEdges(
   edgesAsTubes = TRUE,
   tubesRadius = 0.03,
   verticesAsSpheres = TRUE,
-  only = NULL,
+  only,
   spheresRadius = 0.05,
   spheresColor = color
 )
 }
 \arguments{
-\item{vertices}{A three-columns matrix giving the coordinates of the vertices.}
+\item{vertices}{A matrix with 3 columns giving the coordinates of the vertices.}
 
-\item{edges}{A two-columns integer matrix giving the edges by pairs of
+\item{edges}{\code{integer} matrix with two columns giving the edges by pairs of
 vertex indices.}
 
-\item{color}{A color for the edges.}
+\item{color}{\code{character}. Color for the edges.}
 
-\item{lwd}{Line width, a positive number, ignored if \code{edgesAsTubes=TRUE}.}
+\item{lwd}{Positive number. Line width. Ignored if \code{edgesAsTubes=TRUE}.}
 
-\item{edgesAsTubes}{Boolean: Whether to draw the edges as tubes.}
+\item{edgesAsTubes}{Boolean. Whether to draw the edges as tubes.}
 
-\item{tubesRadius}{The radius of the tubes when \code{edgesAsTubes=TRUE}.}
+\item{tubesRadius}{Positive number. Radius of the tubes when \code{edgesAsTubes=TRUE}.}
 
-\item{verticesAsSpheres}{Boolean: Whether to draw the vertices as spheres.}
+\item{verticesAsSpheres}{Boolean. Whether to draw the vertices as spheres.}
 
-\item{only}{Integer vector made of the indices of the vertices you want
-to plot (as spheres), or \code{NULL} to plot all vertices.}
+\item{only}{\code{integer} vector made of the indices of the vertices you want
+to plot (as spheres). If missing, all vertices are plotted as spheres.}
 
 \item{spheresRadius}{The radius of the spheres when
 \code{verticesAsSpheres=TRUE}.}
 
-\item{spheresColor}{The color of the spheres when
+\item{spheresColor}{\code{character}. Color of the spheres when
 \code{verticesAsSpheres=TRUE}.}
 }
 \value{
 No value.
 }
 \description{
-Plot the given edges with \strong{rgl}.
+Plot the given edges with functions from package \strong{rgl}.
 }
 \examples{
 library(MeshUtils)

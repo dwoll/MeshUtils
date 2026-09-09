@@ -11,10 +11,10 @@ isTriangle(x)
 e.g., a \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
-TRUE or FALSE.
+\code{TRUE} or \code{FALSE}.
 }
 \description{
-Is the given surface mesh a triangle mesh?
+Is the given 3D surface mesh a triangle mesh?
 }
 \examples{
 library(MeshUtils)

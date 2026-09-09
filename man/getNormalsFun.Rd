@@ -7,9 +7,12 @@
 getNormalsFun(x, method = c("PCA", "Jet"))
 }
 \arguments{
-\item{x}{Integer, number of neighbors used to compute the normals.}
+\item{x}{Integer. Number of neighbors used to compute the normals.}
 
-\item{method}{One of \code{"pca"} or \code{"jet"}.}
+\item{method}{One of \code{"pca"} to estimate the normal direction at
+each point by linear least squares fitting of a plane over its nearest
+neighbors, or \code{"jet"} to estimate the normal direction at each
+point by fitting a jet surface over its nearest neighbors). See details.}
 }
 \value{
 A function which takes just one argument: a numeric matrix with
@@ -18,8 +21,11 @@ matrix of the same size as the input matrix, with each row giving one
 unit normal for the point.
 }
 \description{
-Returns a function which computes some normals for a 3D point
-cloud.
+Returns a function which computes normals for a
+3D point cloud.
+}
+\details{
+See \url{https://doc.cgal.org/latest/Point_set_processing_3/} for details.
 }
 \note{
 The \code{getNormalsFun} function is intended to be used in the

@@ -14,7 +14,7 @@ In order to be convertible to a \code{\link[rgl]{mesh3d}} object from package
 \item{...}{Arguments passed to \code{\link[rgl]{mesh3d}}.}
 }
 \value{
-A \strong{rgl} mesh object, i.e., a list of class \code{\link[rgl]{mesh3d}}.
+A \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
 }
 \description{
 Converts a \code{CGALmesh} object (the output of the \code{\link{makeMesh}}

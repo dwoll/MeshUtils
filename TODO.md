@@ -7,6 +7,7 @@
 
 # Wishlist
 
+  * vignette
   * triangulated surface mesh simplification
       * `edge_collapse()`
   * remeshing

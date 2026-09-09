@@ -10,19 +10,19 @@
 ## License: GPL-3
 ## ----------------------------------------------------------------------- //
 
-#' @title Meshes intersection
-#' @description Computes the intersection of the given meshes.
+#' @title Intersection of meshes
+#' @description Compute the intersection of the given meshes.
 #'
 #' @param x A list of meshes, each being either a \code{\link[rgl]{mesh3d}} object
-#'   from package \strong{rgl}, or as a list with (at least) two fields:
-#'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
-#' @param repairSoup Boolean, whether to clean the meshes (merging
+#'   from package \strong{rgl}, or a \code{CGALmesh} object,
+#'   i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param repairSoup Boolean. Whether to clean the meshes (merging
 #'   duplicated vertices, duplicated faces, removing isolated vertices).
-#'   Set to \code{FALSE} if you are sure your meshes are clean, to
+#'   Set to \code{FALSE} if you know the meshes are clean, to
 #'   gain some speed.
-#' @param normals Boolean, whether to return the per-vertex normals of the
+#' @param normals Boolean. Whether to return the vertex normals of the
 #'   output mesh.
-#' @param verbose Boolean: Whether to print out messages about mesh processing.
+#' @param verbose Boolean. Whether to print out messages about mesh processing.
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -79,21 +79,21 @@ boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE, verbose=FALSE) {
   fromCPP(inter)
 }
 
-#' @title Mesh difference
-#' @description Computes the difference between two meshes.
+#' @title Difference between two meshes
+#' @description Compute the difference between two meshes.
 #'
 #' @param mesh1 A mesh, either being given a \code{\link[rgl]{mesh3d}} object
-#'   from package \strong{rgl}, or by a list with (at least) two fields:
-#'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
+#'   from package \strong{rgl}, or a \code{CGALmesh} object,
+#'   i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param mesh2 A mesh, either being given a \code{\link[rgl]{mesh3d}} object
-#'   from package \strong{rgl}, or by a list with (at least) two fields:
-#'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
-#' @param repairSoup Boolean, whether to clean the meshes (merging duplicated
+#'   from package \strong{rgl}, or a \code{CGALmesh} object,
+#'   i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param repairSoup Boolean. Whether to clean the meshes (merging duplicated
 #'   vertices, duplicated faces, removing isolated vertices). Set to
-#'   \code{FALSE} if you know your meshes are clean.
-#' @param normals Boolean, whether to return the per-vertex normals of the
+#'   \code{FALSE} if you know the meshes are clean to gain some speed.
+#' @param normals Boolean. Whether to return the vertex normals of the
 #'   output mesh.
-#' @param verbose Boolean: Whether to print out messages about mesh processing.
+#' @param verbose Boolean. Whether to print out messages about mesh processing.
 #'
 #' @returns A \code{CGALmesh} object.
 #'
@@ -125,7 +125,8 @@ boolIntersection <- function(x, repairSoup=TRUE, normals=FALSE, verbose=FALSE) {
 #'           verticesAsSpheres=TRUE)
 #'
 #' @export
-boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE, verbose=FALSE) {
+boolDifference <- function(
+  mesh1, mesh2, repairSoup=TRUE, normals=FALSE, verbose=FALSE) {
   stopifnot(is.list(mesh1), is.list(mesh2))
   stopifnot(isBoolean(repairSoup))
   stopifnot(isBoolean(normals))
@@ -150,19 +151,19 @@ boolDifference <- function(mesh1, mesh2, repairSoup=TRUE, normals=FALSE, verbose
   fromCPP(differ)
 }
 
-#' @title Meshes union
-#' @description Computes the union of the given meshes.
+#' @title Union of meshes
+#' @description Compute the union of the given meshes.
 #'
 #' @param x A list of meshes, each being either a \code{\link[rgl]{mesh3d}} object
-#'   from package \strong{rgl}, or as a list with (at least) two fields:
-#'   \code{vertices} and \code{faces}, such as a \code{CGALmesh} object.
-#' @param repairSoup Boolean, whether to clean the meshes (merging
+#'   from package \strong{rgl}, or a \code{CGALmesh} object,
+#'   i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param repairSoup Boolean. Whether to clean the meshes (merging
 #'   duplicated vertices, duplicated faces, removing isolated vertices).
-#'   Set to \code{FALSE} if you are sure your meshes are clean, to
+#'   Set to \code{FALSE} if you know the meshes are clean, to
 #'   gain some speed.
-#' @param normals Boolean, whether to return the per-vertex normals of the
+#' @param normals Boolean. Whether to return the vertex normals of the
 #'   output mesh.
-#' @param verbose Boolean: Whether to print out messages about mesh processing.
+#' @param verbose Boolean. Whether to print out messages about mesh processing.
 #'
 #' @returns A \code{CGALmesh} object.
 #'

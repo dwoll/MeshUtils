@@ -2,7 +2,7 @@
 % Please edit documentation in R/mesh.R
 \name{makeMeshValid}
 \alias{makeMeshValid}
-\title{Make a 3D mesh}
+\title{Make a 3D mesh assuming valid input}
 \usage{
 makeMeshValid(
   x,
@@ -14,44 +14,65 @@ makeMeshValid(
 )
 }
 \arguments{
-\item{x}{A numeric matrix with three columns.}
+\item{x}{One of three options: 1) A numeric matrix with three columns providing the
+coordinates of the vertices of the mesh. 2) Either a list containing the components
+\code{vertices} and \code{faces}, or a \strong{rgl} mesh (i.e. a
+\code{\link[rgl]{mesh3d}} object). 3) A filename to read a
+mesh file as in \code{\link[rgl]{readMeshFile}}.}
 
 \item{faces}{Either an integer matrix (each row provides the vertex indices
 of the corresponding face) or a list of integer vectors, each one
 providing the vertex indices of the corresponding face.}
 
-\item{soup}{Boolean: Whether to assume a polygon soup (as opposed to correctly ordered faces).}
+\item{soup}{Boolean. Whether to assume a polygon soup. If \code{FALSE}, assume
+correctly oriented faces - which is a bit faster.}
 
-\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
+\item{triangulate}{Boolean. Whether to triangulate the faces. Ignored if faces
 are already triangle.}
 
-\item{normals}{Boolean: Whether to compute the normals.}
-\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
+\item{normals}{Boolean. Whether to compute vertex normals.}
+
+\item{verbose}{Boolean. Whether to print out messages about mesh processing.}
 }
 \value{
 A list of class \code{CGALmesh} giving the vertices, the edges, the faces
 of the mesh, the exterior edges, the exterior vertices and optionally the normals.
 }
 \description{
-Make a 3D mesh from given vertices and faces, assuming
-the input defines a valid mesh. The mesh is optionally cleaned:
-Duplicated vertices or faces are merged, and isolated vertices are removed.
-The returned faces are coherently oriented, normals are computed if desired,
-and triangulation is performed if desired.
+Make a 3D surface mesh from an input file,
+from an existing \strong{rgl} mesh object, or
+from given vertices and faces - assuming that the input defines a valid mesh.
+Omitted validity checks save some processing time.
+The returned faces are coherently oriented (if possible),
+normals are computed if requested, triangulation is performed if requested
 }
 \examples{
 library(MeshUtils)
 library(rgl)
 
-mesh     <- makeMeshValid(dataPentaPrism, soup=TRUE, triangulate=TRUE)
-mesh_rgl <- toRGL(mesh)
+## mesh from file
+f_mesh    <- system.file("extdata", "corner.off", package="MeshUtils")
+mesh1     <- makeMeshValid(f_mesh, soup=TRUE, triangulate=TRUE)
+mesh1_rgl <- toRGL(mesh1)
+
 open3d(windowRect=c(50, 50, 562, 562))
-wire3d(mesh_rgl)
+wire3d(mesh1_rgl)
+
+## mesh from vertices, faces
+head(dataPentaPrism[["vertices"]])
+head(dataPentaPrism[["faces"]])
+mesh2     <- makeMeshValid(dataPentaPrism, soup=TRUE, triangulate=TRUE)
+mesh2_rgl <- toRGL(mesh2)
+open3d(windowRect=c(50, 50, 562, 562))
+wire3d(mesh2_rgl)
 
 }
 \seealso{
 See \code{\link[MeshUtils]{plotEdges}} for more details about the edges
-returned by this function. See \code{\link[MeshUtils]{toRGL}} for conversion to class
+returned by this function.
+See \code{\link[MeshUtils]{makeMesh}} for a similar function that does not assume
+that the input defines a valid mesh, and performs mesh repair.
+See \code{\link[MeshUtils]{toRGL}} for conversion to class
 \code{\link[rgl]{mesh3d}} from package \strong{rgl}.
 }
 \author{

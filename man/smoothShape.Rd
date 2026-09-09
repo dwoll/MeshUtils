@@ -4,22 +4,22 @@
 \alias{smoothShape}
 \title{Smooth shape}
 \usage{
-smoothShape(x, indices, nIter = 1, time = 1e-04, normals = FALSE)
+smoothShape(x, indices, nIter = 1, time = 0.001, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 The mesh must be triangle or be able to be made triangle.}
 
-\item{indices}{The indices of the faces to be smoothed. If missing, the whole mesh
-is smoothed.}
+\item{indices}{Indices of the faces to be smoothed.
+If missing, the whole mesh is smoothed.}
 
 \item{nIter}{Positive \code{integer}: Number of iterations.}
 
 \item{time}{Positive number: A time step that corresponds to the speed by
-which the surface is smoothed (the larger the faster); typical values
-lie between \code{1e-6} and \code{1}.}
+which the surface is smoothed (the larger the faster).
+typical values lie between \code{1e-6} and \code{1}. See details.}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
+\item{normals}{Boolean. Whether to return vertex normals.}
 }
 \value{
 A \code{CGALmesh} object.

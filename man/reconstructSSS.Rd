@@ -6,9 +6,9 @@
 \usage{
 reconstructSSS(
   x,
-  scaleIterations = 1,
-  neighbors = 12,
-  samples = 300,
+  scaleIterations = 1L,
+  neighbors = 12L,
+  samples = 300L,
   separateShells = FALSE,
   forceManifold = TRUE,
   borderAngle = 45,
@@ -17,23 +17,24 @@ reconstructSSS(
 )
 }
 \arguments{
-\item{x}{Numeric matrix which stores the points, one point per row.}
+\item{x}{Numeric matrix with 3 columns which stores the points, one point per row.}
 
-\item{scaleIterations}{Number of iterations used to increase the scale.}
+\item{scaleIterations}{Positive integer. Number of iterations used to increase the scale.}
 
-\item{neighbors}{Number of neighbors used to smooth the point cloud.}
+\item{neighbors}{Positive integer. Number of neighbors used to smooth the point cloud.}
 
-\item{samples}{Number of samples used to smooth the point cloud.}
+\item{samples}{Positive integer. Number of samples used to smooth the point cloud.}
 
-\item{separateShells}{Boolean, whether to separate the shells.}
+\item{separateShells}{Boolean. whether to separate the shells.}
 
-\item{forceManifold}{Boolean, whether to force a manifold output mesh.}
+\item{forceManifold}{Boolean. whether to force a manifold output mesh.}
 
 \item{borderAngle}{Bound on the angle in degrees used to detect border edges.}
 
-\item{repairSoup}{Boolean. Attempt to fix polygon soup?}
+\item{repairSoup}{Boolean. Whether to clean the mesh (merging
+duplicated vertices, duplicated faces, removing isolated vertices).}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
+\item{normals}{Boolean. Whether to return vertex normals.}
 }
 \value{
 A \code{CGALmesh} object or a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.

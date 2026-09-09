@@ -4,24 +4,25 @@
 \alias{readMeshFile}
 \title{Read a mesh file}
 \usage{
-readMeshFile(x, method = c("soup", "mesh"), binary = FALSE, normals = FALSE)
+readMeshFile(x, method = c("soup", "mesh"), normals = FALSE, verbose = FALSE)
 }
 \arguments{
-\item{x}{Path to the mesh file; supported formats are \code{stl},
-\code{ply}, \code{obj} and \code{off}.}
+\item{x}{Path to the mesh file. Supported formats are \code{stl},
+\code{ply}, \code{obj}, \code{off}, \code{ts}, \code{vtp}.}
 
-\item{method}{Either \code{"soup"} when the file is a polygon soup, or \code{"mesh"} when
-the file is a valid mesh.}
+\item{method}{Either \code{"soup"} when the file is a polygon soup,
+or \code{"mesh"} when the file is known to be a valid mesh with
+correct face orientations.}
 
-\item{binary}{Boolean: For \code{method="mesh"}: Whether input file is binary.}
+\item{normals}{Boolean. Whether to return vertex normals for \code{method="mesh"}.}
 
-\item{normals}{Boolean: Whether to return vertex normals for \code{method="mesh"}.}
+\item{verbose}{Boolean. Whether to print out messages about mesh processing.}
 }
 \value{
 For \code{method="soup"}: A list with two components: \code{vertices},
-a numeric matrix with three
-columns, and \code{faces}, either a list of integer vectors or, in the
-case if all faces have the same number of sides, an integer matrix.
+a numeric matrix with three columns, and \code{faces}, either a list of
+integer vectors or, in the case if all faces have the same number of sides,
+an integer matrix.
 For \code{method="mesh"}: A list of class \code{CGALmesh} giving the vertices,
 the edges, the faces of the mesh, the exterior edges, the exterior vertices and
 optionally the normals.
@@ -32,10 +33,9 @@ Read mesh vertices and faces from a file.
 \examples{
 library(MeshUtils)
 library(rgl)
-ply  <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
-vf   <- readMeshFile(ply, method="soup")
-mesh <- makeMesh(vf, normals=TRUE)
-
+f_ply    <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
+mesh_vf  <- readMeshFile(f_ply, method="soup")
+mesh     <- makeMesh(mesh_vf, normals=TRUE)
 mesh_rgl <- toRGL(mesh)
 open3d(windowRect=c(50, 50, 562, 562))
 view3d(0, 0, zoom=0.8)

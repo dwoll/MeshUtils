@@ -7,7 +7,8 @@
 getDistance(x, points)
 }
 \arguments{
-\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.}
+\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+The mesh must be triangle or must be able to be made triangle.}
 
 \item{points}{\code{numeric} matrix with 3 columns with one point per row.}
 }
@@ -16,8 +17,7 @@ getDistance(x, points)
 to the mesh \code{x}.
 }
 \description{
-Get the Euclidean distance of points
-to a 3D mesh.
+Get the Euclidean distance of points to a given 3D surface mesh.
 }
 \examples{
 library(MeshUtils)

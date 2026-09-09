@@ -10,10 +10,10 @@ getCentroid(x)
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}. The mesh must be triangle.}
 }
 \value{
-\code{numeric} 3-vector with the cartesian coordinates of the mesh centroid.
+\code{numeric} 3-vector with the coordinates of the mesh centroid.
 }
 \description{
-Get mesh centroid.
+Get the centroid of a given 3D surface mesh.
 }
 \examples{
 library(MeshUtils)

@@ -10,10 +10,10 @@ hasGarbage(x)
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
-TRUE or FALSE.
+\code{TRUE} or \code{FALSE}.
 }
 \description{
-Does the given surface mesh have garbage?
+Does the given 3D surface mesh have garbage?
 }
 \examples{
 library(MeshUtils)

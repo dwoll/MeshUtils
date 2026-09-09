@@ -7,7 +7,7 @@
 reconstructPoisson(
   x,
   normalsFun = getNormalsFun(6L),
-  spacing = NULL,
+  spacing,
   smAngle = 20,
   smRadius = 30,
   smDistance = 0.375,
@@ -15,15 +15,14 @@ reconstructPoisson(
 )
 }
 \arguments{
-\item{x}{Numeric matrix which stores the points, one point per row.}
+\item{x}{Numeric matrix with 3 columns which stores the points, one point per row.}
 
-\item{normalsFun}{A function to generate normals as returned from
+\item{normalsFun}{A function to generate normals, e.g., as returned by
 \code{\link[MeshUtils]{getNormalsFun}}.}
 
-\item{spacing}{Size parameter. Smaller values increase the precision of the
-output mesh at the cost of higher computation time. Set to \code{NULL}
-(the default) for a reasonable automatic value: an average spacing whose
-value will be displayed in a message and that you can also get in the
+\item{spacing}{Optional size parameter. Smaller values increase the precision
+of the output mesh at the cost of higher computation time. If missing,
+a reasonable default value: an average spacing that is stored in the
 \code{"spacing"} attribute of the output.}
 
 \item{smAngle}{Bound for the minimum facet angle in degrees.}
@@ -32,7 +31,7 @@ value will be displayed in a message and that you can also get in the
 
 \item{smDistance}{Relative bound for the center-center distances.}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
+\item{normals}{Boolean. Whether to return vertex normals.}
 }
 \value{
 A \code{CGALmesh} object.

@@ -13,7 +13,8 @@ assignNormals(x)
 A \code{CGALmesh} object.
 }
 \description{
-Add normal vectors to a mesh. Currently, only vertex normals are supported.
+Add normal vectors to a given 3D surface mesh.
+Currently, only vertex normals are supported.
 }
 \examples{
 library(MeshUtils)

@@ -7,27 +7,28 @@
 alphaWrap(x, alphaRel, offsetRel, normals = FALSE)
 }
 \arguments{
-\item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}},
-or a numeric matrix which stores the points, one point per row.}
+\item{x}{A \code{CGALmesh} object, i.e.,
+the output of \code{\link[MeshUtils]{makeMesh}}, or a numeric matrix
+with 3 columns which stores the points, one point per row.}
 
 \item{alphaRel}{Relative alpha parameter. The actual alpha parameter (see
 details) is defined as the length of the diagonal of the bounding box of
 the point cloud divided by the relative alpha parameter. Increase for
-more detailed mesh.}
+a more detailed mesh.}
 
 \item{offsetRel}{Relative offset. The actual offset parameter (see details)
 is defined as the length of the diagonal of the bounding box of the
 point cloud divided by the relative offset parameter. Increase for
 output that is closer to input mesh.}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
+\item{normals}{Boolean. Whether to return vertex normals.}
 }
 \value{
 A \code{CGALmesh} object.
 }
 \description{
-Reconstruction of a surface from a cloud of 3D points by
-alpha wrapping.
+Reconstruction of a surface mesh from a cloud of 3D points
+by alpha wrapping.
 }
 \details{
 See \url{https://doc.cgal.org/latest/Alpha_wrap_3/} for details.
@@ -38,7 +39,7 @@ library(rgl)
 
 mesh            <- dataHeart1
 mesh_rgl        <- toRGL(mesh)
-mesh_alwrap     <- alphaWrap(mesh[["vertices"]],
+mesh_alwrap     <- alphaWrap(mesh,
                              alphaRel =5,
                              offsetRel=300)
 mesh_alwrap_rgl <- toRGL(mesh_alwrap)

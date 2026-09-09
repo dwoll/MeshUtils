@@ -4,26 +4,27 @@
 \alias{reconstructAFS}
 \title{Advancing front surface reconstruction}
 \usage{
-reconstructAFS(x, jetSmoothing = NULL, repairSoup = TRUE, normals = FALSE)
+reconstructAFS(x, jetSmoothing, repairSoup = TRUE, normals = FALSE)
 }
 \arguments{
-\item{x}{Numeric matrix which stores the points, one point per row.}
+\item{x}{Numeric matrix with 3 columns which stores the points, one point per row.}
 
-\item{jetSmoothing}{If not \code{NULL}, must be an integer >= 2.
-Then, the point cloud is smoothed before the reconstruction, using
+\item{jetSmoothing}{Optional integer >= 2. If specified,
+the point cloud is smoothed before the reconstruction, using
 this integer as the number of neighbors for the smoothing. Note that this
 smoothing preprocessing relocates the points and then should not be used
 if the points have been sampled without noise on the surface.}
 
-\item{repairSoup}{Boolean. Attempt to fix polygon soup?}
+\item{repairSoup}{Boolean. Whether to clean the mesh (merging
+duplicated vertices, duplicated faces, removing isolated vertices).}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
+\item{normals}{Boolean. Whether to return vertex normals.}
 }
 \value{
 A \code{CGALmesh} object.
 }
 \description{
-Reconstruction of a surface from a cloud of 3D points.
+Reconstruction of a surface mesh from a cloud of 3D points.
 }
 \details{
 See \href{https://doc.cgal.org/latest/Advancing_front_surface_reconstruction/}{Advancing Front Surface Reconstruction}.

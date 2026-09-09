@@ -10,14 +10,18 @@ doesSelfIntersect(x)
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
-TRUE or FALSE.
+\code{TRUE} or \code{FALSE}.
 }
 \description{
-Does mesh self intersect?
+Does the given 3D surface mesh self intersect?
 }
 \examples{
 library(MeshUtils)
 mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
 doesSelfIntersect(mesh)
 
+}
+\seealso{
+See \code{\link[MeshUtils]{removeSelfIntersections}} for a function to
+remove self-intersections.
 }

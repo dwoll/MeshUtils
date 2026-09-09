@@ -12,7 +12,7 @@ The mesh must be triangle or be able to be made triangle.}
 
 \item{nIter}{Positive \code{integer}: Number of iterations.}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
+\item{normals}{Boolean. Whether to return vertex normals.}
 }
 \value{
 A \code{CGALmesh} object.
@@ -28,10 +28,10 @@ See \url{https://doc.cgal.org/latest/Subdivision_method_3/} for details.
 library(MeshUtils)
 library(rgl)
 
-mesh        <- makeMesh(dataPentaPrism, triangulate=TRUE)
-mesh_rgl    <- toRGL(mesh)
-mesh_s3     <- subdivideLoop(mesh, nIter=2)
-mesh_s3_rgl <- toRGL(mesh_s3)
+mesh       <- makeMesh(dataPentaPrism, triangulate=TRUE)
+mesh_rgl   <- toRGL(mesh)
+mesh_l     <- subdivideLoop(mesh, nIter=2)
+mesh_l_rgl <- toRGL(mesh_s3)
 
 open3d(windowRect=50 + c(0, 0, 800, 400))
 mfrow3d(1, 2)
@@ -39,7 +39,7 @@ view3d(0, 0, zoom=0.9)
 wire3d(mesh_rgl)
 next3d()
 view3d(0, 0, zoom=0.9)
-wire3d(mesh_s3_rgl)
+wire3d(mesh_l_rgl)
 
 }
 \author{

@@ -19,47 +19,66 @@ makeMesh(
 )
 }
 \arguments{
-\item{x}{A numeric matrix with three columns.}
+\item{x}{One of three options: 1) A numeric matrix with 3 columns providing the
+coordinates of the vertices of the mesh. 2) Either a list containing the components
+\code{vertices} and \code{faces}, or a \code{\link[rgl]{mesh3d}} object from
+package \strong{rgl}. 3) A filename to read a
+mesh file as in \code{\link[rgl]{readMeshFile}}.}
 
-\item{faces}{Either an integer matrix (each row provides the vertex indices
+\item{faces}{When \code{x} is a numeric matrix with the vertices: Either an integer
+matrix (each row provides the vertex indices
 of the corresponding face) or a list of integer vectors, each one
 providing the vertex indices of the corresponding face.}
 
-\item{triangulate}{Boolean: Whether to triangulate the faces. Ignored if faces
+\item{triangulate}{Boolean. Whether to triangulate the faces. Ignored if faces
 are already triangle.}
 
-\item{repairSoup}{Boolean: Whether to do some mesh cleaning.}
+\item{repairSoup}{Boolean. Whether to clean the mesh (merging duplicated
+vertices, duplicated faces, removing isolated vertices).}
 
-\item{removeIntersections}{Boolean: Whether to attempt to remove self intersections.}
+\item{removeIntersections}{Boolean. Whether to attempt to remove self intersections.}
 
-\item{removeMethod}{One of \code{"auto"} (for auto-refine) and \code{"auto_snap"} (auto-refine with iterative snap).}
+\item{removeMethod}{\code{character}. One of \code{"auto"} (for auto-refine)
+and \code{"auto_snap"} (auto-refine with iterative snap).}
 
-\item{fillHoles}{Boolean: Whether to attempt to fill boundary holes.}
+\item{fillHoles}{Boolean. Whether to attempt to fill boundary holes.}
 
-\item{fairHole}{Boolean: Use CGAL \code{triangulate_refine_and_fair_hole()} (\code{TRUE})
-or \code{triangulate_and_refine_hole()} (\code{FALSE})?}
+\item{fairHole}{Boolean. Use CGAL \code{triangulate_refine_and_fair_hole()}
+(\code{TRUE}) or \code{triangulate_and_refine_hole()} (\code{FALSE})?}
 
-\item{maxNumHoles}{\code{integer}: Maximum number of holes to be filled. May be 0.}
+\item{maxNumHoles}{\code{integer}. Maximum number of holes to be filled. May be 0.}
 
-\item{normals}{Boolean: Whether to compute the normals.}
+\item{normals}{Boolean. Whether to compute vertex normals.}
 
-\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
+\item{verbose}{Boolean. Whether to print out messages about mesh processing.}
 }
 \value{
 A list of class \code{CGALmesh} giving the vertices, the edges, the faces
-of the mesh, the exterior edges, the exterior vertices and optionally the normals.
+of the mesh, the exterior edges, the exterior vertices and optionally the
+vertex normals.
 }
 \description{
-Make a 3D mesh from given vertices and faces; the returned
-faces are coherently oriented, normals are computed if desired, and
-triangulation is performed if desired. The mesh is also cleaned:
+Make a 3D surface mesh from an input file,
+from an existing \strong{rgl} mesh object,
+or from given vertices and faces. The mesh is optionally cleaned:
 duplicated vertices or faces are merged, and isolated vertices are removed.
+The returned faces are coherently oriented, normals are computed if requested, and
+triangulation is performed if requested.
 }
 \examples{
 library(MeshUtils)
 library(rgl)
 
-## a tetrahedron with ill-oriented faces
+## make mesh based on file
+f_mesh    <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
+mesh1     <- makeMesh(f_mesh, verbose=TRUE)
+mesh1_rgl <- toRGL(mesh1)
+
+open3d(windowRect=c(50, 50, 562, 562))
+wire3d(mesh1_rgl)
+
+## make mesh from vertices and faces
+## tetrahedron with ill-oriented faces
 vertices <- rbind(
   c(-1, -1, -1),
   c(1, 1, -1),
@@ -72,35 +91,28 @@ faces <- rbind(
   c(4, 2, 1),
   c(4, 3, 1))
 
-## plot the tetrahedron, hiding the back of the faces
-## then some faces do not appear, as their orientation is not correct
-mesh1_rgl_a <- tmesh3d(vertices=t(vertices),
-                       indices =t(faces))
-
+mesh2 <- makeMesh(vertices, faces, verbose=TRUE)
+mesh2_rgl <- toRGL(mesh2)
 open3d(windowRect=c(50, 50, 562, 562))
-shade3d(mesh1_rgl_a, color="green", back = "cull")
-
-## now run the `makeMesh` function
-mesh1 <- makeMesh(vertices, faces, normals=FALSE)
-## plot the tetrahedron, hiding the back of the faces
-## then all faces appear now
-mesh1_rgl_b <- toRGL(mesh1)
-open3d(windowRect=c(50, 50, 562, 562))
-shade3d(mesh1_rgl_b, color="blue", back="cull")
+wire3d(mesh2_rgl)
 
 ## illustration of the `triangulate` option
 ## the faces of the truncated icosahedron are hexagonal or pentagonal:
 dataTruncIcosahedron[["faces"]]
 # so we triangulate them:
-mesh2     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
-mesh2_rgl <- toRGL(mesh2)
-open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
-shade3d(mesh2_rgl, color="orange")
+mesh3     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
+mesh3_rgl <- toRGL(mesh3)
+open3d(windowRect=c(50, 50, 562, 562))
+wire3d(mesh3_rgl)
 
 }
 \seealso{
 See \code{\link[MeshUtils]{plotEdges}} for more details about the edges
-returned by this function. See \code{\link[MeshUtils]{toRGL}} for conversion to class
+returned by this function.
+See \code{\link[MeshUtils]{makeMeshValid}} for a similar function that assumes
+that the input defines a valid mesh, and does not perform mesh repair to gain
+some speed.
+See \code{\link[MeshUtils]{toRGL}} for conversion to class
 \code{\link[rgl]{mesh3d}} from package \strong{rgl}.
 }
 \author{

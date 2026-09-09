@@ -11,20 +11,21 @@
 ## ----------------------------------------------------------------------- //
 
 #' @title 3D alpha wrapping
-#' @description Reconstruction of a surface from a cloud of 3D points by
-#'   alpha wrapping.
+#' @description Reconstruction of a surface mesh from a cloud of 3D points
+#'   by alpha wrapping.
 #'
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}},
-#'    or a numeric matrix which stores the points, one point per row.
+#' @param x A \code{CGALmesh} object, i.e.,
+#'   the output of \code{\link[MeshUtils]{makeMesh}}, or a numeric matrix
+#'   with 3 columns which stores the points, one point per row.
 #' @param alphaRel Relative alpha parameter. The actual alpha parameter (see
 #'   details) is defined as the length of the diagonal of the bounding box of
 #'   the point cloud divided by the relative alpha parameter. Increase for
-#'   more detailed mesh.
+#'   a more detailed mesh.
 #' @param offsetRel Relative offset. The actual offset parameter (see details)
 #'   is defined as the length of the diagonal of the bounding box of the
 #'   point cloud divided by the relative offset parameter. Increase for
 #'   output that is closer to input mesh.
-#' @param normals Boolean: Whether to return vertex normals.
+#' @param normals Boolean. Whether to return vertex normals.
 #'
 #' @returns A \code{CGALmesh} object.
 #'

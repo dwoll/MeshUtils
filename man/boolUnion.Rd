@@ -2,29 +2,30 @@
 % Please edit documentation in R/boolean.R
 \name{boolUnion}
 \alias{boolUnion}
-\title{Meshes union}
+\title{Union of meshes}
 \usage{
 boolUnion(x, repairSoup = TRUE, normals = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A list of meshes, each being either a \code{\link[rgl]{mesh3d}} object
-from package \strong{rgl}, or as a list with (at least) two fields:
-\code{vertices} and \code{faces}, such as a \code{CGALmesh} object.}
+from package \strong{rgl}, or a \code{CGALmesh} object,
+i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{repairSoup}{Boolean, whether to clean the meshes (merging
+\item{repairSoup}{Boolean. Whether to clean the meshes (merging
 duplicated vertices, duplicated faces, removing isolated vertices).
-Set to \code{FALSE} if you are sure your meshes are clean, to
+Set to \code{FALSE} if you know the meshes are clean, to
 gain some speed.}
 
-\item{normals}{Boolean, whether to return the per-vertex normals of the
+\item{normals}{Boolean. Whether to return the vertex normals of the
 output mesh.}
-\item{verbose}{Boolean: Whether to print out messages about mesh processing.}
+
+\item{verbose}{Boolean. Whether to print out messages about mesh processing.}
 }
 \value{
 A \code{CGALmesh} object.
 }
 \description{
-Computes the union of the given meshes.
+Compute the union of the given meshes.
 }
 \details{
 See \url{https://doc.cgal.org/latest/PMP_Boolean_operations/} for details.

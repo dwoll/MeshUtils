@@ -13,17 +13,18 @@
 #' @title Read a mesh file
 #' @description Read mesh vertices and faces from a file.
 #'
-#' @param x Path to the mesh file; supported formats are \code{stl},
+#' @param x Path to the mesh file. Supported formats are \code{stl},
 #'   \code{ply}, \code{obj}, \code{off}, \code{ts}, \code{vtp}.
 #' @param method Either \code{"soup"} when the file is a polygon soup,
-#'   or \code{"mesh"} when the file is known to be a valid mesh.
-#' @param normals Boolean: Whether to return vertex normals for \code{method="mesh"}.
-#' @param verbose Boolean: Whether to print out messages about mesh processing.
+#'   or \code{"mesh"} when the file is known to be a valid mesh with
+#'   correct face orientations.
+#' @param normals Boolean. Whether to return vertex normals for \code{method="mesh"}.
+#' @param verbose Boolean. Whether to print out messages about mesh processing.
 #'
 #' @returns For \code{method="soup"}: A list with two components: \code{vertices},
-#'   a numeric matrix with three
-#'   columns, and \code{faces}, either a list of integer vectors or, in the
-#'   case if all faces have the same number of sides, an integer matrix.
+#'   a numeric matrix with three columns, and \code{faces}, either a list of
+#'   integer vectors or, in the case if all faces have the same number of sides,
+#'   an integer matrix.
 #'   For \code{method="mesh"}: A list of class \code{CGALmesh} giving the vertices,
 #'   the edges, the faces of the mesh, the exterior edges, the exterior vertices and
 #'   optionally the normals.
@@ -67,15 +68,18 @@ readMeshFile <- function(x, method=c("soup", "mesh"), normals=FALSE, verbose=FAL
 #' @title Export mesh to a file
 #' @description Export a mesh to a file.
 #'
-#' @param x A mesh given either as a list containing (at least) the fields
-#'   \code{vertices} and \code{faces}, otherwise a \strong{rgl} mesh
-#'   (i.e. a \code{\link[rgl]{mesh3d}} object).
-#' @param filename Name of the file to be written, with extension \code{stl},
-#'   \code{ply}, \code{obj} or \code{off}
-#' @param precision Positive integer, number of decimal digits for the vertices.
-#' @param binary Boolean, whether to write a binary file or an ASCII file.
+#' @param x A mesh. Given as a list containing (at least) the components
+#'   \code{vertices} and \code{faces}, or a \code{\link[rgl]{mesh3d}}
+#'   from package \strong{rgl}, or a \code{CGALmesh} object, i.e.,
+#'   the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param filename Name of the output file, with extension \code{stl},
+#'   \code{ply}, \code{obj} or \code{off}.
+#' @param precision Positive integer. Number of decimal digits for the
+#'   vertex coordinates.
+#' @param binary Boolean. Whether to write a binary file (instead of
+#'   an ASCII file).
 #'
-#' @returns No value, just generates the file.
+#' @returns No value. Just generates the file.
 #'
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'

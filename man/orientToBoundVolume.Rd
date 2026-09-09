@@ -4,18 +4,18 @@
 \alias{orientToBoundVolume}
 \title{Orient mesh to bound a volume}
 \usage{
-orientToBoundVolume(x, normals)
+orientToBoundVolume(x, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
+\item{normals}{Boolean. Whether to return vertex normals.}
 }
 \value{
-\code{CGALmesh} object.
+A \code{CGALmesh} object.
 }
 \description{
-Orient mesh to bound a volume
+Orient a given 3D surface mesh to bound a volume
 }
 \examples{
 library(MeshUtils)

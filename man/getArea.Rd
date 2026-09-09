@@ -13,7 +13,7 @@ getArea(x)
 \code{numeric}: The mesh area.
 }
 \description{
-Get the surface area of a 3D mesh.
+Get the surface area of a given 3D surface mesh.
 }
 \examples{
 library(MeshUtils)

@@ -9,9 +9,9 @@ getBoundingBox(x, triangulate = FALSE, normals = FALSE)
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{triangulate}{Boolean: Whether to triangulate the faces of the bounding box.}
+\item{triangulate}{Boolean. Whether to triangulate the faces of the bounding box.}
 
-\item{normals}{Boolean: Whether to return vertex normals.}
+\item{normals}{Boolean. Whether to return vertex normals.}
 }
 \value{
 A \code{CGALmesh} object.

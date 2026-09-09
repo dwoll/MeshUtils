@@ -10,10 +10,10 @@ doesBoundVolume(x)
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 }
 \value{
-TRUE or FALSE.
+\code{TRUE} or \code{FALSE}.
 }
 \description{
-Does mesh bound a volume?
+Does given 3D surface mesh bound a volume?
 }
 \examples{
 library(MeshUtils)

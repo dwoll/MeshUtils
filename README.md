@@ -1,8 +1,8 @@
 # MeshUtils: Utility functions for 3D meshes based on CGAL
 
-`MeshUtils` ís an R package that supports basic processing of 3D meshes using as backend the 'C++' library [`CGAL`](https://www.cgal.org/) via R package [`RcppCGAL`](https://cran.r-project.org/package=RcppCGAL). Features:
+`MeshUtils` ís an R package that supports basic processing of 3D surface meshes using as backend the C++ library [`CGAL`](https://www.cgal.org/) via R package [`RcppCGAL`](https://cran.r-project.org/package=RcppCGAL). Features:
 
-  * Read in mesh files with common formats (STL, PLY, OBJ, OFF)
+  * Read in mesh files in common formats (STL, PLY, OBJ, OFF)
   * Conversion to / from class `mesh3d` from package [`rgl`](https://cran.r-project.org/package=rgl), also compatible with package [`Rvcg`](https://cran.r-project.org/package=Rvcg)
   * Mesh repair
       * Filling holes
@@ -33,11 +33,11 @@
   * Volume
   * Vertex normals
 
-For an application, see package [MeshAgreement](https://github.com/dwoll/MeshAgreement/) that calculates various distance and similarity metrics for two given 3D meshes.
+For an application, see package [MeshAgreement](https://github.com/dwoll/MeshAgreement/) that calculates various distance and similarity metrics for a set of given 3D surface meshes.
 
 ## CAVE
 
-Note that this package requires CGAL headers version 6.2. As of August 2026, `RcppCGAL` provides CGAL version 6.1, but it is possible to update as explained in the [`RcppCGAL::set_cgal()` documentation](https://ericdunipace.r-universe.dev/RcppCGAL/doc/manual.html#set_cgal).
+Note that this package requires CGAL headers at least with version 6.2, provided by [`RcppCGAL`](https://cran.r-project.org/package=RcppCGAL) version 6.2 and newer.
 
 See package [`Rmpfr`](https://cran.r-project.org/package=Rmpfr) for a note on how to install system requirements [MPFR](https://www.mpfr.org/) and [GMP](https://gmplib.org/).
 
