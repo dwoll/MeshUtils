@@ -110,6 +110,9 @@ MeshT readFileSoup(const std::string);
 template <typename MeshT>
 MeshT readFileMesh(const std::string);
 
+template <typename MeshT>
+void run_mesh_checks(MeshT&);
+
 // -------------------------------------------------------------------------- //
 // no template
 std::string toLower(std::string);

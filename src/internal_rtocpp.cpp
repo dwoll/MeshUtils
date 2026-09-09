@@ -260,7 +260,7 @@ template EMesh3 vf_to_mesh<EMesh3, EPoint3>(const Rcpp::NumericMatrix&, const Rc
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename MeshT>
-void run_mesh_checks(MeshT mesh) {
+void run_mesh_checks(MeshT &mesh) {
     const bool is_triangle  = CGAL::is_triangle_mesh(mesh);
     const bool has_self_int = PMP::does_self_intersect(mesh);
     const bool is_closed    = CGAL::is_closed(mesh);
@@ -300,6 +300,9 @@ void run_mesh_checks(MeshT mesh) {
         rmessage("Mesh is not valid.\n");
     }
 }
+
+template void run_mesh_checks<Mesh3>(Mesh3&);
+template void run_mesh_checks<EMesh3>(EMesh3&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //

@@ -14,11 +14,11 @@
 #' @description Read mesh vertices and faces from a file.
 #'
 #' @param x Path to the mesh file; supported formats are \code{stl},
-#'   \code{ply}, \code{obj} and \code{off}.
-#' @param method Either \code{"soup"} when the file is a polygon soup, or \code{"mesh"} when
-#'   the file is a valid mesh.
-#' @param binary Boolean: For \code{method="mesh"}: Whether input file is binary.
+#'   \code{ply}, \code{obj}, \code{off}, \code{ts}, \code{vtp}.
+#' @param method Either \code{"soup"} when the file is a polygon soup,
+#'   or \code{"mesh"} when the file is known to be a valid mesh.
 #' @param normals Boolean: Whether to return vertex normals for \code{method="mesh"}.
+#' @param verbose Boolean: Whether to print out messages about mesh processing.
 #'
 #' @returns For \code{method="soup"}: A list with two components: \code{vertices},
 #'   a numeric matrix with three
@@ -33,25 +33,24 @@
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' ply  <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
-#' vf   <- readMeshFile(ply, method="soup")
-#' mesh <- makeMesh(vf, normals=TRUE)
-#'
+#' f_ply    <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
+#' mesh_vf  <- readMeshFile(f_ply, method="soup")
+#' mesh     <- makeMesh(mesh_vf, normals=TRUE)
 #' mesh_rgl <- toRGL(mesh)
 #' open3d(windowRect=c(50, 50, 562, 562))
 #' view3d(0, 0, zoom=0.8)
 #' shade3d(mesh_rgl, color="palevioletred")
 #'
 #' @export
-readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE, normals=FALSE) {
+readMeshFile <- function(x, method=c("soup", "mesh"), normals=FALSE, verbose=FALSE) {
   stopifnot(isString(x))
-  stopifnot(isBoolean(binary))
+  stopifnot(isBoolean(verbose))
   method <- match.arg(method)
   if(!file.exists(x)) {
     stop("File not found.")
   }
   if(method == "soup") {
-    mesh   <- readFileSoup_cpp(x, binary)
+    mesh   <- readFileSoup_cpp(x, verbose)
     faces  <- mesh[["faces"]]
     usizes <- length(unique(lengths(faces)))
     if(usizes == 1L) {
@@ -60,7 +59,7 @@ readMeshFile <- function(x, method=c("soup", "mesh"), binary=FALSE, normals=FALS
     mesh
   } else {
     stopifnot(isBoolean(normals))
-    mesh_cpp <- readFileMesh_cpp(x, binary, normals)
+    mesh_cpp <- readFileMesh_cpp(x, normals, verbose)
     fromCPP(mesh_cpp)
   }
 }

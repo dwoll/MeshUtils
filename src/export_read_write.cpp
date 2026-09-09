@@ -31,94 +31,47 @@ std::string toLower(std::string s) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List readFileSoup_cpp(const std::string filename, const bool binary) {
-  const std::string ext = toLower(std::filesystem::path(filename).extension().string());
-  std::ifstream infile;
-  if(binary) {
-    infile.open(filename, std::ios::binary);
-  } else {
-    infile.open(filename);
-  }
-  std::vector<Point3> points;
-  std::vector<std::vector<std::size_t>> faces;
-  bool ok = false;
-  if(ext == ".ply") {
-    ok = CGAL::IO::read_PLY(
-      infile, points, faces,
-      CGAL::parameters::use_binary_mode(binary));
-    if(!ok && !binary) {
-      ok = CGAL::IO::read_PLY(
-        infile, points, faces,
-        CGAL::parameters::use_binary_mode(true));
+Rcpp::List readFileSoup_cpp(const std::string filename, const bool verbose) {
+    std::vector<Point3> points;
+    std::vector<std::vector<std::size_t>> faces;
+    const bool ok = CGAL::IO::read_polygon_soup(
+        filename, points, faces, CGAL::parameters::verbose(verbose));
+    if(!ok) {
+      Rcpp::stop("Reading failure.");
     }
-  } else if(ext == ".stl") {
-    ok = CGAL::IO::read_STL(
-      infile, points, faces,
-      CGAL::parameters::use_binary_mode(binary));
-  } else if(ext == ".obj") {
-    ok = CGAL::IO::read_OBJ(infile, points, faces);
-  } else if(ext == ".off") {
-    ok = CGAL::IO::read_OFF(infile, points, faces);
-  } else {
-    Rcpp::stop("Unknown file extension.");
-  }
-  infile.close();
-  if(!ok) {
-    Rcpp::stop("Reading failure.");
-  }
-  const std::size_t nPts = points.size();
-  Rcpp::NumericMatrix vertex_mat(3, nPts);
-  for(std::size_t i = 0; i < nPts; i++) {
-    const Point3 point_i = points[i];
-    Rcpp::NumericVector col_i =
-        Rcpp::NumericVector::create(point_i.x(), point_i.y(), point_i.z());
-    vertex_mat(Rcpp::_, i) = col_i;
-  }
-  const std::size_t nFaces = faces.size();
-  Rcpp::List face_list(nFaces);
-  for(std::size_t i = 0; i < nFaces; i++) {
-    const std::vector<std::size_t> face_i = faces[i];
-    Rcpp::IntegerVector col_i(face_i.begin(), face_i.end());
-    face_list(i) = col_i + 1;
-  }
-  Rcpp::List out;
-  out["vertices"] = Rcpp::transpose(vertex_mat);
-  out["faces"]    = face_list;
-  return out;
+    const std::size_t nPts = points.size();
+    Rcpp::NumericMatrix vertex_mat(3, nPts);
+    for(std::size_t i = 0; i < nPts; i++) {
+      const Point3 point_i = points[i];
+      Rcpp::NumericVector col_i =
+          Rcpp::NumericVector::create(point_i.x(), point_i.y(), point_i.z());
+      vertex_mat(Rcpp::_, i) = col_i;
+    }
+    const std::size_t nFaces = faces.size();
+    Rcpp::List face_list(nFaces);
+    for(std::size_t i = 0; i < nFaces; i++) {
+      const std::vector<std::size_t> face_i = faces[i];
+      Rcpp::IntegerVector col_i(face_i.begin(), face_i.end());
+      face_list(i) = col_i + 1;
+    }
+    Rcpp::List out;
+    out["vertices"] = Rcpp::transpose(vertex_mat);
+    out["faces"]    = face_list;
+    return out;
 }
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List readFileMesh_cpp(
-  const std::string filename, const bool binary, const bool normals) {
+  const std::string filename, const bool normals, const bool verbose) {
   Mesh3 mesh;
-  const std::string ext = toLower(std::filesystem::path(filename).extension().string());
-  bool ok = false;
-  std::ifstream infile;
-  if(binary) {
-    infile.open(filename, std::ios::binary);
-  } else {
-    infile.open(filename);
-  }
-  std::string comments;
-  if(ext == ".ply") {
-    ok = CGAL::IO::read_PLY(infile, mesh, comments);
-  } else if(ext == ".off") {
-    ok = CGAL::IO::read_OFF(infile, mesh);
-  } else {
-    ok = PMP::IO::read_polygon_mesh(filename, mesh);
-  }
-  infile.close();
+  const bool ok = CGAL::IO::read_polygon_mesh(
+      filename, mesh, CGAL::parameters::verbose(verbose));
   if(!ok) {
     Rcpp::stop("Reading failure.");
   }
-  if(!comments.empty()) {
-    rmessage("Comments found in " + filename + ":");
-    rmessage(comments);
-  }
-  const bool valid = mesh.is_valid(false);
-  if(!valid) {
-    Rcpp::warning("The mesh is not valid.");
+  if(verbose) {
+    run_mesh_checks<MeshT>(mesh);
   }
   return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
 }
@@ -134,7 +87,7 @@ void writeFile_cpp(const std::string filename,
   const std::pair<std::vector<std::vector<std::size_t>>, bool> faces =
       list_to_faces2(faceList);
   if(filename.length() < 5) {
-      Rcpp::stop("`filename` needs at least 5 characters, including dot file extension.");
+      Rcpp::stop("`filename` needs at least 5 characters, including dot file-extension.");
   }
   const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;

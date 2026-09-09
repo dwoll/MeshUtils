@@ -1,7 +1,6 @@
 # TODO
 
   * use `make_surf_mesh_valid()` instead of `make_surf_mesh()` wherever reasonable
-  * `readMeshFile()` and `makeMesh()` in one step - via `filename` option
   * `fill_boundary_hole()`
       * pass more parameters (small holes)
   * `remeshIsotropic()`
@@ -9,9 +8,6 @@
 
 # Wishlist
 
-  * messages
-      * verbose/silent option to remove output during processing except for warnings()
-      * `rmessage()` vs. `Rcpp::warning()`
   * triangulated surface mesh simplification
       * `edge_collapse()`
   * remeshing

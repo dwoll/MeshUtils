@@ -78,7 +78,16 @@ print.CGALmesh <- function(x, ...) {
 #' library(MeshUtils)
 #' library(rgl)
 #'
-#' ## a tetrahedron with ill-oriented faces
+#' ## make mesh based on file
+#' f_mesh    <- system.file("extdata", "dataHeart3.ply", package="MeshUtils")
+#' mesh1     <- makeMesh(f_mesh, verbose=TRUE)
+#' mesh1_rgl <- toRGL(mesh1)
+#'
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' wire3d(mesh1_rgl)
+#'
+#' ## make mesh from vertices and faces
+#' ## tetrahedron with ill-oriented faces
 #' vertices <- rbind(
 #'   c(-1, -1, -1),
 #'   c(1, 1, -1),
@@ -91,30 +100,19 @@ print.CGALmesh <- function(x, ...) {
 #'   c(4, 2, 1),
 #'   c(4, 3, 1))
 #'
-#' ## plot the tetrahedron, hiding the back of the faces
-#' ## then some faces do not appear, as their orientation is not correct
-#' mesh1_rgl_a <- tmesh3d(vertices=t(vertices),
-#'                        indices =t(faces))
-#'
+#' mesh2 <- makeMesh(vertices, faces, verbose=TRUE)
+#' mesh2_rgl <- toRGL(mesh2)
 #' open3d(windowRect=c(50, 50, 562, 562))
-#' shade3d(mesh1_rgl_a, color="green", back = "cull")
-#'
-#' ## now run the `makeMesh` function
-#' mesh1 <- makeMesh(vertices, faces, normals=FALSE)
-#' ## plot the tetrahedron, hiding the back of the faces
-#' ## then all faces appear now
-#' mesh1_rgl_b <- toRGL(mesh1)
-#' open3d(windowRect=c(50, 50, 562, 562))
-#' shade3d(mesh1_rgl_b, color="blue", back="cull")
+#' wire3d(mesh2_rgl)
 #'
 #' ## illustration of the `triangulate` option
 #' ## the faces of the truncated icosahedron are hexagonal or pentagonal:
 #' dataTruncIcosahedron[["faces"]]
 #' # so we triangulate them:
-#' mesh2     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
-#' mesh2_rgl <- toRGL(mesh2)
-#' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
-#' shade3d(mesh2_rgl, color="orange")
+#' mesh3     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
+#' mesh3_rgl <- toRGL(mesh3)
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' wire3d(mesh3_rgl)
 #'
 #' @export
 makeMesh <- function(x,
@@ -220,11 +218,22 @@ makeMesh <- function(x,
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' mesh <- makeMeshValid(dataPentaPrism, soup=TRUE, triangulate=TRUE)
-#' mesh_rgl <- toRGL(mesh)
+#'
+#' ## mesh from file
+#' f_mesh    <- system.file("extdata", "corner.off", package="MeshUtils")
+#' mesh1     <- makeMeshValid(f_mesh, soup=TRUE, triangulate=TRUE)
+#' mesh1_rgl <- toRGL(mesh1)
 #'
 #' open3d(windowRect=c(50, 50, 562, 562))
-#' wire3d(mesh_rgl)
+#' wire3d(mesh1_rgl)
+#'
+#' ## mesh from vertices, faces
+#' head(dataPentaPrism[["vertices"]])
+#' head(dataPentaPrism[["faces"]])
+#' mesh2     <- makeMeshValid(dataPentaPrism, soup=TRUE, triangulate=TRUE)
+#' mesh2_rgl <- toRGL(mesh2)
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' wire3d(mesh2_rgl)
 #'
 #' @export
 makeMeshValid <- function(x,
@@ -476,7 +485,7 @@ isTriangle <- function(x) {
 #' library(MeshUtils)
 #' f_mesh  <- system.file("extdata", "corner.off", package="MeshUtils")
 #' mesh_vf <- readMeshFile(f_mesh)
-#' mesh    <- makeMesh(mesh_vf[["vertices"]], mesh_vf[["faces"]])
+#' mesh    <- makeMesh(f_mesh)
 #' isQuad(mesh)
 #'
 #' @export
