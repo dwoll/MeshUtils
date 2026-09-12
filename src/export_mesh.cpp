@@ -393,6 +393,37 @@ Rcpp::List addVNormals_cpp(const Rcpp::List rmesh) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
+Rcpp::NumericMatrix sampleVerts_cpp(const Rcpp::List rmesh, const unsigned n) {
+  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
+    rmesh,
+    false,       // soup
+    true,        // triangulate - must be triangle
+    false,       // repair_soup
+    false);      // verbose
+  std::vector<Point3> verts;
+  // PMP::parameters::use_random_uniform_sampling(true)     // true
+  // PMP::parameters::use_grid_sampling(true)               // false
+  // PMP::parameters::use_monte_carlo_sampling(true)        // false
+  // PMP::parameters::do_sample_vertices(true)              // true
+  // PMP::parameters::do_sample_edges(true)                 // true
+  // PMP::parameters::do_sample_faces(true)                 // true
+  // PMP::parameters::grid_spacing(n)                       // double
+  // PMP::parameters::number_of_points_on_edges(n)          // unsigned int
+  // PMP::parameters::number_of_points_on_faces(n)          // unsigned int
+  // PMP::parameters::number_of_points_per_distance_unit(n) // double
+  // PMP::parameters::number_of_points_per_edge(n)          // unsigned int
+  // PMP::parameters::number_of_points_per_area_unit(n)     // double
+  // PMP::parameters::number_of_points_per_face(n)          // unsigned int
+  PMP::sample_triangle_mesh(
+    mesh, std::back_inserter(verts),
+    PMP::parameters::number_of_points_on_faces(n)
+  );
+  Rcpp::NumericMatrix r_verts = points3_to_matrix<K, Point3>(verts);
+  return Rcpp::transpose(r_verts);
+}
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
 Rcpp::List triangulateMesh_cpp(const Rcpp::List rmesh, const bool normals) {
   Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
     rmesh,

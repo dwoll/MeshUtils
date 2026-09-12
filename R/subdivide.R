@@ -40,7 +40,7 @@
 #' wire3d(mesh_sd_rgl)
 #'
 #' @export
-subdivideCatmullClark <- function(x, nIter = 1, normals = FALSE) {
+subdivideCatmullClark <- function(x, nIter = 1L, normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			     " (i.e., the output of the `makeMesh()` function).")
@@ -82,7 +82,7 @@ subdivideCatmullClark <- function(x, nIter = 1, normals = FALSE) {
 #' wire3d(mesh_ds_rgl)
 #'
 #' @export
-subdivideDooSabin <- function(x, nIter = 1, triangulate = TRUE, normals = FALSE) {
+subdivideDooSabin <- function(x, nIter = 1L, triangulate = TRUE, normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			     " (i.e., the output of the `makeMesh()` function).")
@@ -124,7 +124,7 @@ subdivideDooSabin <- function(x, nIter = 1, triangulate = TRUE, normals = FALSE)
 #' wire3d(mesh_s3_rgl)
 #'
 #' @export
-subdivideSqrt3 <- function(x, nIter = 1, normals = FALSE) {
+subdivideSqrt3 <- function(x, nIter = 1L, normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
@@ -154,7 +154,7 @@ subdivideSqrt3 <- function(x, nIter = 1, normals = FALSE) {
 #' mesh       <- makeMesh(dataPentaPrism, triangulate=TRUE)
 #' mesh_rgl   <- toRGL(mesh)
 #' mesh_l     <- subdivideLoop(mesh, nIter=2)
-#' mesh_l_rgl <- toRGL(mesh_s3)
+#' mesh_l_rgl <- toRGL(mesh_l)
 #'
 #' open3d(windowRect=50 + c(0, 0, 800, 400))
 #' mfrow3d(1, 2)
@@ -165,7 +165,7 @@ subdivideSqrt3 <- function(x, nIter = 1, normals = FALSE) {
 #' wire3d(mesh_l_rgl)
 #'
 #' @export
-subdivideLoop <- function(x, nIter = 1, normals = FALSE) {
+subdivideLoop <- function(x, nIter = 1L, normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")

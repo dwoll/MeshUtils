@@ -19,6 +19,26 @@
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+template <typename KernelT, typename PointT>
+Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT> &points) {
+  const std::size_t nPts = points.size();
+  Rcpp::NumericMatrix pts_mat(3, nPts);
+  for(std::size_t i = 0; i < nPts; i++) {
+    Rcpp::NumericVector col_i(3);
+    const PointT point = points[i];
+    col_i(0) = CGAL::to_double<typename KernelT::FT>(point.x());
+    col_i(1) = CGAL::to_double<typename KernelT::FT>(point.y());
+    col_i(2) = CGAL::to_double<typename KernelT::FT>(point.z());
+    pts_mat(Rcpp::_, i) = col_i;
+  }
+  return pts_mat;
+}
+
+template Rcpp::NumericMatrix points3_to_matrix<K,  Point3>(const  std::vector<Point3>&);
+template Rcpp::NumericMatrix points3_to_matrix<EK, EPoint3>(const std::vector<EPoint3>&);
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
 Rcpp::NumericMatrix getVertices(const MeshT &mesh) {
   const std::size_t nVerts = mesh.number_of_vertices();

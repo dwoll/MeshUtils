@@ -35,13 +35,13 @@ library(MeshUtils)
 library(rgl)
 
 # mesh one: truncated icosahedron; we triangulate it
-mesh1 <- makeMesh(mesh       =dataTruncIcosahedron,
+mesh1 <- makeMesh(dataTruncIcosahedron,
                   triangulate=TRUE,
                   normals    = FALSE)
 
 # mesh two: a cube
 mesh2_rgl <- translate3d(cube3d(), 2, 0, 0)
-mesh2     <- makeMesh(mesh       =mesh2_rgl,
+mesh2     <- makeMesh(mesh2_rgl,
                       triangulate=TRUE,
                       normals    =FALSE)
 

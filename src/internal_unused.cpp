@@ -112,27 +112,6 @@ property_map_pair(MeshT &mesh, const std::string name) {
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 /*
-template <typename KernelT, typename PointT>
-Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT> &points) {
-  const std::size_t nPts = points.size();
-  Rcpp::NumericMatrix M(3, nPts);
-  for(std::size_t i = 0; i < nPts; i++) {
-    Rcpp::NumericVector col_i(3);
-    const PointT point = points[i];
-    col_i(0) = CGAL::to_double<typename KernelT::FT>(point.x());
-    col_i(1) = CGAL::to_double<typename KernelT::FT>(point.y());
-    col_i(2) = CGAL::to_double<typename KernelT::FT>(point.z());
-    M(Rcpp::_, i) = col_i;
-  }
-  return M;
-}
-
-template Rcpp::NumericMatrix points3_to_matrix<K,  Point3>(const  std::vector<Point3>&);
-template Rcpp::NumericMatrix points3_to_matrix<EK, EPoint3>(const std::vector<EPoint3>&);
-*/
-// ----------------------------------------------------------------------- //
-// ----------------------------------------------------------------------- //
-/*
 (const Rcpp::Nullable<Rcpp::NumericMatrix> &normals_)
 using norm_map_r   = typename MeshT::template Property_map<v_descriptor, Rcpp::NumericVector>;
 using vertex_descriptor = typename boost::graph_traits<MeshT>::vertex_descriptor;

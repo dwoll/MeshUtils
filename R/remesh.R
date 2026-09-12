@@ -53,8 +53,8 @@ remeshIsotropic <- function(
         edgeMin = 0.001,
         edgeMax,
         targetEdgeLen,
-        nIter = 1,
-        nRelaxSteps = 1,
+        nIter = 1L,
+        nRelaxSteps = 1L,
         normals = FALSE) {
     method <- match.arg(method)
     if(!inherits(x, "CGALmesh")) {

@@ -356,6 +356,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sampleVerts_cpp
+Rcpp::NumericMatrix sampleVerts_cpp(const Rcpp::List rmesh, const unsigned n);
+RcppExport SEXP _MeshUtils_sampleVerts_cpp(SEXP rmeshSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    Rcpp::traits::input_parameter< const unsigned >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(sampleVerts_cpp(rmesh, n));
+    return rcpp_result_gen;
+END_RCPP
+}
 // triangulateMesh_cpp
 Rcpp::List triangulateMesh_cpp(const Rcpp::List rmesh, const bool normals);
 RcppExport SEXP _MeshUtils_triangulateMesh_cpp(SEXP rmeshSEXP, SEXP normalsSEXP) {
@@ -598,6 +610,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_boundingBox_cpp", (DL_FUNC) &_MeshUtils_boundingBox_cpp, 1},
     {"_MeshUtils_getDistance_cpp", (DL_FUNC) &_MeshUtils_getDistance_cpp, 2},
     {"_MeshUtils_addVNormals_cpp", (DL_FUNC) &_MeshUtils_addVNormals_cpp, 1},
+    {"_MeshUtils_sampleVerts_cpp", (DL_FUNC) &_MeshUtils_sampleVerts_cpp, 2},
     {"_MeshUtils_triangulateMesh_cpp", (DL_FUNC) &_MeshUtils_triangulateMesh_cpp, 2},
     {"_MeshUtils_jet_pca_normals_cpp", (DL_FUNC) &_MeshUtils_jet_pca_normals_cpp, 3},
     {"_MeshUtils_readFileSoup_cpp", (DL_FUNC) &_MeshUtils_readFileSoup_cpp, 2},

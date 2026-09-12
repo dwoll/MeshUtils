@@ -94,6 +94,9 @@ Rcpp::List make_rmesh2(const MeshT&, const bool, const std::size_t);
 template <typename KernelT, typename MeshT, typename PointT, typename VectorT>
 Rcpp::List get_rmesh(MeshT&, const bool, const bool);
 
+template <typename KernelT, typename PointT>
+Rcpp::NumericMatrix points3_to_matrix(const std::vector<PointT>&);
+
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT remove_selfint_mesh(const MeshT&, const int, const bool);
 

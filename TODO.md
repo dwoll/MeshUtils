@@ -23,6 +23,9 @@
   * bounding meshes
       * approximate bounding ellipsoid
       * bounding spheres
+  * sample faces `sample_triangle_mesh()` (for ASD, RMSE)
+      * 95% Hausdorff distance
+      * `max_distance_to_triangle_mesh<Concurrency_tag>(sample_points, tm2, np2);`
 
 # CRAN
 

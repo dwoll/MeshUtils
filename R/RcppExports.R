@@ -105,6 +105,10 @@ addVNormals_cpp <- function(rmesh) {
     .Call(`_MeshUtils_addVNormals_cpp`, rmesh)
 }
 
+sampleVerts_cpp <- function(rmesh, n) {
+    .Call(`_MeshUtils_sampleVerts_cpp`, rmesh, n)
+}
+
 triangulateMesh_cpp <- function(rmesh, normals) {
     .Call(`_MeshUtils_triangulateMesh_cpp`, rmesh, normals)
 }

@@ -46,7 +46,7 @@
 #' wire3d(mesh_s_rgl)
 #'
 #' @export
-smoothShape <- function(x, indices, nIter = 1, time = 0.001, normals = FALSE) {
+smoothShape <- function(x, indices, nIter = 1L, time = 0.001, normals = FALSE) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
            " (i.e., the output of the `makeMesh()` function).")

@@ -812,6 +812,29 @@ assignNormals <- function(x) {
   fromCPP(mesh)
 }
 
+#' @title Sample vertices on triangle
+#' @description Random sampling of vertices on a given triangle 3D surface mesh.
+#' @param n \code{integer}. The desired number of sampled vertices.
+#' @return A \code{n x 3} numeric matrix containing the sampled vertices.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' makeMesh(dataPentaPrism, triangulate=TRUE)
+#' sampleVerts(mesh, n=5L)
+#'
+#' @export
+sampleVerts <- function(x, n = 1L) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
+  stopifnot(isStrictPositiveInteger(n))
+  meshCPP <- fromR(x)
+  ## output matrix already transposed in sampleVerts_cpp()
+  sampleVerts_cpp(meshCPP, as.integer(n))
+}
+
 #' @title Triangulate mesh
 #' @description Triangulate a given 3D surface mesh.
 #'
