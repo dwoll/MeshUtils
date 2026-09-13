@@ -84,15 +84,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // getHausdorffApprox_cpp
-double getHausdorffApprox_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric);
-RcppExport SEXP _MeshUtils_getHausdorffApprox_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP) {
+double getHausdorffApprox_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const unsigned int n);
+RcppExport SEXP _MeshUtils_getHausdorffApprox_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh1(rmesh1SEXP);
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
     Rcpp::traits::input_parameter< const bool >::type symmetric(symmetricSEXP);
-    rcpp_result_gen = Rcpp::wrap(getHausdorffApprox_cpp(rmesh1, rmesh2, symmetric));
+    Rcpp::traits::input_parameter< const unsigned int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(getHausdorffApprox_cpp(rmesh1, rmesh2, symmetric, n));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -107,6 +108,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type symmetric(symmetricSEXP);
     Rcpp::traits::input_parameter< const double >::type error_bound(error_boundSEXP);
     rcpp_result_gen = Rcpp::wrap(getHausdorffEst_cpp(rmesh1, rmesh2, symmetric, error_bound));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getHausdorffSampled_cpp
+double getHausdorffSampled_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const double p, const unsigned int n);
+RcppExport SEXP _MeshUtils_getHausdorffSampled_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP pSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh1(rmesh1SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
+    Rcpp::traits::input_parameter< const bool >::type symmetric(symmetricSEXP);
+    Rcpp::traits::input_parameter< const double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(getHausdorffSampled_cpp(rmesh1, rmesh2, symmetric, p, n));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -180,25 +196,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// isValid_cpp
-bool isValid_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_isValid_cpp(SEXP rmeshSEXP) {
+// addVNormals_cpp
+Rcpp::List addVNormals_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_addVNormals_cpp(SEXP rmeshSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(isValid_cpp(rmesh));
-    return rcpp_result_gen;
-END_RCPP
-}
-// hasGarbage_cpp
-bool hasGarbage_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_hasGarbage_cpp(SEXP rmeshSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(hasGarbage_cpp(rmesh));
+    rcpp_result_gen = Rcpp::wrap(addVNormals_cpp(rmesh));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -221,43 +226,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
     rcpp_result_gen = Rcpp::wrap(doesSelfIntersect_cpp(rmesh));
-    return rcpp_result_gen;
-END_RCPP
-}
-// isClosed_cpp
-bool isClosed_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_isClosed_cpp(SEXP rmeshSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(isClosed_cpp(rmesh));
-    return rcpp_result_gen;
-END_RCPP
-}
-// orientToBoundVolume_cpp
-Rcpp::List orientToBoundVolume_cpp(const Rcpp::List rmesh, const bool normals);
-RcppExport SEXP _MeshUtils_orientToBoundVolume_cpp(SEXP rmeshSEXP, SEXP normalsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(orientToBoundVolume_cpp(rmesh, normals));
-    return rcpp_result_gen;
-END_RCPP
-}
-// removeSelfIntersections_cpp
-Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh, const int method, const bool normals, const bool verbose);
-RcppExport SEXP _MeshUtils_removeSelfIntersections_cpp(SEXP rmeshSEXP, SEXP methodSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    Rcpp::traits::input_parameter< const int >::type method(methodSEXP);
-    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(removeSelfIntersections_cpp(rmesh, method, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -287,14 +255,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// getVolume_cpp
-double getVolume_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_getVolume_cpp(SEXP rmeshSEXP) {
+// getBoundingBox_cpp
+Rcpp::List getBoundingBox_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_getBoundingBox_cpp(SEXP rmeshSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(getVolume_cpp(rmesh));
+    rcpp_result_gen = Rcpp::wrap(getBoundingBox_cpp(rmesh));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getBoundingBoxOptimal_cpp
+Rcpp::List getBoundingBoxOptimal_cpp(const Rcpp::List rmeshIn, const bool triangulate, const bool normals);
+RcppExport SEXP _MeshUtils_getBoundingBoxOptimal_cpp(SEXP rmeshInSEXP, SEXP triangulateSEXP, SEXP normalsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
+    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    rcpp_result_gen = Rcpp::wrap(getBoundingBoxOptimal_cpp(rmeshIn, triangulate, normals));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -306,30 +287,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
     rcpp_result_gen = Rcpp::wrap(getCentroid_cpp(rmesh));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optimalBoundingBox_cpp
-Rcpp::List optimalBoundingBox_cpp(const Rcpp::List rmeshIn, const bool triangulate, const bool normals);
-RcppExport SEXP _MeshUtils_optimalBoundingBox_cpp(SEXP rmeshInSEXP, SEXP triangulateSEXP, SEXP normalsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshIn(rmeshInSEXP);
-    Rcpp::traits::input_parameter< const bool >::type triangulate(triangulateSEXP);
-    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimalBoundingBox_cpp(rmeshIn, triangulate, normals));
-    return rcpp_result_gen;
-END_RCPP
-}
-// boundingBox_cpp
-Rcpp::List boundingBox_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_boundingBox_cpp(SEXP rmeshSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(boundingBox_cpp(rmesh));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -345,14 +302,73 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// addVNormals_cpp
-Rcpp::List addVNormals_cpp(const Rcpp::List rmesh);
-RcppExport SEXP _MeshUtils_addVNormals_cpp(SEXP rmeshSEXP) {
+// getVolume_cpp
+double getVolume_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_getVolume_cpp(SEXP rmeshSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    rcpp_result_gen = Rcpp::wrap(addVNormals_cpp(rmesh));
+    rcpp_result_gen = Rcpp::wrap(getVolume_cpp(rmesh));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hasGarbage_cpp
+bool hasGarbage_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_hasGarbage_cpp(SEXP rmeshSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    rcpp_result_gen = Rcpp::wrap(hasGarbage_cpp(rmesh));
+    return rcpp_result_gen;
+END_RCPP
+}
+// isClosed_cpp
+bool isClosed_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_isClosed_cpp(SEXP rmeshSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    rcpp_result_gen = Rcpp::wrap(isClosed_cpp(rmesh));
+    return rcpp_result_gen;
+END_RCPP
+}
+// isValid_cpp
+bool isValid_cpp(const Rcpp::List rmesh);
+RcppExport SEXP _MeshUtils_isValid_cpp(SEXP rmeshSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    rcpp_result_gen = Rcpp::wrap(isValid_cpp(rmesh));
+    return rcpp_result_gen;
+END_RCPP
+}
+// orientToBoundVolume_cpp
+Rcpp::List orientToBoundVolume_cpp(const Rcpp::List rmesh, const bool normals);
+RcppExport SEXP _MeshUtils_orientToBoundVolume_cpp(SEXP rmeshSEXP, SEXP normalsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    rcpp_result_gen = Rcpp::wrap(orientToBoundVolume_cpp(rmesh, normals));
+    return rcpp_result_gen;
+END_RCPP
+}
+// removeSelfIntersections_cpp
+Rcpp::List removeSelfIntersections_cpp(const Rcpp::List rmesh, const int method, const bool normals, const bool verbose);
+RcppExport SEXP _MeshUtils_removeSelfIntersections_cpp(SEXP rmeshSEXP, SEXP methodSEXP, SEXP normalsSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
+    Rcpp::traits::input_parameter< const int >::type method(methodSEXP);
+    Rcpp::traits::input_parameter< const bool >::type normals(normalsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(removeSelfIntersections_cpp(rmesh, method, normals, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -589,27 +605,28 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_boolIntersectionEK_cpp", (DL_FUNC) &_MeshUtils_boolIntersectionEK_cpp, 4},
     {"_MeshUtils_boolDifferenceEK_cpp", (DL_FUNC) &_MeshUtils_boolDifferenceEK_cpp, 5},
     {"_MeshUtils_boolUnionEK_cpp", (DL_FUNC) &_MeshUtils_boolUnionEK_cpp, 4},
-    {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 3},
+    {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 4},
     {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 4},
+    {"_MeshUtils_getHausdorffSampled_cpp", (DL_FUNC) &_MeshUtils_getHausdorffSampled_cpp, 5},
     {"_MeshUtils_makeMesh_cpp", (DL_FUNC) &_MeshUtils_makeMesh_cpp, 10},
     {"_MeshUtils_makeMeshFF_cpp", (DL_FUNC) &_MeshUtils_makeMeshFF_cpp, 10},
     {"_MeshUtils_makeMeshValid_cpp", (DL_FUNC) &_MeshUtils_makeMeshValid_cpp, 5},
     {"_MeshUtils_makeMeshValidFF_cpp", (DL_FUNC) &_MeshUtils_makeMeshValidFF_cpp, 5},
-    {"_MeshUtils_isValid_cpp", (DL_FUNC) &_MeshUtils_isValid_cpp, 1},
-    {"_MeshUtils_hasGarbage_cpp", (DL_FUNC) &_MeshUtils_hasGarbage_cpp, 1},
+    {"_MeshUtils_addVNormals_cpp", (DL_FUNC) &_MeshUtils_addVNormals_cpp, 1},
     {"_MeshUtils_doesBoundVolume_cpp", (DL_FUNC) &_MeshUtils_doesBoundVolume_cpp, 1},
     {"_MeshUtils_doesSelfIntersect_cpp", (DL_FUNC) &_MeshUtils_doesSelfIntersect_cpp, 1},
-    {"_MeshUtils_isClosed_cpp", (DL_FUNC) &_MeshUtils_isClosed_cpp, 1},
-    {"_MeshUtils_orientToBoundVolume_cpp", (DL_FUNC) &_MeshUtils_orientToBoundVolume_cpp, 2},
-    {"_MeshUtils_removeSelfIntersections_cpp", (DL_FUNC) &_MeshUtils_removeSelfIntersections_cpp, 4},
     {"_MeshUtils_fillBoundaryHoles_cpp", (DL_FUNC) &_MeshUtils_fillBoundaryHoles_cpp, 5},
     {"_MeshUtils_getArea_cpp", (DL_FUNC) &_MeshUtils_getArea_cpp, 1},
-    {"_MeshUtils_getVolume_cpp", (DL_FUNC) &_MeshUtils_getVolume_cpp, 1},
+    {"_MeshUtils_getBoundingBox_cpp", (DL_FUNC) &_MeshUtils_getBoundingBox_cpp, 1},
+    {"_MeshUtils_getBoundingBoxOptimal_cpp", (DL_FUNC) &_MeshUtils_getBoundingBoxOptimal_cpp, 3},
     {"_MeshUtils_getCentroid_cpp", (DL_FUNC) &_MeshUtils_getCentroid_cpp, 1},
-    {"_MeshUtils_optimalBoundingBox_cpp", (DL_FUNC) &_MeshUtils_optimalBoundingBox_cpp, 3},
-    {"_MeshUtils_boundingBox_cpp", (DL_FUNC) &_MeshUtils_boundingBox_cpp, 1},
     {"_MeshUtils_getDistance_cpp", (DL_FUNC) &_MeshUtils_getDistance_cpp, 2},
-    {"_MeshUtils_addVNormals_cpp", (DL_FUNC) &_MeshUtils_addVNormals_cpp, 1},
+    {"_MeshUtils_getVolume_cpp", (DL_FUNC) &_MeshUtils_getVolume_cpp, 1},
+    {"_MeshUtils_hasGarbage_cpp", (DL_FUNC) &_MeshUtils_hasGarbage_cpp, 1},
+    {"_MeshUtils_isClosed_cpp", (DL_FUNC) &_MeshUtils_isClosed_cpp, 1},
+    {"_MeshUtils_isValid_cpp", (DL_FUNC) &_MeshUtils_isValid_cpp, 1},
+    {"_MeshUtils_orientToBoundVolume_cpp", (DL_FUNC) &_MeshUtils_orientToBoundVolume_cpp, 2},
+    {"_MeshUtils_removeSelfIntersections_cpp", (DL_FUNC) &_MeshUtils_removeSelfIntersections_cpp, 4},
     {"_MeshUtils_sampleVerts_cpp", (DL_FUNC) &_MeshUtils_sampleVerts_cpp, 2},
     {"_MeshUtils_triangulateMesh_cpp", (DL_FUNC) &_MeshUtils_triangulateMesh_cpp, 2},
     {"_MeshUtils_jet_pca_normals_cpp", (DL_FUNC) &_MeshUtils_jet_pca_normals_cpp, 3},

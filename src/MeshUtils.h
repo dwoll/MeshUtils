@@ -116,6 +116,10 @@ MeshT readFileMesh(const std::string);
 template <typename MeshT>
 void run_mesh_checks(MeshT&);
 
+template <typename KernelT, typename MeshT, typename PointT>
+std::vector<double> sampled_distances_to_mesh(
+    const MeshT&, const MeshT&, const unsigned int);
+
 // -------------------------------------------------------------------------- //
 // no template
 std::string toLower(std::string);
@@ -126,6 +130,10 @@ bool is_triangle_soup(const std::vector<std::vector<std::size_t>>&);
 
           std::vector<std::vector<std::size_t>>        list_to_faces1(const Rcpp::List&);
 std::pair<std::vector<std::vector<std::size_t>>, bool> list_to_faces2(const Rcpp::List&);
+
+std::optional<double> get_quantile(std::vector<double>&, double);
+
+bool is_triangle_soup(const std::vector<std::vector<std::size_t>>&);
 
 // -------------------------------------------------------------------------- //
 #endif

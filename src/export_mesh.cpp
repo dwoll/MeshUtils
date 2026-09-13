@@ -14,10 +14,16 @@
 #include "MeshUtils.h"
 #endif
 
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_face_graph_triangle_primitive.h>
+#include <CGAL/AABB_traits_3.h>
 #include <CGAL/optimal_bounding_box.h>
+
 #include <CGAL/Polygon_mesh_processing/distance.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/Polygon_mesh_processing/orientation.h>
+
+#include <cmath>
 
 // ----------------------------------------------------------------------- //
 // initial mesh generation - EPIC kernel - TODO make parameter
@@ -111,26 +117,14 @@ Rcpp::List makeMeshValidFF_cpp(const Rcpp::String filename,
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-bool isValid_cpp(const Rcpp::List rmesh) {
+Rcpp::List addVNormals_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
-      rmesh,
-      false,       // soup
-      false,       // triangulate
-      false,       // repair_soup
-      false);      // verbose
-  return mesh.is_valid(false);
-}
-
-// ----------------------------------------------------------------------- //
-// [[Rcpp::export]]
-bool hasGarbage_cpp(const Rcpp::List rmesh) {
-  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
-      rmesh,
-      false,       // soup
-      false,       // triangulate
-      false,       // repair_soup
-      false);      // verbose
-  return mesh.has_garbage();
+    rmesh,
+    false,       // soup
+    false,       // triangulate
+    false,       // repair_soup
+    false);      // verbose
+ return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, true);
 }
 
 // ----------------------------------------------------------------------- //
@@ -164,56 +158,6 @@ bool doesSelfIntersect_cpp(
       false,       // repair_soup
       false);      // verbose
    return PMP::does_self_intersect(mesh);
-}
-
-// ----------------------------------------------------------------------- //
-// [[Rcpp::export]]
-bool isClosed_cpp(const Rcpp::List rmesh) {
-  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
-      rmesh,
-      false,       // soup
-      false,       // triangulate
-      false,       // repair_soup
-      false);      // verbose
-   return CGAL::is_closed(mesh);
-}
-
-// ----------------------------------------------------------------------- //
-// [[Rcpp::export]]
-Rcpp::List orientToBoundVolume_cpp(
-  const Rcpp::List rmesh, const bool normals) {
-  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
-      rmesh,
-      false,       // soup
-      true,        // triangulate - must be triangle
-      false,       // repair_soup
-      false);      // verbose
-   if(!CGAL::is_triangle_mesh(mesh)) {
-    Rcpp::stop("The mesh is not triangle.");
-  }
-  PMP::orient_to_bound_a_volume(mesh);
-  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
-}
-
-// ----------------------------------------------------------------------- //
-// use EPEC kernel for autorefine_triangle_soup()
-// [[Rcpp::export]]
-Rcpp::List removeSelfIntersections_cpp(
-  const Rcpp::List rmesh,
-  const int method,
-  const bool normals,
-  const bool verbose) {
-  EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
-      rmesh,
-      true,        // triangulate - must be triangle
-      true,        // repair_soup
-      true,        // remove_intersections
-      method,      // remove_method
-      false,       // fill_holes
-      false,       // fair hole
-      0,           // max_num_holes
-      verbose);    // verbose
-   return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -257,52 +201,25 @@ double getArea_cpp(const Rcpp::List rmesh) {
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-double getVolume_cpp(const Rcpp::List rmesh) {
+Rcpp::List getBoundingBox_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
       rmesh,
       false,       // soup
-      true,        // triangulate - must be triangle
+      false,       // triangulate
       false,       // repair_soup
       false);      // verbose
-   if(!CGAL::is_closed(mesh)) {
-    Rcpp::warning("The mesh is not closed.");
-    return Rcpp::NumericVector::get_na();
-  }
-  if(PMP::does_self_intersect(mesh)) {
-    Rcpp::warning("The mesh self-intersects.");
-    return Rcpp::NumericVector::get_na();
-  }
-  const K::FT vol = PMP::volume(mesh);
-  return CGAL::to_double<K::FT>(vol);
+   CGAL::Bbox_3 bbox = PMP::bbox(mesh);
+  Rcpp::NumericVector lcorner = { bbox.xmin(), bbox.ymin(), bbox.zmin() };
+  Rcpp::NumericVector ucorner = { bbox.xmax(), bbox.ymax(), bbox.zmax() };
+  return Rcpp::List::create(
+    Rcpp::Named("lcorner") = lcorner,
+    Rcpp::Named("ucorner") = ucorner
+  );
 }
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::NumericVector getCentroid_cpp(const Rcpp::List rmesh) {
-  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
-      rmesh,
-      false,       // soup
-      true,        // triangulate - must be triangle
-      false,       // repair_soup
-      false);      // verbose
-   Rcpp::NumericVector ctr(3);
-  if(!CGAL::is_triangle_mesh(mesh)) {
-      Rcpp::warning("The mesh is not triangle.");
-      ctr(0) = Rcpp::NumericVector::get_na();
-      ctr(1) = Rcpp::NumericVector::get_na();
-      ctr(2) = Rcpp::NumericVector::get_na();
-  } else {
-      const Point3 centroid = PMP::centroid(mesh);
-      ctr(0) = CGAL::to_double<K::FT>(centroid.x());
-      ctr(1) = CGAL::to_double<K::FT>(centroid.y());
-      ctr(2) = CGAL::to_double<K::FT>(centroid.z());
-  }
-  return ctr;
-}
-
-// ----------------------------------------------------------------------- //
-// [[Rcpp::export]]
-Rcpp::List optimalBoundingBox_cpp(
+Rcpp::List getBoundingBoxOptimal_cpp(
   const Rcpp::List rmeshIn, const bool triangulate, const bool normals) {
   Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
       rmeshIn,
@@ -336,20 +253,26 @@ Rcpp::List optimalBoundingBox_cpp(
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List boundingBox_cpp(const Rcpp::List rmesh) {
+Rcpp::NumericVector getCentroid_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
       rmesh,
       false,       // soup
-      false,       // triangulate
+      true,        // triangulate - must be triangle
       false,       // repair_soup
       false);      // verbose
-   CGAL::Bbox_3 bbox = PMP::bbox(mesh);
-  Rcpp::NumericVector lcorner = { bbox.xmin(), bbox.ymin(), bbox.zmin() };
-  Rcpp::NumericVector ucorner = { bbox.xmax(), bbox.ymax(), bbox.zmax() };
-  return Rcpp::List::create(
-    Rcpp::Named("lcorner") = lcorner,
-    Rcpp::Named("ucorner") = ucorner
-  );
+   Rcpp::NumericVector ctr(3);
+  if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::warning("The mesh is not triangle.");
+      ctr(0) = Rcpp::NumericVector::get_na();
+      ctr(1) = Rcpp::NumericVector::get_na();
+      ctr(2) = Rcpp::NumericVector::get_na();
+  } else {
+      const Point3 centroid = PMP::centroid(mesh);
+      ctr(0) = CGAL::to_double<K::FT>(centroid.x());
+      ctr(1) = CGAL::to_double<K::FT>(centroid.y());
+      ctr(2) = CGAL::to_double<K::FT>(centroid.z());
+  }
+  return ctr;
 }
 
 // ----------------------------------------------------------------------- //
@@ -362,7 +285,11 @@ Rcpp::NumericVector getDistance_cpp(
       true,        // triangulate - must be triangle
       false,       // repair_soup
       false);      // verbose
-   const std::size_t nPts = points.ncol();
+  typedef CGAL::AABB_face_graph_triangle_primitive<Mesh3> Primitive;
+  typedef CGAL::AABB_traits_3<K, Primitive> Tree_Traits;
+  typedef CGAL::AABB_tree<Tree_Traits> Tree;
+
+  const std::size_t nPts = points.ncol();
   Rcpp::NumericVector distances(nPts);
   if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::warning("The mesh is not triangle.");
@@ -370,10 +297,11 @@ Rcpp::NumericVector getDistance_cpp(
           distances(i) = Rcpp::NumericVector::get_na();
       }
   } else {
+      Tree tree(faces(mesh).first, faces(mesh).second, mesh);
       for(std::size_t i = 0; i < nPts; i++) {
           Rcpp::NumericVector point_i = points(Rcpp::_, i);
-          std::vector<Point3> pt = { Point3(point_i(0), point_i(1), point_i(2)) };
-          distances(i) = PMP::max_distance_to_triangle_mesh<CGAL::Sequential_tag>(pt, mesh);
+          const Point3 pt = Point3(point_i(0), point_i(1), point_i(2));
+          distances(i) = std::sqrt(tree.squared_distance(pt));
       }
   }
   return distances;
@@ -381,14 +309,97 @@ Rcpp::NumericVector getDistance_cpp(
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List addVNormals_cpp(const Rcpp::List rmesh) {
+double getVolume_cpp(const Rcpp::List rmesh) {
   Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
-    rmesh,
-    false,       // soup
-    false,       // triangulate
-    false,       // repair_soup
-    false);      // verbose
- return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, true);
+      rmesh,
+      false,       // soup
+      true,        // triangulate - must be triangle
+      false,       // repair_soup
+      false);      // verbose
+   if(!CGAL::is_closed(mesh)) {
+    Rcpp::warning("The mesh is not closed.");
+    return Rcpp::NumericVector::get_na();
+  }
+  if(PMP::does_self_intersect(mesh)) {
+    Rcpp::warning("The mesh self-intersects.");
+    return Rcpp::NumericVector::get_na();
+  }
+  const K::FT vol = PMP::volume(mesh);
+  return CGAL::to_double<K::FT>(vol);
+}
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
+bool hasGarbage_cpp(const Rcpp::List rmesh) {
+  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
+      rmesh,
+      false,       // soup
+      false,       // triangulate
+      false,       // repair_soup
+      false);      // verbose
+  return mesh.has_garbage();
+}
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
+bool isClosed_cpp(const Rcpp::List rmesh) {
+  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
+      rmesh,
+      false,       // soup
+      false,       // triangulate
+      false,       // repair_soup
+      false);      // verbose
+   return CGAL::is_closed(mesh);
+}
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
+bool isValid_cpp(const Rcpp::List rmesh) {
+  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
+      rmesh,
+      false,       // soup
+      false,       // triangulate
+      false,       // repair_soup
+      false);      // verbose
+  return mesh.is_valid(false);
+}
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
+Rcpp::List orientToBoundVolume_cpp(
+  const Rcpp::List rmesh, const bool normals) {
+  Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
+      rmesh,
+      false,       // soup
+      true,        // triangulate - must be triangle
+      false,       // repair_soup
+      false);      // verbose
+   if(!CGAL::is_triangle_mesh(mesh)) {
+    Rcpp::stop("The mesh is not triangle.");
+  }
+  PMP::orient_to_bound_a_volume(mesh);
+  return get_rmesh<K, Mesh3, Point3, Vector3>(mesh, false, normals);
+}
+
+// ----------------------------------------------------------------------- //
+// use EPEC kernel for autorefine_triangle_soup()
+// [[Rcpp::export]]
+Rcpp::List removeSelfIntersections_cpp(
+  const Rcpp::List rmesh,
+  const int method,
+  const bool normals,
+  const bool verbose) {
+  EMesh3 mesh = make_surf_mesh<EK, EMesh3, EPoint3>(
+      rmesh,
+      true,        // triangulate - must be triangle
+      true,        // repair_soup
+      true,        // remove_intersections
+      method,      // remove_method
+      false,       // fill_holes
+      false,       // fair hole
+      0,           // max_num_holes
+      verbose);    // verbose
+   return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
 // ----------------------------------------------------------------------- //
@@ -410,14 +421,14 @@ Rcpp::NumericMatrix sampleVerts_cpp(const Rcpp::List rmesh, const unsigned n) {
   // PMP::parameters::grid_spacing(n)                       // double
   // PMP::parameters::number_of_points_on_edges(n)          // unsigned int
   // PMP::parameters::number_of_points_on_faces(n)          // unsigned int
+  //
   // PMP::parameters::number_of_points_per_distance_unit(n) // double
   // PMP::parameters::number_of_points_per_edge(n)          // unsigned int
   // PMP::parameters::number_of_points_per_area_unit(n)     // double
   // PMP::parameters::number_of_points_per_face(n)          // unsigned int
   PMP::sample_triangle_mesh(
     mesh, std::back_inserter(verts),
-    PMP::parameters::number_of_points_on_faces(n)
-  );
+    PMP::parameters::number_of_points_on_faces(n));
   Rcpp::NumericMatrix r_verts = points3_to_matrix<K, Point3>(verts);
   return Rcpp::transpose(r_verts);
 }

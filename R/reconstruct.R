@@ -124,7 +124,6 @@ reconstructAFS <- function(x, jetSmoothing, repairSoup=TRUE, normals=FALSE) {
 #' wire3d(mesh_psr_rgl)
 #'
 #' @export
-#' @importFrom Rvcg vcgUpdateNormals
 reconstructPoisson <- function(
   x,
   normalsFun= getNormalsFun(6L),

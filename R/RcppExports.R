@@ -21,12 +21,16 @@ boolUnionEK_cpp <- function(rmeshes, repairSoup, normals, verbose) {
     .Call(`_MeshUtils_boolUnionEK_cpp`, rmeshes, repairSoup, normals, verbose)
 }
 
-getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric) {
-    .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric)
+getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric, n) {
+    .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric, n)
 }
 
 getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, error_bound) {
     .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, error_bound)
+}
+
+getHausdorffSampled_cpp <- function(rmesh1, rmesh2, symmetric, p, n) {
+    .Call(`_MeshUtils_getHausdorffSampled_cpp`, rmesh1, rmesh2, symmetric, p, n)
 }
 
 makeMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals, verbose) {
@@ -45,12 +49,8 @@ makeMeshValidFF_cpp <- function(filename, soup, triangulate, normals, verbose) {
     .Call(`_MeshUtils_makeMeshValidFF_cpp`, filename, soup, triangulate, normals, verbose)
 }
 
-isValid_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_isValid_cpp`, rmesh)
-}
-
-hasGarbage_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_hasGarbage_cpp`, rmesh)
+addVNormals_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_addVNormals_cpp`, rmesh)
 }
 
 doesBoundVolume_cpp <- function(rmesh) {
@@ -61,18 +61,6 @@ doesSelfIntersect_cpp <- function(rmesh) {
     .Call(`_MeshUtils_doesSelfIntersect_cpp`, rmesh)
 }
 
-isClosed_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_isClosed_cpp`, rmesh)
-}
-
-orientToBoundVolume_cpp <- function(rmesh, normals) {
-    .Call(`_MeshUtils_orientToBoundVolume_cpp`, rmesh, normals)
-}
-
-removeSelfIntersections_cpp <- function(rmesh, method, normals, verbose) {
-    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmesh, method, normals, verbose)
-}
-
 fillBoundaryHoles_cpp <- function(rmesh, fairHole, maxNumHoles, normals, verbose) {
     .Call(`_MeshUtils_fillBoundaryHoles_cpp`, rmesh, fairHole, maxNumHoles, normals, verbose)
 }
@@ -81,28 +69,44 @@ getArea_cpp <- function(rmesh) {
     .Call(`_MeshUtils_getArea_cpp`, rmesh)
 }
 
-getVolume_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_getVolume_cpp`, rmesh)
+getBoundingBox_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_getBoundingBox_cpp`, rmesh)
+}
+
+getBoundingBoxOptimal_cpp <- function(rmeshIn, triangulate, normals) {
+    .Call(`_MeshUtils_getBoundingBoxOptimal_cpp`, rmeshIn, triangulate, normals)
 }
 
 getCentroid_cpp <- function(rmesh) {
     .Call(`_MeshUtils_getCentroid_cpp`, rmesh)
 }
 
-optimalBoundingBox_cpp <- function(rmeshIn, triangulate, normals) {
-    .Call(`_MeshUtils_optimalBoundingBox_cpp`, rmeshIn, triangulate, normals)
-}
-
-boundingBox_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_boundingBox_cpp`, rmesh)
-}
-
 getDistance_cpp <- function(rmesh, points) {
     .Call(`_MeshUtils_getDistance_cpp`, rmesh, points)
 }
 
-addVNormals_cpp <- function(rmesh) {
-    .Call(`_MeshUtils_addVNormals_cpp`, rmesh)
+getVolume_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_getVolume_cpp`, rmesh)
+}
+
+hasGarbage_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_hasGarbage_cpp`, rmesh)
+}
+
+isClosed_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_isClosed_cpp`, rmesh)
+}
+
+isValid_cpp <- function(rmesh) {
+    .Call(`_MeshUtils_isValid_cpp`, rmesh)
+}
+
+orientToBoundVolume_cpp <- function(rmesh, normals) {
+    .Call(`_MeshUtils_orientToBoundVolume_cpp`, rmesh, normals)
+}
+
+removeSelfIntersections_cpp <- function(rmesh, method, normals, verbose) {
+    .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmesh, method, normals, verbose)
 }
 
 sampleVerts_cpp <- function(rmesh, n) {

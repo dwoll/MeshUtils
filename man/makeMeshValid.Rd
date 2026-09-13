@@ -18,7 +18,7 @@ makeMeshValid(
 coordinates of the vertices of the mesh. 2) Either a list containing the components
 \code{vertices} and \code{faces}, or a \strong{rgl} mesh (i.e. a
 \code{\link[rgl]{mesh3d}} object). 3) A filename to read a
-mesh file as in \code{\link[rgl]{readMeshFile}}.}
+mesh file as in \code{\link[MeshUtils]{readMeshFile}}.}
 
 \item{faces}{Either an integer matrix (each row provides the vertex indices
 of the corresponding face) or a list of integer vectors, each one

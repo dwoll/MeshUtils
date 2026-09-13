@@ -23,7 +23,7 @@ makeMesh(
 coordinates of the vertices of the mesh. 2) Either a list containing the components
 \code{vertices} and \code{faces}, or a \code{\link[rgl]{mesh3d}} object from
 package \strong{rgl}. 3) A filename to read a
-mesh file as in \code{\link[rgl]{readMeshFile}}.}
+mesh file as in \code{\link[MeshUtils]{readMeshFile}}.}
 
 \item{faces}{When \code{x} is a numeric matrix with the vertices: Either an integer
 matrix (each row provides the vertex indices

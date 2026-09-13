@@ -10,31 +10,6 @@
 ## License: GPL-3
 ## ----------------------------------------------------------------------- //
 
-#' @exportS3Method print CGALmesh
-print.CGALmesh <- function(x, ...) {
-	rgl <- attr(x, "toRGL")
-	nv  <- nrow(x[["vertices"]])
-	nf  <- if(is.list(x[["faces"]])) { length(x[["faces"]]) } else { nrow(x[["faces"]]) }
-	msg <- sprintf("CGALmesh with %d vertices and %d faces.\n", nv, nf)
-	cat(msg)
-	elr <- formatC(range(x[["edgesDF"]][["length"]]))
-	msg <- sprintf("The edge lengths vary from %s to %s.\n", elr[1L], elr[2L])
-	cat(msg)
-	is  <- if(rgl == 3L) { " is " } else { " is not " }
-	msg <- paste0("This mesh", is, "triangle.\n")
-	cat(msg)
-	can <- if(isFALSE(rgl)) { " cannot " } else { " can " }
-	msg <- paste0(
-			"This mesh", can, "be converted to a 'rgl' mesh (see `?toRGL`).\n"
-	)
-	cat(msg)
-	normals <- !is.null(x[["normals"]])
-	has     <- if(normals) { " has " } else { " does not have " }
-	msg     <- paste0("This mesh", has, "vertex normals.\n")
-	cat(msg)
-	invisible(NULL)
-}
-
 #' @title Make a 3D mesh
 #' @description Make a 3D surface mesh from an input file,
 #'   from an existing \strong{rgl} mesh object,
@@ -47,7 +22,7 @@ print.CGALmesh <- function(x, ...) {
 #'   coordinates of the vertices of the mesh. 2) Either a list containing the components
 #'   \code{vertices} and \code{faces}, or a \code{\link[rgl]{mesh3d}} object from
 #'   package \strong{rgl}. 3) A filename to read a
-#'   mesh file as in \code{\link[rgl]{readMeshFile}}.
+#'   mesh file as in \code{\link[MeshUtils]{readMeshFile}}.
 #' @param faces When \code{x} is a numeric matrix with the vertices: Either an integer
 #'   matrix (each row provides the vertex indices
 #'   of the corresponding face) or a list of integer vectors, each one
@@ -199,7 +174,7 @@ makeMesh <- function(x,
 #'   coordinates of the vertices of the mesh. 2) Either a list containing the components
 #'   \code{vertices} and \code{faces}, or a \strong{rgl} mesh (i.e. a
 #'   \code{\link[rgl]{mesh3d}} object). 3) A filename to read a
-#'   mesh file as in \code{\link[rgl]{readMeshFile}}.
+#'   mesh file as in \code{\link[MeshUtils]{readMeshFile}}.
 #' @param faces Either an integer matrix (each row provides the vertex indices
 #'   of the corresponding face) or a list of integer vectors, each one
 #'   providing the vertex indices of the corresponding face.
@@ -287,220 +262,32 @@ makeMeshValid <- function(x,
     fromCPP(mesh_cpp)
 }
 
-#' @title Conversion to 'rgl' mesh
-#' @description Converts a \code{CGALmesh} object (the output of the \code{\link{makeMesh}}
-#'   function) to a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+#' @title Add normals to a mesh
+#' @description Add normal vectors to a given 3D surface mesh.
+#'   Currently, only vertex normals are supported.
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#'   In order to be convertible to a \code{\link[rgl]{mesh3d}} object from package
-#'   \strong{rgl}, its faces must have at most four sides.
-#' @param ... Arguments passed to \code{\link[rgl]{mesh3d}}.
-#'
-#' @returns A \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
-#'
+#' @returns A \code{CGALmesh} object.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
 #' library(MeshUtils)
 #' library(rgl)
-#' mesh     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
-#' mesh_rgl <- toRGL(mesh, segments=t(mesh[["edges"]]))
-#' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
-#' wire3d(mesh_rgl, color="darkred")
+#' mesh        <- makeMesh(dataPentaPrism, triangulate=TRUE)
+#' mesh_vn     <- assignNormals(mesh)
+#' mesh_vn_rgl <- toRGL(mesh_vn)
+#' open3d(windowRect=c(50, 50, 562, 562))
+#' wire3d(mesh_vn_rgl)
 #'
 #' @export
-#' @importFrom rgl mesh3d
-toRGL <- function(x, ...) {
-	if(!inherits(x, "CGALmesh")) {
-		stop("The `x` argument must be of class 'CGALmesh'",
-				 " (i.e., the output of the `makeMesh()` function).")
-	}
-	rgl <- attr(x, "toRGL")
-	if(isFALSE(rgl)) {
-		stop("Impossible to convert this mesh to a 'rgl' mesh ",
-				 "(the faces must have at most four sides).")
-	}
-	if(rgl == 3L) {
-		mesh3d(x        =x[["vertices"]],
-				   normals  =x[["normals"]],
-				   triangles=t(x[["faces"]]),
-				   ...)
-	} else if(rgl == 4L) {
-		mesh3d(x      =x[["vertices"]],
-				   normals=x[["normals"]],
-				   quads  =t(x[["faces"]]),
-				   ...)
-	} else {
-		faces <- split(x[["faces"]], lengths(x[["faces"]]))
-		mesh3d(x        =x[["vertices"]],
-				   normals  =x[["normals"]],
-				   triangles=do.call(cbind, faces[["3"]]),
-				   quads    =do.call(cbind, faces[["4"]]),
-				   ...)
-	}
-}
-
-#' @title Plot some edges
-#' @description Plot the given edges with functions from package \strong{rgl}.
-#'
-#' @param vertices A matrix with 3 columns giving the coordinates of the vertices.
-#' @param edges \code{integer} matrix with two columns giving the edges by pairs of
-#'   vertex indices.
-#' @param color \code{character}. Color for the edges.
-#' @param lwd Positive number. Line width. Ignored if \code{edgesAsTubes=TRUE}.
-#' @param edgesAsTubes Boolean. Whether to draw the edges as tubes.
-#' @param tubesRadius Positive number. Radius of the tubes when \code{edgesAsTubes=TRUE}.
-#' @param verticesAsSpheres Boolean. Whether to draw the vertices as spheres.
-#' @param only \code{integer} vector made of the indices of the vertices you want
-#'   to plot (as spheres). If missing, all vertices are plotted as spheres.
-#' @param spheresRadius The radius of the spheres when
-#'   \code{verticesAsSpheres=TRUE}.
-#' @param spheresColor \code{character}. Color of the spheres when
-#'   \code{verticesAsSpheres=TRUE}.
-#'
-#' @returns No value.
-#'
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' library(rgl)
-#'
-#' # triangulate and plot the pentagrammic prism mesh
-#' mesh     <- makeMesh(dataPentaPrism, triangulate=TRUE)
-#' mesh_rgl <- toRGL(mesh)
-#' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
-#' shade3d(mesh_rgl, color="navy")
-#' # plot the exterior edges only, given in `mesh[["exteriorEdges"]]`
-#' plotEdges(mesh[["vertices"]],
-#'           mesh[["exteriorEdges"]],
-#'           color        ="gold",
-#'           tubesRadius  =0.02,
-#'           spheresRadius=0.02)
-#'
-#' @export
-#' @importFrom rgl cylinder3d shade3d lines3d spheres3d
-plotEdges <- function(
-		vertices,
-		edges,
-		color = "black",
-		lwd = 2,
-		edgesAsTubes = TRUE,
-		tubesRadius = 0.03,
-		verticesAsSpheres = TRUE,
-		only,
-		spheresRadius = 0.05,
-		spheresColor = color) {
-  for(i in seq_len(nrow(edges))) {
-		edge <- edges[i, ]
-		if(edgesAsTubes) {
-			tube <- cylinder3d(
-					vertices[edge, , drop=FALSE], radius = tubesRadius, sides = 90)
-			shade3d(tube, color = color)
-		} else {
-			lines3d(vertices[edge, ], color = color, lwd = lwd)
-		}
-	}
-	if(verticesAsSpheres) {
-		if(!missing(only)) {
-			vertices <- vertices[only, , drop=FALSE]
-		}
-		spheres3d(vertices, radius=spheresRadius, color=spheresColor)
-	}
-	invisible(NULL)
-}
-
-#' @title Is mesh a valid mesh?
-#' @description Is the given mesh a valid 3D surface mesh?
-#'
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @returns \code{TRUE} or \code{FALSE}.
-#' @export
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' mesh <- makeMesh(dataPentaPrism)
-#' isValid(mesh)
-#'
-#' @export
-isValid <- function(x) {
-    if(!inherits(x, "CGALmesh")) {
-        stop("The `x` argument must be of class 'CGALmesh'",
+assignNormals <- function(x) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
-    }
-    meshCPP <- fromR(x)
-    isValid_cpp(meshCPP)
-}
-
-#' @title Does mesh have garbage?
-#' @description Does the given 3D surface mesh have garbage?
-#'
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @returns \code{TRUE} or \code{FALSE}.
-#' @export
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' mesh <- makeMesh(dataPentaPrism)
-#' hasGarbage(mesh)
-#'
-#' @export
-hasGarbage <- function(x) {
-    if(!inherits(x, "CGALmesh")) {
-        stop("The `x` argument must be of class 'CGALmesh'",
-			       " (i.e., the output of the `makeMesh()` function).")
-    }
-    meshCPP <- fromR(x)
-    hasGarbage_cpp(meshCPP)
-}
-
-#' @title Is mesh a triangle mesh?
-#' @description Is the given 3D surface mesh a triangle mesh?
-#'
-#' @param x A \code{list} with components \code{vertices} and \code{faces},
-#'   e.g., a \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @returns \code{TRUE} or \code{FALSE}.
-#' @export
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' mesh <- makeMesh(dataPentaPrism, triangulate=FALSE)
-#' isTriangle(mesh)
-#'
-#' @export
-isTriangle <- function(x) {
-  checkedMesh <- checkMesh(x[["vertices"]],
-                           x[["faces"]],
-                           aslist = TRUE)
-
-  checkedMesh[["isTriangle"]]
-}
-
-#' @title Is mesh a quad mesh?
-#' @description Is the given 3D surface mesh a quad mesh?
-#'
-#' @param x A \code{list} with components \code{vertices} and \code{faces},
-#'   e.g., a \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @returns \code{TRUE} or \code{FALSE}.
-#' @export
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' f_mesh <- system.file("extdata", "corner.off", package="MeshUtils")
-#' mesh   <- makeMesh(f_mesh)
-#' isQuad(mesh)
-#'
-#' @export
-isQuad <- function(x) {
-  checkedMesh <- checkMesh(x[["vertices"]],
-                           x[["faces"]],
-                           aslist = TRUE)
-
-  checkedMesh[["isQuad"]]
+  }
+  meshCPP <- fromR(x)
+  mesh    <- addVNormals_cpp(meshCPP)
+  fromCPP(mesh)
 }
 
 #' @title Does mesh bound a volume?
@@ -547,55 +334,6 @@ doesSelfIntersect <- function(x) {
   }
   meshCPP <- fromR(x)
   doesSelfIntersect_cpp(meshCPP)
-}
-
-#' @title Is mesh closed?
-#' @description Is the given 3D surface mesh closed?
-#'
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @returns \code{TRUE} or \code{FALSE}.
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#' @seealso See \code{\link[MeshUtils]{fillBoundaryHoles}} for a function to fill holes.
-#'
-#' @examples
-#' library(MeshUtils)
-#' mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
-#' isClosed(mesh)
-#'
-#' @export
-isClosed <- function(x) {
-  if(!inherits(x, "CGALmesh")) {
-      stop("The `x` argument must be of class 'CGALmesh'",
-			       " (i.e., the output of the `makeMesh()` function).")
-  }
-  meshCPP <- fromR(x)
-  isClosed_cpp(meshCPP)
-}
-
-#' @title Orient mesh to bound a volume
-#' @description Orient a given 3D surface mesh to bound a volume
-#'
-#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param normals Boolean. Whether to return vertex normals.
-#' @returns A \code{CGALmesh} object.
-#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
-#'
-#' @examples
-#' library(MeshUtils)
-#' mesh   <- makeMesh(dataPentaPrism)
-#' mesh_o <- orientToBoundVolume(mesh)
-#' getVolume(mesh_o)
-#'
-#' @export
-orientToBoundVolume <- function(x, normals = FALSE) {
-  if(!inherits(x, "CGALmesh")) {
-      stop("The `x` argument must be of class 'CGALmesh'",
-			       " (i.e., the output of the `makeMesh()` function).")
-  }
-  stopifnot(isBoolean(normals))
-  meshCPP <- fromR(x)
-  mesh    <- orientToBoundVolume_cpp(meshCPP, normals)
-  fromCPP(mesh)
 }
 
 #' @title Get mesh area
@@ -653,7 +391,7 @@ getBoundingBox <- function(x, triangulate = FALSE, normals = FALSE) {
   stopifnot(isBoolean(triangulate))
   stopifnot(isBoolean(normals))
   meshCPP <- fromR(x)
-  outL    <- boundingBox_cpp(meshCPP)
+  outL    <- getBoundingBox_cpp(meshCPP)
   lcorner <- outL[["lcorner"]]
   ucorner <- outL[["ucorner"]]
   center  <- (lcorner + ucorner) / 2
@@ -696,7 +434,7 @@ getBoundingBoxOptimal <- function(x, triangulate = FALSE, normals = FALSE) {
   stopifnot(isBoolean(triangulate))
   stopifnot(isBoolean(normals))
   meshCPP <- fromR(x)
-  outL    <- optimalBoundingBox_cpp(meshCPP, triangulate, normals)
+  outL    <- getBoundingBoxOptimal_cpp(meshCPP, triangulate, normals)
   outL[["mesh"]] <- fromCPP(outL[["mesh"]])
   outL
 }
@@ -784,35 +522,244 @@ getVolume <- function(x) {
   getVolume_cpp(meshCPP)
 }
 
-#' @title Add normals to a mesh
-#' @description Add normal vectors to a given 3D surface mesh.
-#'   Currently, only vertex normals are supported.
+#' @title Does mesh have garbage?
+#' @description Does the given 3D surface mesh have garbage?
 #'
 #' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @returns A \code{CGALmesh} object.
+#' @returns \code{TRUE} or \code{FALSE}.
+#' @export
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
 #' library(MeshUtils)
-#' library(rgl)
-#' mesh        <- makeMesh(dataPentaPrism, triangulate=TRUE)
-#' mesh_vn     <- assignNormals(mesh)
-#' mesh_vn_rgl <- toRGL(mesh_vn)
-#' open3d(windowRect=c(50, 50, 562, 562))
-#' wire3d(mesh_vn_rgl)
+#' mesh <- makeMesh(dataPentaPrism)
+#' hasGarbage(mesh)
 #'
 #' @export
-assignNormals <- function(x) {
+hasGarbage <- function(x) {
+    if(!inherits(x, "CGALmesh")) {
+        stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+    }
+    meshCPP <- fromR(x)
+    hasGarbage_cpp(meshCPP)
+}
+
+#' @title Is mesh closed?
+#' @description Is the given 3D surface mesh closed?
+#'
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @returns \code{TRUE} or \code{FALSE}.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#' @seealso See \code{\link[MeshUtils]{fillBoundaryHoles}} for a function to fill holes.
+#'
+#' @examples
+#' library(MeshUtils)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
+#' isClosed(mesh)
+#'
+#' @export
+isClosed <- function(x) {
   if(!inherits(x, "CGALmesh")) {
       stop("The `x` argument must be of class 'CGALmesh'",
 			       " (i.e., the output of the `makeMesh()` function).")
   }
   meshCPP <- fromR(x)
-  mesh    <- addVNormals_cpp(meshCPP)
+  isClosed_cpp(meshCPP)
+}
+
+#' @title Is mesh a triangle mesh?
+#' @description Is the given 3D surface mesh a triangle mesh?
+#'
+#' @param x A \code{list} with components \code{vertices} and \code{faces},
+#'   e.g., a \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @returns \code{TRUE} or \code{FALSE}.
+#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=FALSE)
+#' isTriangle(mesh)
+#'
+#' @export
+isTriangle <- function(x) {
+  checkedMesh <- checkMesh(x[["vertices"]],
+                           x[["faces"]],
+                           aslist = TRUE)
+
+  checkedMesh[["isTriangle"]]
+}
+
+#' @title Is mesh a quad mesh?
+#' @description Is the given 3D surface mesh a quad mesh?
+#'
+#' @param x A \code{list} with components \code{vertices} and \code{faces},
+#'   e.g., a \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @returns \code{TRUE} or \code{FALSE}.
+#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' f_mesh <- system.file("extdata", "corner.off", package="MeshUtils")
+#' mesh   <- makeMesh(f_mesh)
+#' isQuad(mesh)
+#'
+#' @export
+isQuad <- function(x) {
+  checkedMesh <- checkMesh(x[["vertices"]],
+                           x[["faces"]],
+                           aslist = TRUE)
+
+  checkedMesh[["isQuad"]]
+}
+
+#' @title Is mesh a valid mesh?
+#' @description Is the given mesh a valid 3D surface mesh?
+#'
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @returns \code{TRUE} or \code{FALSE}.
+#' @export
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' mesh <- makeMesh(dataPentaPrism)
+#' isValid(mesh)
+#'
+#' @export
+isValid <- function(x) {
+    if(!inherits(x, "CGALmesh")) {
+        stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+    }
+    meshCPP <- fromR(x)
+    isValid_cpp(meshCPP)
+}
+
+#' @title Orient mesh to bound a volume
+#' @description Orient a given 3D surface mesh to bound a volume
+#'
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param normals Boolean. Whether to return vertex normals.
+#' @returns A \code{CGALmesh} object.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' mesh   <- makeMesh(dataPentaPrism)
+#' mesh_o <- orientToBoundVolume(mesh)
+#' getVolume(mesh_o)
+#'
+#' @export
+orientToBoundVolume <- function(x, normals = FALSE) {
+  if(!inherits(x, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+			       " (i.e., the output of the `makeMesh()` function).")
+  }
+  stopifnot(isBoolean(normals))
+  meshCPP <- fromR(x)
+  mesh    <- orientToBoundVolume_cpp(meshCPP, normals)
   fromCPP(mesh)
 }
 
-#' @title Sample vertices on triangle
+#' @title Plot some edges
+#' @description Plot the given edges with functions from package \strong{rgl}.
+#'
+#' @param vertices A matrix with 3 columns giving the coordinates of the vertices.
+#' @param edges \code{integer} matrix with two columns giving the edges by pairs of
+#'   vertex indices.
+#' @param color \code{character}. Color for the edges.
+#' @param lwd Positive number. Line width. Ignored if \code{edgesAsTubes=TRUE}.
+#' @param edgesAsTubes Boolean. Whether to draw the edges as tubes.
+#' @param tubesRadius Positive number. Radius of the tubes when \code{edgesAsTubes=TRUE}.
+#' @param verticesAsSpheres Boolean. Whether to draw the vertices as spheres.
+#' @param only \code{integer} vector made of the indices of the vertices you want
+#'   to plot (as spheres). If missing, all vertices are plotted as spheres.
+#' @param spheresRadius The radius of the spheres when
+#'   \code{verticesAsSpheres=TRUE}.
+#' @param spheresColor \code{character}. Color of the spheres when
+#'   \code{verticesAsSpheres=TRUE}.
+#'
+#' @returns No value.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' library(rgl)
+#'
+#' # triangulate and plot the pentagrammic prism mesh
+#' mesh     <- makeMesh(dataPentaPrism, triangulate=TRUE)
+#' mesh_rgl <- toRGL(mesh)
+#' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
+#' shade3d(mesh_rgl, color="navy")
+#' # plot the exterior edges only, given in `mesh[["exteriorEdges"]]`
+#' plotEdges(mesh[["vertices"]],
+#'           mesh[["exteriorEdges"]],
+#'           color        ="gold",
+#'           tubesRadius  =0.02,
+#'           spheresRadius=0.02)
+#'
+#' @export
+#' @importFrom rgl cylinder3d shade3d lines3d spheres3d
+plotEdges <- function(
+		vertices,
+		edges,
+		color = "black",
+		lwd = 2,
+		edgesAsTubes = TRUE,
+		tubesRadius = 0.03,
+		verticesAsSpheres = TRUE,
+		only,
+		spheresRadius = 0.05,
+		spheresColor = color) {
+  for(i in seq_len(nrow(edges))) {
+		edge <- edges[i, ]
+		if(edgesAsTubes) {
+			tube <- cylinder3d(
+					vertices[edge, , drop=FALSE], radius = tubesRadius, sides = 90)
+			shade3d(tube, color = color)
+		} else {
+			lines3d(vertices[edge, ], color = color, lwd = lwd)
+		}
+	}
+	if(verticesAsSpheres) {
+		if(!missing(only)) {
+			vertices <- vertices[only, , drop=FALSE]
+		}
+		spheres3d(vertices, radius=spheresRadius, color=spheresColor)
+	}
+	invisible(NULL)
+}
+
+#' @exportS3Method print CGALmesh
+print.CGALmesh <- function(x, ...) {
+	rgl <- attr(x, "toRGL")
+	nv  <- nrow(x[["vertices"]])
+	nf  <- if(is.list(x[["faces"]])) { length(x[["faces"]]) } else { nrow(x[["faces"]]) }
+	msg <- sprintf("CGALmesh with %d vertices and %d faces.\n", nv, nf)
+	cat(msg)
+	elr <- formatC(range(x[["edgesDF"]][["length"]]))
+	msg <- sprintf("The edge lengths vary from %s to %s.\n", elr[1L], elr[2L])
+	cat(msg)
+	is  <- if(rgl == 3L) { " is " } else { " is not " }
+	msg <- paste0("This mesh", is, "triangle.\n")
+	cat(msg)
+	can <- if(isFALSE(rgl)) { " cannot " } else { " can " }
+	msg <- paste0(
+			"This mesh", can, "be converted to a 'rgl' mesh (see `?toRGL`).\n"
+	)
+	cat(msg)
+	normals <- !is.null(x[["normals"]])
+	has     <- if(normals) { " has " } else { " does not have " }
+	msg     <- paste0("This mesh", has, "vertex normals.\n")
+	cat(msg)
+	invisible(NULL)
+}
+
+#' @title Sample vertices on mesh
 #' @description Random sampling of vertices on a given triangle 3D surface mesh.
 #' @param n \code{integer}. The desired number of sampled vertices.
 #' @return A \code{n x 3} numeric matrix containing the sampled vertices.
@@ -833,6 +780,59 @@ sampleVerts <- function(x, n = 1L) {
   meshCPP <- fromR(x)
   ## output matrix already transposed in sampleVerts_cpp()
   sampleVerts_cpp(meshCPP, as.integer(n))
+}
+
+#' @title Conversion to 'rgl' mesh
+#' @description Converts a \code{CGALmesh} object (the output of the \code{\link{makeMesh}}
+#'   function) to a \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+#'
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#'   In order to be convertible to a \code{\link[rgl]{mesh3d}} object from package
+#'   \strong{rgl}, its faces must have at most four sides.
+#' @param ... Arguments passed to \code{\link[rgl]{mesh3d}}.
+#'
+#' @returns A \code{\link[rgl]{mesh3d}} object from package \strong{rgl}.
+#'
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' library(rgl)
+#' mesh     <- makeMesh(dataTruncIcosahedron, triangulate=TRUE)
+#' mesh_rgl <- toRGL(mesh, segments=t(mesh[["edges"]]))
+#' open3d(windowRect=c(50, 50, 562, 562), zoom=0.9)
+#' wire3d(mesh_rgl, color="darkred")
+#'
+#' @export
+#' @importFrom rgl mesh3d
+toRGL <- function(x, ...) {
+	if(!inherits(x, "CGALmesh")) {
+		stop("The `x` argument must be of class 'CGALmesh'",
+				 " (i.e., the output of the `makeMesh()` function).")
+	}
+	rgl <- attr(x, "toRGL")
+	if(isFALSE(rgl)) {
+		stop("Impossible to convert this mesh to a 'rgl' mesh ",
+				 "(the faces must have at most four sides).")
+	}
+	if(rgl == 3L) {
+		mesh3d(x        =x[["vertices"]],
+				   normals  =x[["normals"]],
+				   triangles=t(x[["faces"]]),
+				   ...)
+	} else if(rgl == 4L) {
+		mesh3d(x      =x[["vertices"]],
+				   normals=x[["normals"]],
+				   quads  =t(x[["faces"]]),
+				   ...)
+	} else {
+		faces <- split(x[["faces"]], lengths(x[["faces"]]))
+		mesh3d(x        =x[["vertices"]],
+				   normals  =x[["normals"]],
+				   triangles=do.call(cbind, faces[["3"]]),
+				   quads    =do.call(cbind, faces[["4"]]),
+				   ...)
+	}
 }
 
 #' @title Triangulate mesh

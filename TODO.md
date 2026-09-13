@@ -1,7 +1,6 @@
 # TODO
 
-  * `fill_boundary_hole()`
-      * pass more parameters (small holes)
+  * ASD, RMSE
   * `remeshIsotropic()`
       * does not work well for pentagrammic prism - why? (`Rvcg::vcgIsotropicRemeshing()` works)
 
@@ -23,9 +22,8 @@
   * bounding meshes
       * approximate bounding ellipsoid
       * bounding spheres
-  * sample faces `sample_triangle_mesh()` (for ASD, RMSE)
-      * 95% Hausdorff distance
-      * `max_distance_to_triangle_mesh<Concurrency_tag>(sample_points, tm2, np2);`
+  * `fill_boundary_hole()`
+      * pass more parameters (small holes)
 
 # CRAN
 

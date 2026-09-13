@@ -14,7 +14,8 @@ export(getBoundingBox)
 export(getBoundingBoxOptimal)
 export(getCentroid)
 export(getDistance)
-export(getHausdorffDistance)
+export(getHausdorff)
+export(getHausdorffQuantile)
 export(getNormalsFun)
 export(getVolume)
 export(hasGarbage)
@@ -53,6 +54,6 @@ importFrom(rgl,
   tmesh3d,
   translate3d
 )
-importFrom(stats,na.omit)
-importFrom(utils,hasName)
+importFrom(stats, na.omit)
+importFrom(utils, hasName)
 useDynLib(MeshUtils, .registration=TRUE)
