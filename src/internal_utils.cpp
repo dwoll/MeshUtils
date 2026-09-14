@@ -113,7 +113,7 @@ std::optional<double> get_quantile(std::vector<double> &data, double p) {
 // root mean squared error
 // https://github.com/zarquon42b/Rvcg/blob/master/src/metroSampling.h
 template <typename KernelT, typename MeshT, typename PointT>
-std::tuple<double, double, double> getMetro(
+std::tuple<double, double, double> get_metro(
   const MeshT& mesh1,
   const MeshT& mesh2,
   const bool symmetric,
@@ -126,15 +126,10 @@ std::tuple<double, double, double> getMetro(
   std::vector<double> dsts21 = sampled_distances_to_mesh<KernelT, MeshT, PointT>(
     mesh2, mesh1, n);
   // number of samples may differ between meshes
-  std::size_t nDst12 = dsts12.size();
-  std::size_t nDst21 = dsts21.size();
-  std::size_t nDst   = nDst12 + nDst21;
-  // weights for forward, backward sampled points
-  double w12 = static_cast<double>(nDst12) / static_cast<double>(nDst);
-  double w21 = static_cast<double>(nDst21) / static_cast<double>(nDst);
+  const std::size_t nDst = dsts12.size() + dsts21.size();
   // Hausdorff distance quantile
-  std::optional<double> dst12_q = get_quantile(dsts12, p);
-  std::optional<double> dst21_q = get_quantile(dsts21, p);
+  const std::optional<double> dst12_q = get_quantile(dsts12, p);
+  const std::optional<double> dst21_q = get_quantile(dsts21, p);
   double HDq;
   if(!dst12_q.has_value() || !dst21_q.has_value()) {
     HDq = std::nan("0");
@@ -146,20 +141,20 @@ std::tuple<double, double, double> getMetro(
     }
   }
 
-  // average surface distance
-  double sum_dsts12 = std::reduce(dsts12.begin(), dsts12.end()); // could be auto sum12
-  double sum_dsts21 = std::reduce(dsts21.begin(), dsts21.end()); // could be auto sum21
-  double ASSD  = w12*sum_dsts12 + w21*sum_dsts21;
+  // average symmetric surface distance
+  const double sum_dsts12 = std::reduce(dsts12.begin(), dsts12.end()); // could be auto sum12
+  const double sum_dsts21 = std::reduce(dsts21.begin(), dsts21.end()); // could be auto sum21
+  const double assd = (sum_dsts12 + sum_dsts21) / static_cast<double>(nDst);
   // root mean squared error
-  double ssq_dsts12 = std::inner_product(dsts12.begin(), dsts12.end(), dsts12.begin(), 0.0); // sum of squared distances
-  double ssq_dsts21 = std::inner_product(dsts21.begin(), dsts21.end(), dsts21.begin(), 0.0); // sum of squared distances
-  double msq_dst    = w12*ssq_dsts12 + w21*ssq_dsts21;    // mean squared distance
-  double RMSE       = std::sqrt(msq_dst);
-  return std::tuple<double, double, double>(HDq, ASSD, RMSE);
+  const double ssq_dsts12 = std::inner_product(dsts12.begin(), dsts12.end(), dsts12.begin(), 0.0); // sum of squared distances
+  const double ssq_dsts21 = std::inner_product(dsts21.begin(), dsts21.end(), dsts21.begin(), 0.0); // sum of squared distances
+  const double msq_dst    = (ssq_dsts12 + ssq_dsts21) / static_cast<double>(nDst);    // mean squared distance
+  const double rmse       = std::sqrt(msq_dst);
+  return std::tuple<double, double, double>(HDq, assd, rmse);
 }
 
-template std::tuple<double, double, double> getMetro<K, Mesh3, Point3>(
+template std::tuple<double, double, double> get_metro<K, Mesh3, Point3>(
   const Mesh3&, const Mesh3&, const bool, const double, const unsigned int);
 
-template std::tuple<double, double, double> getMetro<EK, EMesh3, EPoint3>(
+template std::tuple<double, double, double> get_metro<EK, EMesh3, EPoint3>(
   const EMesh3&, const EMesh3&, const bool, const double, const unsigned int);

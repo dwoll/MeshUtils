@@ -1,20 +1,19 @@
 Type: Package
 Package: MeshUtils
-Title: Utility Functions for 3D Meshes Based on 'CGAL'
+Title: Utility Functions for 3D Surface Meshes Based on 'CGAL'
 Version: 0.0.1
 Authors@R:
   c(person("Daniel", "Wollschlaeger", role=c("aut", "cre"), email="wollschlaeger@uni-mainz.de"),
     person("Stephane", "Laurent", role=c("aut")))
 Maintainer: Daniel Wollschlaeger <wollschlaeger@uni-mainz.de>
-Description: Basic processing of 3D meshes based on the 'C++'
-    library 'CGAL' <https://www.cgal.org/>.
+Description: Basic processing of 3D surface meshes based on the
+    'C++' library 'CGAL' <https://www.cgal.org/>.
     Reads and writes common file formats for meshes and
     polygon soups.
-    Supports mesh repair, remeshing, smoothing,
-    subdivision ('Catmull-Clark', 'Doo-Sabin', 'Sqrt3', 'Loop'),
-    Boolean operations (union, difference, intersection),
-    surface reconstruction ('AFS', 'SSS', Poisson, alpha
-    wrapping), (optimal) bounding box, and Hausdorff distance.
+    Supports mesh repair, remeshing, smoothing, subdivision,
+    Boolean operations, surface reconstruction, (optimal)
+    bounding box as well as distance and similarity metrics
+    for two given meshes.
     Adapts code from packages 'Boov', 'PolygonSoup',
     and 'cgalMeshes' developed by Stephane Laurent.
 License: GPL-3

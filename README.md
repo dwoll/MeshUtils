@@ -1,8 +1,8 @@
-# MeshUtils: Utility functions for 3D meshes based on CGAL
+# MeshUtils: Utility functions for 3D surface meshes based on `CGAL`
 
 `MeshUtils` ís an R package that supports basic processing of 3D surface meshes using as backend the C++ library [`CGAL`](https://www.cgal.org/) via R package [`RcppCGAL`](https://cran.r-project.org/package=RcppCGAL). Features:
 
-  * Read in mesh files in common formats (STL, PLY, OBJ, OFF)
+  * Read in and write mesh files in common formats (STL, PLY, OBJ, OFF)
   * Conversion to / from class `mesh3d` from package [`rgl`](https://cran.r-project.org/package=rgl), also compatible with package [`Rvcg`](https://cran.r-project.org/package=Rvcg)
   * Mesh repair
       * Filling holes
@@ -32,21 +32,21 @@
   * Volume
   * Vertex normals
 
-The package also calculates distance and similarity metrics for a given pair of 3D surface meshes (see [dkfz metrics reloaded](https://metrics-reloaded.dkfz.de/metric-library))
+The package also calculates distance and similarity metrics for a given pair of 3D surface meshes (see [dkfz metrics reloaded](https://metrics-reloaded.dkfz.de/metric-library)):
 
   * Distance between the two respective centers of mass (DCOM)
   * Hausdorff distance
       * Approximate
       * Bounded error
-      * Quantile (`HD95`)
+      * Quantile ('HD95')
   * Average symmetric surface distance (ASSD)
   * Root mean squared error (RMSE, with respect to the surface)
-  * Jaccard Similarity Coefficient (JSC, aka Intersection over Union, IoU)
+  * Jaccard Similarity Coefficient (JSC, aka 'Intersection over Union', IoU)
   * Dice Similarity Coefficient
 
 ## CAVE
 
-Note that this package requires CGAL headers at least with version 6.2, provided by [`RcppCGAL`](https://cran.r-project.org/package=RcppCGAL) version 6.2 and newer.
+Note that this package requires CGAL headers at least version 6.2, provided by [`RcppCGAL`](https://cran.r-project.org/package=RcppCGAL) version 6.2 and newer.
 
 See package [`Rmpfr`](https://cran.r-project.org/package=Rmpfr) for a note on how to install system requirements [MPFR](https://www.mpfr.org/) and [GMP](https://gmplib.org/).
 

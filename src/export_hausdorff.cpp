@@ -52,18 +52,6 @@ double getHausdorffApprox_cpp(
     return Rcpp::NumericVector::get_na();
   }
   double d;
-  // PMP::parameters::use_random_uniform_sampling(true)     // true
-  // PMP::parameters::do_sample_vertices(true)              // true
-  // PMP::parameters::do_sample_edges(true)                 // true
-  // PMP::parameters::do_sample_faces(true)                 // true
-  //
-  // PMP::parameters::number_of_points_on_faces(n)          // unsigned int *
-  // PMP::parameters::number_of_points_on_edges(n)          // unsigned int
-  //
-  // PMP::parameters::number_of_points_per_distance_unit(n) // double
-  // PMP::parameters::number_of_points_per_edge(n)          // unsigned int
-  // PMP::parameters::number_of_points_per_area_unit(n)     // double
-  // PMP::parameters::number_of_points_per_face(n)          // unsigned int
   if(symmetric) {
     if(n > 0) {
         d = CGAL::to_double<K::FT>(PMP::approximate_symmetric_Hausdorff_distance<PIA_TAG>(
@@ -130,6 +118,19 @@ double getHausdorffEst_cpp(
     return d;
 }
 
+// PMP::parameters::use_random_uniform_sampling(true)     // true
+// PMP::parameters::do_sample_vertices(true)              // true
+// PMP::parameters::do_sample_edges(true)                 // true
+// PMP::parameters::do_sample_faces(true)                 // true
+//
+// PMP::parameters::number_of_points_on_faces(n)          // unsigned int *
+// PMP::parameters::number_of_points_on_edges(n)          // unsigned int
+//
+// PMP::parameters::number_of_points_per_distance_unit(n) // double
+// PMP::parameters::number_of_points_per_edge(n)          // unsigned int
+// PMP::parameters::number_of_points_per_area_unit(n)     // double
+// PMP::parameters::number_of_points_per_face(n)          // unsigned int
+
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List getMetro_cpp(
@@ -166,17 +167,16 @@ Rcpp::List getMetro_cpp(
     Rcpp::warning("Mesh 2 is not triangle.");
     return Rcpp::NumericVector::get_na();
   }
-  std::tuple<double, double, double> metro = getMetro<K, Mesh3, Point3>(
+  std::tuple<double, double, double> metro = get_metro<K, Mesh3, Point3>(
     mesh1,
     mesh2,
     symmetric,
     p,
     n);
   double HDq  = get<0>(metro);
-  double ASSD = get<1>(metro);
-  double RMSE = get<2>(metro);
-  Rcpp::List out = Rcpp::List::create(Rcpp::Named("HDq")  = HDq,
-                                      Rcpp::Named("ASSD") = ASSD,
-                                      Rcpp::Named("RMSE") = RMSE);
-  return out;
+  double assd = get<1>(metro);
+  double rmse = get<2>(metro);
+  return Rcpp::List::create(Rcpp::Named("HDq")  = HDq,
+                            Rcpp::Named("ASSD") = assd,
+                            Rcpp::Named("RMSE") = rmse);
 }
