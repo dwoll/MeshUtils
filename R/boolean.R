@@ -212,3 +212,53 @@ boolUnion <- function(x, repairSoup = TRUE, normals = FALSE, verbose = FALSE) {
   umesh  <- boolUnionEK_cpp(meshes, repairSoup, normals, verbose)
   fromCPP(umesh)
 }
+
+#' @title Jaccard Similarity Coefficient and Dice Similarity Coefficient
+#' @description Compute the Jaccard Similarity Coefficient (JSC, also known as
+#'   Intersection over Union, IoU) and the Dice Similarity Coefficient (DSC)
+#'   for the respective volumes defined by two 3D surface meshes.
+#'
+#' @param mesh1 A \code{\link[rgl]{mesh3d}} object
+#'   from package \strong{rgl}, or a \code{CGALmesh} object,
+#'   i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param mesh2 A \code{\link[rgl]{mesh3d}} object
+#'   from package \strong{rgl}, or a \code{CGALmesh} object,
+#'   i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param repairSoup Boolean. Whether to clean the meshes (merging
+#'   duplicated vertices, duplicated faces, removing isolated vertices).
+#'   Set to \code{FALSE} if you know the meshes are clean, to
+#'   gain some speed.
+#' @param verbose Boolean. Whether to print out messages about mesh processing.
+#'
+#' @returns A \code{list} with two components: \code{JSC} (IoU) and \code{DSC}.
+#'
+#' @details See \url{https://metrics-reloaded.dkfz.de/metric-library/dsc} and
+#'   \url{https://metrics-reloaded.dkfz.de/metric-library/intersection_over_union}
+#'   for details.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#'
+#' @examples
+#' library(MeshUtils)
+#' library(rgl)
+#'
+#' # mesh one: a cube
+#' mesh1_rgl <- cube3d() # (from the rgl package)
+#'
+#' # mesh two: another cube
+#' mesh2_rgl <- translate3d(cube3d(), 1, 1, 1)
+#'
+#' # compute JSC, DSC
+#' getJSCDSC(mesh1_rgl, mesh2_rgl)
+#'
+#' @export
+getJSCDSC <- function(mesh1, mesh2, repairSoup = TRUE, verbose = FALSE) {
+  m_u   <- boolUnion(       meshes, repairSoup, FALSE, verbose)
+  m_i   <- boolIntersection(meshes, repairSoup, FALSE, verbose)
+  vol_1 <- getVolume(mesh1)
+  vol_2 <- getVolume(mesh2)
+  vol_u <- getVolume(m_u)
+  vol_i <- getVolume(m_i)
+  JSC   <-   vol_i / vol_u
+  DSC   <- 2*vol_i / (vol_1 + vol_2)
+  list(JSC=JSC, DSC=DSC)
+}

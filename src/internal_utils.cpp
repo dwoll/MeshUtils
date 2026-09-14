@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -42,12 +43,12 @@ bool is_triangle_soup(const std::vector<std::vector<std::size_t>>& polygons) {
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
-// distances from a random sample of points on `mesh` to `mesh_target`,
-// one point at a time so that max_distance_to_triangle_mesh() (which only
-// reports the distance of the single furthest point) yields a per-point value
+// distances from a random sample of points on `mesh_source` to `mesh_target`
 template <typename KernelT, typename MeshT, typename PointT>
 std::vector<double> sampled_distances_to_mesh(
-  const MeshT& mesh_source, const MeshT& mesh_target, const unsigned int n) {
+  const MeshT& mesh_source,
+  const MeshT& mesh_target,
+  const unsigned int n) {
   typedef CGAL::AABB_face_graph_triangle_primitive<MeshT> Primitive;
   typedef CGAL::AABB_traits_3<KernelT, Primitive> Tree_Traits;
   typedef CGAL::AABB_tree<Tree_Traits> Tree;
@@ -61,13 +62,13 @@ std::vector<double> sampled_distances_to_mesh(
       mesh_source, std::back_inserter(pts));
   }
   Tree tree(faces(mesh_target).first, faces(mesh_target).second, mesh_target);
-  std::vector<double> dists;
-  dists.reserve(pts.size());
+  std::vector<double> dsts;
+  dsts.reserve(pts.size());
   for(const PointT& p : pts) {
-    std::vector<PointT> pt = { p };
-    dists.push_back(std::sqrt(tree.squared_distance(p)));
+    double dsq = CGAL::to_double<typename KernelT::FT>(tree.squared_distance(p));
+    dsts.push_back(std::sqrt(dsq));
   }
-  return dists;
+  return dsts;
 }
 
 template std::vector<double> sampled_distances_to_mesh<K, Mesh3, Point3>(
@@ -104,3 +105,61 @@ std::optional<double> get_quantile(std::vector<double> &data, double p) {
         return (1.0 - weight)*q_lower + weight*q_upper;
     }
 }
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+// Hausdorff distance quantile
+// average symmetric surface distance
+// root mean squared error
+// https://github.com/zarquon42b/Rvcg/blob/master/src/metroSampling.h
+template <typename KernelT, typename MeshT, typename PointT>
+std::tuple<double, double, double> getMetro(
+  const MeshT& mesh1,
+  const MeshT& mesh2,
+  const bool symmetric,
+  const double p,
+  const unsigned int n) {
+  // distances of sampled points from mesh1 to mesh2
+  std::vector<double> dsts12 = sampled_distances_to_mesh<KernelT, MeshT, PointT>(
+    mesh1, mesh2, n);
+  // distances of sampled points from mesh2 to mesh1
+  std::vector<double> dsts21 = sampled_distances_to_mesh<KernelT, MeshT, PointT>(
+    mesh2, mesh1, n);
+  // number of samples may differ between meshes
+  std::size_t nDst12 = dsts12.size();
+  std::size_t nDst21 = dsts21.size();
+  std::size_t nDst   = nDst12 + nDst21;
+  // weights for forward, backward sampled points
+  double w12 = static_cast<double>(nDst12) / static_cast<double>(nDst);
+  double w21 = static_cast<double>(nDst21) / static_cast<double>(nDst);
+  // Hausdorff distance quantile
+  std::optional<double> dst12_q = get_quantile(dsts12, p);
+  std::optional<double> dst21_q = get_quantile(dsts21, p);
+  double HDq;
+  if(!dst12_q.has_value() || !dst21_q.has_value()) {
+    HDq = std::nan("0");
+  } else {
+    if(symmetric) {
+        HDq = std::max(dst12_q.value(), dst21_q.value());
+    } else {
+        HDq = dst12_q.value();
+    }
+  }
+
+  // average surface distance
+  double sum_dsts12 = std::reduce(dsts12.begin(), dsts12.end()); // could be auto sum12
+  double sum_dsts21 = std::reduce(dsts21.begin(), dsts21.end()); // could be auto sum21
+  double ASSD  = w12*sum_dsts12 + w21*sum_dsts21;
+  // root mean squared error
+  double ssq_dsts12 = std::inner_product(dsts12.begin(), dsts12.end(), dsts12.begin(), 0.0); // sum of squared distances
+  double ssq_dsts21 = std::inner_product(dsts21.begin(), dsts21.end(), dsts21.begin(), 0.0); // sum of squared distances
+  double msq_dst    = w12*ssq_dsts12 + w21*ssq_dsts21;    // mean squared distance
+  double RMSE       = std::sqrt(msq_dst);
+  return std::tuple<double, double, double>(HDq, ASSD, RMSE);
+}
+
+template std::tuple<double, double, double> getMetro<K, Mesh3, Point3>(
+  const Mesh3&, const Mesh3&, const bool, const double, const unsigned int);
+
+template std::tuple<double, double, double> getMetro<EK, EMesh3, EPoint3>(
+  const EMesh3&, const EMesh3&, const bool, const double, const unsigned int);

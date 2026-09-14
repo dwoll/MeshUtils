@@ -1,7 +1,7 @@
 # TODO
 
-  * add uniform_sampling method to .Rd
-  * ASD, RMSE (same n forward sampling, backward sampling)
+  * expose mesh sampling options in `getMetro()`
+  * fix ASSD, RMSE
   * `remeshIsotropic()`
       * does not work well for pentagrammic prism - why? (`Rvcg::vcgIsotropicRemeshing()` works)
 

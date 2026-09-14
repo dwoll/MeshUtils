@@ -462,6 +462,36 @@ getCentroid <- function(x) {
   getCentroid_cpp(meshCPP)
 }
 
+#' @title Euclidean distance between center of mass of two meshes
+#' @description Calculates the Euclidean distance between the two
+#'   respective centers of mass of two meshes
+#' @param mesh1 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param mesh2 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @returns The Euclidean distance between the two respective centers of mass.
+#' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+#' @seealso See \code{\link[MeshUtils]{getCentroid}} for calculating the centroid.
+#'
+#' @examples
+#' library(MeshUtils)
+#' getDCOM(dataHeart1, dataHeart2)
+#'
+#' @export
+getDCOM <- function(mesh1, mesh2) {
+  if(!inherits(mesh1, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+             " (i.e., the output of the `makeMesh()` function).")
+  }
+  if(!inherits(mesh2, "CGALmesh")) {
+      stop("The `x` argument must be of class 'CGALmesh'",
+             " (i.e., the output of the `makeMesh()` function).")
+  }
+  meshCPP1 <- fromR(mesh1)
+  meshCPP2 <- fromR(mesh2)
+  ctr1     <- getCentroid_cpp(meshCPP1)
+  ctr2     <- getCentroid_cpp(meshCPP2)
+  sqrt(sum((ctr1-ctr2)^2))
+}
+
 #' @title Get distance from points to a mesh
 #' @description Get the Euclidean distance of points to a given 3D surface mesh.
 #'

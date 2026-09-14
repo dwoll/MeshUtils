@@ -4,7 +4,7 @@
 \alias{subdivideDooSabin}
 \title{Doo-Sabin subdivision and deformation}
 \usage{
-subdivideDooSabin(x, nIter = 1, triangulate = TRUE, normals = FALSE)
+subdivideDooSabin(x, nIter = 1L, triangulate = TRUE, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.

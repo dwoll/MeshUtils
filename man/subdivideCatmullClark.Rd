@@ -4,7 +4,7 @@
 \alias{subdivideCatmullClark}
 \title{Catmull-Clark subdivision and deformation}
 \usage{
-subdivideCatmullClark(x, nIter = 1, normals = FALSE)
+subdivideCatmullClark(x, nIter = 1L, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.

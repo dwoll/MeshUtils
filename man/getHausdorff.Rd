@@ -11,11 +11,11 @@ getHausdorff(mesh1, mesh2, symmetric = TRUE, n, errorBound)
 
 \item{mesh2}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{n}{\code{integer}. Number of points sampled for the approximate Hausdorff distance.
-If missing and \code{errorBound} is missing as well, the number of vertices is used.}
-
 \item{symmetric}{Boolean. Whether to consider the symmetric Hausdorff
 distance.}
+
+\item{n}{\code{integer}. Number of points sampled for the approximate Hausdorff distance.
+If missing and \code{errorBound} is missing as well, the number of vertices is used.}
 
 \item{errorBound}{A positive number. Upper bound on the error of the
 estimate. If missing, the approximate distance is returned.}
@@ -30,6 +30,9 @@ approximate distance, or the distance estimate with a given error bound.
 }
 \details{
 See \url{https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#PMPDistance} for details.
+The approximate distance uses random uniform vertex sampling, edge sampling, face sampling. See
+\url{https://doc.cgal.org/latest/Polygon_mesh_processing/group__PMP__distance__grp.html}
+for details.
 }
 \examples{
 library(MeshUtils)
@@ -40,6 +43,9 @@ getHausdorff(dataHeart1, dataHeart2, symmetric=TRUE)
 getHausdorff(dataHeart1, dataHeart2, symmetric=TRUE,
                      errorBound=0.001)
 
+}
+\seealso{
+See \code{\link[MeshUtils]{getHausdorffQuantile}} for the quantile Hausdorff distance.
 }
 \author{
 Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.

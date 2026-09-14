@@ -4,7 +4,7 @@
 \alias{smoothShape}
 \title{Smooth shape}
 \usage{
-smoothShape(x, indices, nIter = 1, time = 0.001, normals = FALSE)
+smoothShape(x, indices, nIter = 1L, time = 0.001, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.

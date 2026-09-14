@@ -29,8 +29,8 @@ getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, error_bound) {
     .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, error_bound)
 }
 
-getHausdorffSampled_cpp <- function(rmesh1, rmesh2, symmetric, p, n) {
-    .Call(`_MeshUtils_getHausdorffSampled_cpp`, rmesh1, rmesh2, symmetric, p, n)
+getMetro_cpp <- function(rmesh1, rmesh2, symmetric, p, n) {
+    .Call(`_MeshUtils_getMetro_cpp`, rmesh1, rmesh2, symmetric, p, n)
 }
 
 makeMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals, verbose) {

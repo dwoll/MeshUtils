@@ -132,7 +132,7 @@ double getHausdorffEst_cpp(
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-double getHausdorffSampled_cpp(
+Rcpp::List getMetro_cpp(
     const Rcpp::List rmesh1,
     const Rcpp::List rmesh2,
     const bool symmetric,
@@ -166,20 +166,17 @@ double getHausdorffSampled_cpp(
     Rcpp::warning("Mesh 2 is not triangle.");
     return Rcpp::NumericVector::get_na();
   }
-  std::vector<double> dists12 = sampled_distances_to_mesh<K, Mesh3, Point3>(mesh1, mesh2, n);
-  std::optional<double> q12 = get_quantile(dists12, p);
-  if(!symmetric) {
-      if(q12.has_value()) {
-          std::string msg12;
-          return q12.value();
-      }
-  } else {
-      std::vector<double> dists21 = sampled_distances_to_mesh<K, Mesh3, Point3>(mesh2, mesh1, n);
-      std::optional<double> q21 = get_quantile(dists21, p);
-      if(q12.has_value() && q21.has_value()) {
-          return std::max(q12.value(), q21.value());
-      }
-  }
-  Rcpp::warning("No non-NA values");
-  return Rcpp::NumericVector::get_na();
+  std::tuple<double, double, double> metro = getMetro<K, Mesh3, Point3>(
+    mesh1,
+    mesh2,
+    symmetric,
+    p,
+    n);
+  double HDq  = get<0>(metro);
+  double ASSD = get<1>(metro);
+  double RMSE = get<2>(metro);
+  Rcpp::List out = Rcpp::List::create(Rcpp::Named("HDq")  = HDq,
+                                      Rcpp::Named("ASSD") = ASSD,
+                                      Rcpp::Named("RMSE") = RMSE);
+  return out;
 }

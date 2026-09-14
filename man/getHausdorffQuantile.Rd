@@ -9,18 +9,19 @@ getHausdorffQuantile(mesh1, mesh2, symmetric = TRUE, p = 0.95, n)
 \arguments{
 \item{mesh1}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{mesh2}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+\item{symmetric}{Boolean. Whether to pool the sampled distances from
+\code{mesh1} to \code{mesh2} with those from \code{mesh2} to \code{mesh1}
+before taking the quantile.}
 
-\item{symmetric}{Boolean. Whether to consider the symmetric Hausdorff
-distance.}
+\item{p}{A number in \eqn{[0, 1]}. The quantile probability, defaults
+to \code{0.95}.}
 
-\item{p}{A number in \eqn{(0, 1)}. The quantile probability, defaults to \code{0.95}.}
-
-\item{n}{\code{integer}. The number of points to sample on each mesh.}
+\item{n}{\code{integer}. Number of points sampled on each mesh.
+If missing, the number of vertices is used.}
 }
 \value{
-A number. For the apprixmate distance, the algorithm uses
-simulation and thus the result can vary.
+A number: the requested quantile of the sampled point-to-mesh
+distances. The algorithm uses random sampling, so the result can vary.
 }
 \description{
 Approximate the Hausdorff distance between two meshes using a
@@ -30,13 +31,21 @@ instead of their maximum. This is less sensitive to small, isolated
 outlying regions than the full Hausdorff distance.
 }
 \details{
-See \url{https://doc.cgal.org/latest/Polygon_mesh_processing/index.html#PMPDistance} for details.
+See \url{https://metrics-reloaded.dkfz.de/metric-library/xhd} for details.
+Note: This function under the hood simply calls
+\code{\link[MeshUtils]{getMetro}} and extracts the quantile Hausdorff distance.
+See there for details on the sampling process.
 }
 \examples{
 library(MeshUtils)
-## approximate symmetric Hausdorff distance
-getHausdorffQuantile(dataHeart1, dataHeart2, p=0.95)
+## symmetric 95\\% Hausdorff distance ("HD95")
+getHausdorffQuantile(dataHeart1, dataHeart2, n=1000L, p=0.95)
+
+}
+\seealso{
+See \code{\link[MeshUtils]{getHausdorff}} for the (approximate) Hausdorff distance.
+See \code{\link[MeshUtils]{getMetro}} for other surface metrics.
 }
 \author{
-Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
+Daniel Wollschlaeger.
 }

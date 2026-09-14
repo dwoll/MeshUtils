@@ -4,7 +4,7 @@
 \alias{subdivideSqrt3}
 \title{Sqrt3 subdivision and deformation}
 \usage{
-subdivideSqrt3(x, nIter = 1, normals = FALSE)
+subdivideSqrt3(x, nIter = 1L, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.

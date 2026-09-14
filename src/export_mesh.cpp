@@ -301,7 +301,8 @@ Rcpp::NumericVector getDistance_cpp(
       for(std::size_t i = 0; i < nPts; i++) {
           Rcpp::NumericVector point_i = points(Rcpp::_, i);
           const Point3 pt = Point3(point_i(0), point_i(1), point_i(2));
-          distances(i) = std::sqrt(tree.squared_distance(pt));
+          double dsq = CGAL::to_double<typename K::FT>(tree.squared_distance(pt));
+          distances(i) = std::sqrt(dsq);
       }
   }
   return distances;

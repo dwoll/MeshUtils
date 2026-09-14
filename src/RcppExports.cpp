@@ -111,9 +111,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// getHausdorffSampled_cpp
-double getHausdorffSampled_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const double p, const unsigned int n);
-RcppExport SEXP _MeshUtils_getHausdorffSampled_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP pSEXP, SEXP nSEXP) {
+// getMetro_cpp
+Rcpp::List getMetro_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const double p, const unsigned int n);
+RcppExport SEXP _MeshUtils_getMetro_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP pSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -122,7 +122,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type symmetric(symmetricSEXP);
     Rcpp::traits::input_parameter< const double >::type p(pSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(getHausdorffSampled_cpp(rmesh1, rmesh2, symmetric, p, n));
+    rcpp_result_gen = Rcpp::wrap(getMetro_cpp(rmesh1, rmesh2, symmetric, p, n));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -607,7 +607,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_boolUnionEK_cpp", (DL_FUNC) &_MeshUtils_boolUnionEK_cpp, 4},
     {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 4},
     {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 4},
-    {"_MeshUtils_getHausdorffSampled_cpp", (DL_FUNC) &_MeshUtils_getHausdorffSampled_cpp, 5},
+    {"_MeshUtils_getMetro_cpp", (DL_FUNC) &_MeshUtils_getMetro_cpp, 5},
     {"_MeshUtils_makeMesh_cpp", (DL_FUNC) &_MeshUtils_makeMesh_cpp, 10},
     {"_MeshUtils_makeMeshFF_cpp", (DL_FUNC) &_MeshUtils_makeMeshFF_cpp, 10},
     {"_MeshUtils_makeMeshValid_cpp", (DL_FUNC) &_MeshUtils_makeMeshValid_cpp, 5},

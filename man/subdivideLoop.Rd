@@ -4,7 +4,7 @@
 \alias{subdivideLoop}
 \title{Loop subdivision and deformation}
 \usage{
-subdivideLoop(x, nIter = 1, normals = FALSE)
+subdivideLoop(x, nIter = 1L, normals = FALSE)
 }
 \arguments{
 \item{x}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
