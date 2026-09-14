@@ -26,14 +26,23 @@
   * Bounding box
       * Axis-parallel bounding box
       * Optimal (oriented) bounding box
-  * Hausdorff distance between two meshes
   * Distance from points to mesh
   * Centroid
   * Area
   * Volume
   * Vertex normals
 
-For an application, see package [MeshAgreement](https://github.com/dwoll/MeshAgreement/) that calculates various distance and similarity metrics for a set of given 3D surface meshes.
+The package also calculates distance and similarity metrics for a given pair of 3D surface meshes (see [dkfz metrics reloaded](https://metrics-reloaded.dkfz.de/metric-library))
+
+  * Distance between the two respective centers of mass (DCOM)
+  * Hausdorff distance
+      * Approximate
+      * Bounded error
+      * Quantile (`HD95`)
+  * Average symmetric surface distance (ASSD)
+  * Root mean squared error (RMSE, with respect to the surface)
+  * Jaccard Similarity Coefficient (JSC, aka Intersection over Union, IoU)
+  * Dice Similarity Coefficient
 
 ## CAVE
 
