@@ -118,7 +118,16 @@ void run_mesh_checks(MeshT&);
 
 template <typename KernelT, typename MeshT, typename PointT>
 std::tuple<double, double, double> get_metro(
-    const MeshT&, const MeshT&, const bool, const double p, const unsigned int);
+    const MeshT&,
+    const MeshT&,
+    const bool,
+    const double,
+    const unsigned int,
+    const bool,
+    const bool,
+    const bool,
+    const unsigned int,
+    const unsigned int);
 
 // -------------------------------------------------------------------------- //
 // no template

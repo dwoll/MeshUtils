@@ -119,17 +119,22 @@ double getHausdorffEst_cpp(
 }
 
 // PMP::parameters::use_random_uniform_sampling(true)     // true
+// PMP::parameters::use_grid_sampling(false)              // false
+// PMP::parameters:: use_monte_carlo_sampling(false)      // false
+//
 // PMP::parameters::do_sample_vertices(true)              // true
 // PMP::parameters::do_sample_edges(true)                 // true
 // PMP::parameters::do_sample_faces(true)                 // true
 //
-// PMP::parameters::number_of_points_on_faces(n)          // unsigned int *
-// PMP::parameters::number_of_points_on_edges(n)          // unsigned int
+// PMP::parameters::grid_spacing(n)                       // double, for grid sampling
 //
-// PMP::parameters::number_of_points_per_distance_unit(n) // double
-// PMP::parameters::number_of_points_per_edge(n)          // unsigned int
-// PMP::parameters::number_of_points_per_area_unit(n)     // double
-// PMP::parameters::number_of_points_per_face(n)          // unsigned int
+// PMP::parameters::number_of_points_on_faces(n)          // *unsigned int, for random sampling
+// PMP::parameters::number_of_points_on_edges(n)          //  unsigned int, for random sampling
+//
+// PMP::parameters::number_of_points_per_distance_unit(n) // double, for random sampling and Monte Carlo sampling
+// PMP::parameters::number_of_points_per_area_unit(n)     // double, for random sampling and Monte Carlo sampling
+// PMP::parameters::number_of_points_per_edge(n)          // unsigned int, for Monte-Carlo sampling
+// PMP::parameters::number_of_points_per_face(n)          // unsigned int, for Monte-Carlo sampling
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
@@ -138,7 +143,12 @@ Rcpp::List getMetro_cpp(
     const Rcpp::List rmesh2,
     const bool symmetric,
     const double p,
-    const unsigned int n) {
+    const unsigned int method,
+    const bool sampleVerts,
+    const bool sampleEdges,
+    const bool sampleFaces,
+    const unsigned int nPtsFaces,
+    const unsigned int nPtsEdges) {
   Mesh3 mesh1 = make_surf_mesh_valid<Mesh3, Point3>(
       rmesh1,
       true,        // soup
@@ -172,7 +182,12 @@ Rcpp::List getMetro_cpp(
     mesh2,
     symmetric,
     p,
-    n);
+    method,
+    sampleVerts,
+    sampleEdges,
+    sampleFaces,
+    nPtsFaces,
+    nPtsEdges);
   double HDq  = get<0>(metro);
   double assd = get<1>(metro);
   double rmse = get<2>(metro);

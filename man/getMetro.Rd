@@ -4,7 +4,16 @@
 \alias{getMetro}
 \title{Several distance metrics between two meshes}
 \usage{
-getMetro(mesh1, mesh2, symmetric = TRUE, p = 0.95, n)
+getMetro(mesh1,
+         mesh2,
+         symmetric = TRUE,
+         p = 0.95,
+         method = c("random", "grid", "mc"),
+         sampleVerts = TRUE,
+         sampleEdges = TRUE,
+         sampleFaces = TRUE,
+         nPtsFaces,
+         nPtsEdges)
 }
 \arguments{
 \item{mesh1}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
@@ -18,8 +27,23 @@ before taking the quantile.}
 \item{p}{A number in \eqn{[0, 1]}. The quantile probability, defaults
 to \code{0.95}.}
 
-\item{n}{\code{integer}. Number of points sampled on each mesh.
-If missing, the number of vertices is used.}
+\item{method}{\code{character}. \code{"random"} for random uniform sampling,
+    \code{"grid"} for grid sampling, \code{"mc"} for Monte Carlo sampling.
+    See details.}
+
+\item{sampleVerts}{Boolean. Do sample vertices?}
+
+\item{sampleVerts}{Boolean. Do sample edges?}
+
+\item{sampleVerts}{Boolean. Do sample faces?}
+
+\item{nPtsFaces}{\code{integer}. For the random sampling method as the
+  number of points to pick on the surface.
+  If missing, the number of vertices is used.}
+
+\item{nPtsEdges}{\code{integer}. For the random sampling method as the
+  number of points to pick exclusively on edges.
+  If missing, the number of edges is used.}
 }
 \value{
 A number: the requested quantile of the sampled point-to-mesh
@@ -33,9 +57,8 @@ and root mean squared error (RMSE) for the surface distance between two meshes.
 See \code{\link[MeshUtils]{getHausdorffQuantile}} for details on the quantile
 Hausdorff distance, \url{https://metrics-reloaded.dkfz.de/metric-library/assd} for ASSD.
 Inspired by \url{http://vcglib.net/metro.html}.
-Uses random uniform vertex sampling, edge sampling, face sampling. See
-\url{https://doc.cgal.org/latest/Polygon_mesh_processing/group__PMP__distance__grp.html}
-for details.
+For details on sampling options, see
+\url{https://doc.cgal.org/latest/Polygon_mesh_processing/group__PMP__distance__grp.html}.
 }
 \examples{
 library(MeshUtils)

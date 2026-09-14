@@ -82,6 +82,8 @@ getHausdorff <- function(mesh1, mesh2, symmetric = TRUE, n, errorBound) {
 #'   See there for details on the sampling process.
 #' @seealso See \code{\link[MeshUtils]{getHausdorff}} for the (approximate) Hausdorff distance.
 #'   See \code{\link[MeshUtils]{getMetro}} for other surface metrics.
+#'   See \code{\link[MeshUtils]{getJSCDSC}} for volume-overlap based similarity metrics
+#'   (JSC, DSC).
 #' @author Daniel Wollschlaeger.
 #'
 #' @examples
@@ -105,17 +107,28 @@ getHausdorffQuantile <- function(mesh1, mesh2, symmetric = TRUE, p = 0.95, n) {
 #'   before taking the quantile.
 #' @param p A number in \eqn{[0, 1]}. The quantile probability, defaults
 #'   to \code{0.95}.
-#' @param n \code{integer}. Number of points sampled on each mesh.
+#' @param method \code{character}. \code{"random"} for random uniform sampling,
+#'   \code{"grid"} for grid sampling, \code{"mc"} for Monte Carlo sampling.
+#'   See details.
+#' @param sampleVerts Boolean. Do sample vertices?
+#' @param sampleEdges Boolean. Do sample edges?
+#' @param sampleFaces Boolean. Do sample faces?
+#' @param nPtsFaces \code{integer}. For the random sampling method as the
+#'   number of points to pick on the surface.
 #'   If missing, the number of vertices is used.
+#' @param nPtsEdges \code{integer}. For the random sampling method as the
+#'   number of points to pick exclusively on edges.
+#'   If missing, the number of edges is used.
 #' @returns A number: the requested quantile of the sampled point-to-mesh
 #'   distances. The algorithm uses random sampling, so the result can vary.
 #' @details See \code{\link[MeshUtils]{getHausdorffQuantile}} for details on the quantile
 #'   Hausdorff distance, \url{https://metrics-reloaded.dkfz.de/metric-library/assd} for ASSD.
 #'   Inspired by \url{http://vcglib.net/metro.html}.
-#'   Uses random uniform vertex sampling, edge sampling, face sampling. See
-#'   \url{https://doc.cgal.org/latest/Polygon_mesh_processing/group__PMP__distance__grp.html}
-#'   for details.
+#'   For details on sampling options, see
+#'   \url{https://doc.cgal.org/latest/Polygon_mesh_processing/group__PMP__distance__grp.html}.
 #' @seealso See \code{\link[MeshUtils]{getHausdorffQuantile}} for the quantile Hausdorff distance.
+#'   See \code{\link[MeshUtils]{getJSCDSC}} for volume-overlap based similarity metrics
+#'   (JSC, DSC).
 #' @author Daniel Wollschlaeger.
 #'
 #' @examples
@@ -123,17 +136,47 @@ getHausdorffQuantile <- function(mesh1, mesh2, symmetric = TRUE, p = 0.95, n) {
 #' getMetro(dataHeart1, dataHeart2, n=1000L, p=0.95)
 #'
 #' @export
-getMetro <- function(mesh1, mesh2, symmetric = TRUE, p = 0.95, n) {
+getMetro <- function(mesh1,
+                     mesh2,
+                     symmetric = TRUE,
+                     p = 0.95,
+                     method = c("random", "grid", "mc"),
+                     sampleVerts = TRUE,
+                     sampleEdges = TRUE,
+                     sampleFaces = TRUE,
+                     nPtsFaces,
+                     nPtsEdges) {
+  method_choices <- c("random", "grid", "mc")
+  method         <- match.arg(method, choices=method_choices)
+  methodInt      <- match(method, method_choices)
+
   stopifnot(inherits(mesh1, "CGALmesh"))
   stopifnot(inherits(mesh2, "CGALmesh"))
   stopifnot(isBoolean(symmetric))
-  if(missing(n)) {
-    n <- 0L
-  } else {
-    stopifnot(isStrictPositiveInteger(n))
-  }
+  stopifnot(isBoolean(sampleVerts))
+  stopifnot(isBoolean(sampleEdges))
+  stopifnot(isBoolean(sampleFaces))
   stopifnot(is.numeric(p), length(p) == 1L, p > 0, p < 1)
+  if(missing(nPtsFaces)) {
+    nPtsFaces <- 0L
+  } else {
+    stopifnot(isStrictPositiveInteger(nPtsFaces))
+  }
+  if(missing(nPtsEdges)) {
+    nPtsEdges <- 0L
+  } else {
+    stopifnot(isStrictPositiveInteger(nPtsEdges))
+  }
   meshCPP1 <- fromR(mesh1)
   meshCPP2 <- fromR(mesh2)
-  getMetro_cpp(meshCPP1, meshCPP2, symmetric, p, as.integer(n))
+  getMetro_cpp(meshCPP1,
+               meshCPP2,
+               symmetric,
+               p,
+               methodInt,
+               sampleVerts,
+               sampleEdges,
+               sampleFaces,
+               as.integer(nPtsFaces),
+               as.integer(nPtsEdges))
 }
