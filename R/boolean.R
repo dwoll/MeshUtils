@@ -218,9 +218,11 @@ boolUnion <- function(x, repairSoup = TRUE, normals = FALSE, verbose = FALSE) {
 #'   Intersection over Union, IoU) and the Dice Similarity Coefficient (DSC)
 #'   for the respective volumes defined by two 3D surface meshes.
 #'
-#' @param mesh1 A \code{CGALmesh} object,
+#' @param mesh1 Either a \code{\link[rgl]{mesh3d}} object
+#'   from package \strong{rgl}, or a \code{CGALmesh} object,
 #'   i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param mesh2 A \code{CGALmesh} object,
+#' @param mesh2 Either a \code{\link[rgl]{mesh3d}} object
+#'   from package \strong{rgl}, or a \code{CGALmesh} object,
 #'   i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param repairSoup Boolean. Whether to clean the meshes (merging
 #'   duplicated vertices, duplicated faces, removing isolated vertices).
@@ -241,25 +243,26 @@ boolUnion <- function(x, repairSoup = TRUE, normals = FALSE, verbose = FALSE) {
 #'
 #' # mesh one: a cube
 #' mesh1_rgl <- cube3d() # (from the rgl package)
-#' mesh1     <- makeMeshValid(mesh1_rgl)
 #'
 #' # mesh two: another cube
 #' mesh2_rgl <- translate3d(cube3d(), 1, 1, 1)
-#' mesh2     <- makeMeshValid(mesh2_rgl)
 #'
 #' # compute JSC, DSC
-#' getJSCDSC(mesh1_rgl, mesh2_rgl)
+#' getJSCDSC(list(mesh1_rgl, mesh2_rgl))
 #'
 #' @export
 getJSCDSC <- function(mesh1, mesh2, repairSoup = TRUE, verbose = FALSE) {
-  meshes <- list(mesh1, mesh2)
-  m_u    <- boolUnion(       meshes, repairSoup, FALSE, verbose)
-  m_i    <- boolIntersection(meshes, repairSoup, FALSE, verbose)
-  vol_1  <- getVolume(mesh1)
-  vol_2  <- getVolume(mesh2)
-  vol_u  <- getVolume(m_u)
-  vol_i  <- getVolume(m_i)
-  JSC    <-   vol_i / vol_u
-  DSC    <- 2*vol_i / (vol_1 + vol_2)
-  list(JSC=JSC, DSC=DSC)
+  stopifnot(isBoolean(repairSoup))
+  stopifnot(isBoolean(verbose))
+  x <- list(mesh1, mesh2)
+  checkMeshes <- lapply(x, function(mesh) {
+    if(inherits(mesh, "mesh3d")) {
+      vft  <- getVFT(mesh, beforeCheck = TRUE)
+      mesh <- vft[["rmesh"]]
+    }
+    checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
+  })
+
+  meshes <- lapply(checkMeshes, `[`, c("vertices", "faces"))
+  getJSCDSC_cpp(meshes, repairSoup, verbose)
 }

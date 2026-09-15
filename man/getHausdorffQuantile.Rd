@@ -4,10 +4,12 @@
 \alias{getHausdorffQuantile}
 \title{Quantile Hausdorff distance between two meshes}
 \usage{
-getHausdorffQuantile(mesh1, mesh2, symmetric = TRUE, p = 0.95, n)
+getHausdorffQuantile(mesh1, mesh2, symmetric = TRUE, p = 0.95, ...)
 }
 \arguments{
 \item{mesh1}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
+
+\item{mesh2}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
 \item{symmetric}{Boolean. Whether to pool the sampled distances from
 \code{mesh1} to \code{mesh2} with those from \code{mesh2} to \code{mesh1}
@@ -16,8 +18,7 @@ before taking the quantile.}
 \item{p}{A number in \eqn{[0, 1]}. The quantile probability, defaults
 to \code{0.95}.}
 
-\item{n}{\code{integer}. Number of points sampled on each mesh.
-If missing, the number of vertices is used.}
+\item{...}{Sampling options passed on to \code{\link[MeshUtils]{getMetro}}.}
 }
 \value{
 A number: the requested quantile of the sampled point-to-mesh
@@ -39,7 +40,7 @@ See there for details on the sampling process.
 \examples{
 library(MeshUtils)
 ## symmetric 95\\% Hausdorff distance ("HD95")
-getHausdorffQuantile(dataHeart1, dataHeart2, n=1000L, p=0.95)
+getHausdorffQuantile(dataHeart1, dataHeart2, p=0.95)
 
 }
 \seealso{

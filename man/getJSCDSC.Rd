@@ -7,11 +7,11 @@
 getJSCDSC(mesh1, mesh2, repairSoup = TRUE, verbose = FALSE)
 }
 \arguments{
-\item{mesh1}{A \code{\link[rgl]{mesh3d}} object
+\item{mesh1}{Either a \code{\link[rgl]{mesh3d}} object
 from package \strong{rgl}, or a \code{CGALmesh} object,
 i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 
-\item{mesh2}{A \code{\link[rgl]{mesh3d}} object
+\item{mesh2}{Either a \code{\link[rgl]{mesh3d}} object
 from package \strong{rgl}, or a \code{CGALmesh} object,
 i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
 

@@ -15,7 +15,9 @@
 #endif
 
 #include <CGAL/Polygon_mesh_processing/corefinement.h>
+#include <CGAL/Polygon_mesh_processing/measure.h>
 
+// ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename MeshT>
 void checkMesh1(const MeshT &mesh, std::size_t i) {
@@ -27,6 +29,7 @@ void checkMesh1(const MeshT &mesh, std::size_t i) {
 }
 
 // ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
 template <typename MeshT>
 void checkMesh2(const MeshT &mesh, const std::string& what) {
   const bool si = PMP::does_self_intersect(mesh);
@@ -36,6 +39,7 @@ void checkMesh2(const MeshT &mesh, const std::string& what) {
   }
 }
 
+// ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolIntersection(const Rcpp::List &rmeshes,
@@ -91,6 +95,7 @@ Rcpp::List boolIntersectionEK_cpp(const Rcpp::List rmeshes,
 }
 
 // ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolDifference(const Rcpp::List &rmesh1,
                      const Rcpp::List &rmesh2,
@@ -130,6 +135,7 @@ Rcpp::List boolDifferenceEK_cpp(const Rcpp::List rmesh1,
   return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
 }
 
+// ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
 template <typename KernelT, typename MeshT, typename PointT>
 MeshT boolUnion(const Rcpp::List &rmeshes,
@@ -181,4 +187,44 @@ Rcpp::List boolUnionEK_cpp(const Rcpp::List rmeshes,
                            const bool verbose) {
   EMesh3 mesh = boolUnion<EK, EMesh3, EPoint3>(rmeshes, repairSoup, verbose);
   return get_rmesh<EK, EMesh3, EPoint3, EVector3>(mesh, false, normals);
+}
+
+// ----------------------------------------------------------------------- //
+// [[Rcpp::export]]
+Rcpp::List getJSCDSC_cpp(const Rcpp::List rmeshes,
+                         const bool repairSoup,
+                         const bool verbose) {
+  const EMesh3 mesh_1 = make_surf_mesh_valid<EMesh3, EPoint3>(
+      Rcpp::as<Rcpp::List>(rmeshes(0)),
+      true,        // soup
+      true,        // triangulate - must be triangle
+      repairSoup,  // repair_soup
+      verbose);
+  const EMesh3 mesh_2 = make_surf_mesh_valid<EMesh3, EPoint3>(
+      Rcpp::as<Rcpp::List>(rmeshes(1)),
+      true,        // soup
+      true,        // triangulate - must be triangle
+      repairSoup,  // repair_soup
+      verbose);
+  const EMesh3 mesh_i = boolIntersection<EK, EMesh3, EPoint3>(rmeshes, repairSoup, verbose);
+  const EMesh3 mesh_u = boolUnion<EK, EMesh3, EPoint3>(rmeshes, repairSoup, verbose);
+  if(!CGAL::is_closed(mesh_u) ||
+     !CGAL::is_closed(mesh_i)) {
+    Rcpp::warning("Mesh union or intersection is not closed.");
+    return Rcpp::NumericVector::get_na();
+  }
+  if(PMP::does_self_intersect(mesh_u) ||
+     PMP::does_self_intersect(mesh_i)) {
+    Rcpp::warning("Mesh union or intersection self-intersects.");
+    return Rcpp::NumericVector::get_na();
+  }
+  const double vol_1 = CGAL::to_double<EK::FT>(PMP::volume(mesh_1));
+  const double vol_2 = CGAL::to_double<EK::FT>(PMP::volume(mesh_2));
+  const double vol_i = CGAL::to_double<EK::FT>(PMP::volume(mesh_i));
+  const double vol_u = CGAL::to_double<EK::FT>(PMP::volume(mesh_u));
+  const double jsc   =   vol_i / vol_u;
+  const double dsc   = 2*vol_i / (vol_1 + vol_2);
+  return Rcpp::List::create(
+    Rcpp::Named("JSC") = jsc,
+    Rcpp::Named("DSC") = dsc);
 }

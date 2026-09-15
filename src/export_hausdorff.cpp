@@ -118,24 +118,6 @@ double getHausdorffEst_cpp(
     return d;
 }
 
-// PMP::parameters::use_random_uniform_sampling(true)     // true
-// PMP::parameters::use_grid_sampling(false)              // false
-// PMP::parameters:: use_monte_carlo_sampling(false)      // false
-//
-// PMP::parameters::do_sample_vertices(true)              // true
-// PMP::parameters::do_sample_edges(true)                 // true
-// PMP::parameters::do_sample_faces(true)                 // true
-//
-// PMP::parameters::grid_spacing(n)                       // double, for grid sampling
-//
-// PMP::parameters::number_of_points_on_faces(n)          // *unsigned int, for random sampling
-// PMP::parameters::number_of_points_on_edges(n)          //  unsigned int, for random sampling
-//
-// PMP::parameters::number_of_points_per_distance_unit(n) // double, for random sampling and Monte Carlo sampling
-// PMP::parameters::number_of_points_per_area_unit(n)     // double, for random sampling and Monte Carlo sampling
-// PMP::parameters::number_of_points_per_edge(n)          // unsigned int, for Monte-Carlo sampling
-// PMP::parameters::number_of_points_per_face(n)          // unsigned int, for Monte-Carlo sampling
-
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List getMetro_cpp(
@@ -143,12 +125,9 @@ Rcpp::List getMetro_cpp(
     const Rcpp::List rmesh2,
     const bool symmetric,
     const double p,
-    const unsigned int method,
-    const bool sampleVerts,
-    const bool sampleEdges,
-    const bool sampleFaces,
-    const unsigned int nPtsFaces,
-    const unsigned int nPtsEdges) {
+    const Rcpp::List ropt) {
+  Rcpp::List ropt_l = Rcpp::as<Rcpp::List>(ropt);
+  sample_opts opt = ropts_to_sample_opts(ropt_l);
   Mesh3 mesh1 = make_surf_mesh_valid<Mesh3, Point3>(
       rmesh1,
       true,        // soup
@@ -178,20 +157,8 @@ Rcpp::List getMetro_cpp(
     return Rcpp::NumericVector::get_na();
   }
   std::tuple<double, double, double> metro = get_metro<K, Mesh3, Point3>(
-    mesh1,
-    mesh2,
-    symmetric,
-    p,
-    method,
-    sampleVerts,
-    sampleEdges,
-    sampleFaces,
-    nPtsFaces,
-    nPtsEdges);
-  double HDq  = get<0>(metro);
-  double assd = get<1>(metro);
-  double rmse = get<2>(metro);
-  return Rcpp::List::create(Rcpp::Named("HDq")  = HDq,
-                            Rcpp::Named("ASSD") = assd,
-                            Rcpp::Named("RMSE") = rmse);
+    mesh1, mesh2, symmetric, p, opt);
+  return Rcpp::List::create(Rcpp::Named("HDq")  = get<0>(metro),
+                            Rcpp::Named("ASSD") = get<1>(metro),
+                            Rcpp::Named("RMSE") = get<2>(metro));
 }

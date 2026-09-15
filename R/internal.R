@@ -307,3 +307,71 @@ checkMeshValid <- function(vertices, faces, aslist) {
        "isQuad"          =isQuad,
        "toRGL"           =toRGL)
 }
+
+checkSampleOpts <- function(x) {
+  method_choices <- c("random", "grid", "mc")
+  method         <- match.arg(x[["method"]], choices=method_choices)
+  x[["method"]]  <- match(method, method_choices)
+  if(!hasName(x, "sampleVerts")) {
+    x[["sampleVerts"]] <- TRUE
+  } else {
+    stopifnot(isBoolean(x[["sampleVerts"]]))
+  }
+  if(!hasName(x, "sampleEdges")) {
+    x[["sampleEdges"]] <- TRUE
+  } else {
+    stopifnot(isBoolean(x[["sampleEdges"]]))
+  }
+  if(!hasName(x, "sampleFaces")) {
+    x[["sampleFaces"]] <- TRUE
+  } else {
+    stopifnot(isBoolean(x[["sampleFaces"]]))
+  }
+  if(!hasName(x, "ptsOnFaces")) {
+    x[["ptsOnFaces"]] <- 0L
+  } else {
+    stopifnot(isStrictPositiveInteger(x[["ptsOnFaces"]]))
+  }
+  if(!hasName(x, "ptsOnEdges")) {
+    x[["ptsOnEdges"]] <- 0L
+  } else {
+    stopifnot(isStrictPositiveInteger(x[["ptsOnEdges"]]))
+  }
+  if(!hasName(x, "gridSpacing")) {
+    x[["gridSpacing"]] <- 0.0
+  } else {
+    stopifnot(isPositiveNumber(x[["gridSpacing"]]))
+  }
+  if(!hasName(x, "ptsPerDist")) {
+    x[["ptsPerDist"]] <- 0.0
+  } else {
+    stopifnot(isPositiveNumber(x[["ptsPerDist"]]))
+  }
+  if(!hasName(x, "ptsPerEdge")) {
+    x[["ptsPerEdge"]] <- 0.0
+  } else {
+    stopifnot(isPositiveNumber(x[["ptsPerEdge"]]))
+  }
+  if(!hasName(x, "ptsPerArea")) {
+    x[["ptsPerArea"]] <- 0.0
+  } else {
+    stopifnot(isPositiveNumber(x[["ptsPerArea"]]))
+  }
+  if(!hasName(x, "ptsPerFace")) {
+    x[["ptsPerFace"]] <- 0.0
+  } else {
+    stopifnot(isPositiveNumber(x[["ptsPerFace"]]))
+  }
+
+  x[["method"]]     <- as.integer(x[["method"]])
+  x[["ptsOnFaces"]] <- as.integer(x[["ptsOnFaces"]])
+  x[["ptsOnEdges"]] <- as.integer(x[["ptsOnEdges"]])
+
+  storage.mode(x[["gridSpacing"]]) <- "double"
+  storage.mode(x[["ptsPerDist"]])  <- "double"
+  storage.mode(x[["ptsPerEdge"]])  <- "double"
+  storage.mode(x[["ptsPerArea"]])  <- "double"
+  storage.mode(x[["ptsPerFace"]])  <- "double"
+
+  x
+}

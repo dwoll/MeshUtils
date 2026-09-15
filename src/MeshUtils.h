@@ -116,22 +116,51 @@ MeshT readFileMesh(const std::string);
 template <typename MeshT>
 void run_mesh_checks(MeshT&);
 
+// triangle sample options used via getMetro()
+// PMP::parameters::use_random_uniform_sampling(true)     // true
+// PMP::parameters::use_grid_sampling(false)              // false
+// PMP::parameters::use_monte_carlo_sampling(false)       // false
+//
+// PMP::parameters::do_sample_vertices(true)              // true
+// PMP::parameters::do_sample_edges(true)                 // true
+// PMP::parameters::do_sample_faces(true)                 // true
+//
+// PMP::parameters::grid_spacing(n)                       // double, for grid sampling
+//
+// PMP::parameters::number_of_points_on_faces(n)          // *unsigned int, for random sampling
+// PMP::parameters::number_of_points_on_edges(n)          //  unsigned int, for random sampling
+//
+// PMP::parameters::number_of_points_per_distance_unit(n) // double, for random sampling and Monte Carlo sampling
+// PMP::parameters::number_of_points_per_area_unit(n)     // double, for random sampling and Monte Carlo sampling
+// PMP::parameters::number_of_points_per_edge(n)          // unsigned int, for Monte-Carlo sampling
+// PMP::parameters::number_of_points_per_face(n)          // unsigned int, for Monte-Carlo sampling
+struct sample_opts {
+    unsigned int method;
+    bool sampleVerts;
+    bool sampleEdges;
+    bool sampleFaces;
+    double gridSpacing;
+    unsigned int ptsOnFaces;
+    unsigned int ptsOnEdges;
+    double ptsPerDist;
+    double ptsPerEdge;
+    double ptsPerArea;
+    double ptsPerFace;
+};
+
 template <typename KernelT, typename MeshT, typename PointT>
 std::tuple<double, double, double> get_metro(
     const MeshT&,
     const MeshT&,
     const bool,
     const double,
-    const unsigned int,
-    const bool,
-    const bool,
-    const bool,
-    const unsigned int,
-    const unsigned int);
+    const sample_opts&);
 
 // -------------------------------------------------------------------------- //
 // no template
 std::string toLower(std::string);
+
+sample_opts ropts_to_sample_opts(const Rcpp::List&);
 
 void rmessage(std::string);
 

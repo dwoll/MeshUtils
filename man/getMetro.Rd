@@ -12,8 +12,13 @@ getMetro(mesh1,
          sampleVerts = TRUE,
          sampleEdges = TRUE,
          sampleFaces = TRUE,
-         nPtsFaces,
-         nPtsEdges)
+         gridSpacing = NULL,
+         ptsOnFaces = NULL,
+         ptsOnEdges = NULL,
+         ptsPerDist = NULL,
+         ptsPerEdge = NULL,
+         ptsPerArea = NULL,
+         ptsPerFace = NULL)
 }
 \arguments{
 \item{mesh1}{A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.}
@@ -33,17 +38,23 @@ to \code{0.95}.}
 
 \item{sampleVerts}{Boolean. Do sample vertices?}
 
-\item{sampleVerts}{Boolean. Do sample edges?}
+\item{sampleEdges}{Boolean. Do sample edges?}
 
-\item{sampleVerts}{Boolean. Do sample faces?}
+\item{sampleFaces}{Boolean. Do sample faces?}
 
-\item{nPtsFaces}{\code{integer}. For the random sampling method as the
+\item{gridSpacing}{\code{numeric}.}
+\item{ptsOnFaces}{\code{integer}. For the random sampling method as the
   number of points to pick on the surface.
   If missing, the number of vertices is used.}
 
-\item{nPtsEdges}{\code{integer}. For the random sampling method as the
+\item{ptsOnEdges}{\code{integer}. For the random sampling method as the
   number of points to pick exclusively on edges.
   If missing, the number of edges is used.}
+
+\item{ptsPerDist}{\code{numeric}.}
+\item{ptsPerEdge}{\code{numeric}.}
+\item{ptsPerArea}{\code{numeric}.}
+\item{ptsPerFace}{\code{numeric}.}
 }
 \value{
 A number: the requested quantile of the sampled point-to-mesh
@@ -62,7 +73,7 @@ For details on sampling options, see
 }
 \examples{
 library(MeshUtils)
-getMetro(dataHeart1, dataHeart2, n=1000L, p=0.95)
+getMetro(dataHeart1, dataHeart2, p=0.95, ptsOnFaces=1000L)
 
 }
 \seealso{

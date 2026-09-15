@@ -1,8 +1,7 @@
 # TODO
 
-  * `getJSCDSC_cpp()`
-  * expose mesh sampling options in `getMetro()`
-  * fix ASSD, RMSE
+  * `sampleVerts()` and `sampled_distances_to_mesh`
+      * implement all options for `sample_triangle_mesh()`
   * `remeshIsotropic()`
       * does not work well for pentagrammic prism - why? (`Rvcg::vcgIsotropicRemeshing()` works)
 

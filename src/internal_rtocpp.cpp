@@ -22,6 +22,24 @@
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+sample_opts ropts_to_sample_opts(const Rcpp::List &ropt) {
+  sample_opts opt;
+  opt.method      = ropt["method"];
+  opt.sampleVerts = ropt["sampleVerts"];
+  opt.sampleEdges = ropt["sampleEdges"];
+  opt.sampleFaces = ropt["sampleFaces"];
+  opt.gridSpacing = ropt["gridSpacing"];
+  opt.ptsOnFaces  = ropt["ptsOnFaces"];
+  opt.ptsOnEdges  = ropt["ptsOnEdges"];
+  opt.ptsPerDist  = ropt["ptsPerDist"];
+  opt.ptsPerArea  = ropt["ptsPerArea"];
+  opt.ptsPerEdge  = ropt["ptsPerEdge"];
+  opt.ptsPerFace  = ropt["ptsPerFace"];
+  return opt;
+}
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
 template <typename PointT>
 std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix &M) {
   const size_t nPts = M.ncol();

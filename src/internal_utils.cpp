@@ -72,25 +72,37 @@ std::optional<double> get_quantile(std::vector<double> &data, double p) {
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
+// PMP::parameters::use_random_uniform_sampling(true)     // true
+// PMP::parameters::use_grid_sampling(false)              // false
+// PMP::parameters::use_monte_carlo_sampling(false)       // false
+//
+// PMP::parameters::do_sample_vertices(true)              // true
+// PMP::parameters::do_sample_edges(true)                 // true
+// PMP::parameters::do_sample_faces(true)                 // true
+//
+// PMP::parameters::grid_spacing(n)                       // double, for grid sampling
+//
+// PMP::parameters::number_of_points_on_faces(n)          // *unsigned int, for random sampling
+// PMP::parameters::number_of_points_on_edges(n)          //  unsigned int, for random sampling
+//
+// PMP::parameters::number_of_points_per_distance_unit(n) // double, for random sampling and Monte Carlo sampling
+// PMP::parameters::number_of_points_per_area_unit(n)     // double, for random sampling and Monte Carlo sampling
+// PMP::parameters::number_of_points_per_edge(n)          // unsigned int, for Monte-Carlo sampling
+// PMP::parameters::number_of_points_per_face(n)          // unsigned int, for Monte-Carlo sampling
 // distances from a random sample of points on `mesh_source` to `mesh_target`
 template <typename KernelT, typename MeshT, typename PointT>
 std::vector<double> sampled_distances_to_mesh(
   const MeshT& mesh_source,
   const MeshT& mesh_target,
-  const unsigned int method,
-  const bool sampleVerts,
-  const bool sampleEdges,
-  const bool sampleFaces,
-  const unsigned int nPtsFaces,
-  const unsigned int nPtsEdges) {
+  const sample_opts &opt) {
   typedef CGAL::AABB_face_graph_triangle_primitive<MeshT> Primitive;
   typedef CGAL::AABB_traits_3<KernelT, Primitive> Tree_Traits;
   typedef CGAL::AABB_tree<Tree_Traits> Tree;
   std::vector<PointT> pts;
-  if(nPtsFaces > 0) {
+  if(opt.ptsOnFaces > 0) {
     PMP::sample_triangle_mesh(
       mesh_source, std::back_inserter(pts),
-      PMP::parameters::number_of_points_on_faces(nPtsFaces));
+      PMP::parameters::number_of_points_on_faces(opt.ptsOnFaces));
   } else {
     PMP::sample_triangle_mesh(
       mesh_source, std::back_inserter(pts));
@@ -98,8 +110,8 @@ std::vector<double> sampled_distances_to_mesh(
   Tree tree(faces(mesh_target).first, faces(mesh_target).second, mesh_target);
   std::vector<double> dsts;
   dsts.reserve(pts.size());
-  for(const PointT& p : pts) {
-    double dsq = CGAL::to_double<typename KernelT::FT>(tree.squared_distance(p));
+  for(const PointT& pt : pts) {
+    double dsq = CGAL::to_double<typename KernelT::FT>(tree.squared_distance(pt));
     dsts.push_back(std::sqrt(dsq));
   }
   return dsts;
@@ -108,22 +120,12 @@ std::vector<double> sampled_distances_to_mesh(
 template std::vector<double> sampled_distances_to_mesh<K, Mesh3, Point3>(
     const Mesh3&,
     const Mesh3&,
-    const unsigned int,
-    const bool,
-    const bool,
-    const bool,
-    const unsigned int,
-    const unsigned int);
+    const sample_opts&);
 
 template std::vector<double> sampled_distances_to_mesh<EK, EMesh3, EPoint3>(
     const EMesh3&,
     const EMesh3&,
-    const unsigned int,
-    const bool,
-    const bool,
-    const bool,
-    const unsigned int,
-    const unsigned int);
+    const sample_opts&);
 
 // ----------------------------------------------------------------------- //
 // ----------------------------------------------------------------------- //
@@ -137,18 +139,13 @@ std::tuple<double, double, double> get_metro(
   const MeshT& mesh2,
   const bool symmetric,
   const double p,
-  const unsigned int method,
-  const bool sampleVerts,
-  const bool sampleEdges,
-  const bool sampleFaces,
-  const unsigned int nPtsFaces,
-  const unsigned int nPtsEdges) {
+  const sample_opts &opt) {
   // distances of sampled points from mesh1 to mesh2
   std::vector<double> dsts12 = sampled_distances_to_mesh<KernelT, MeshT, PointT>(
-    mesh1, mesh2, method, sampleVerts, sampleEdges, sampleFaces, nPtsFaces, nPtsEdges);
+    mesh1, mesh2, opt);
   // distances of sampled points from mesh2 to mesh1
   std::vector<double> dsts21 = sampled_distances_to_mesh<KernelT, MeshT, PointT>(
-    mesh2, mesh1, method, sampleVerts, sampleEdges, sampleFaces, nPtsFaces, nPtsEdges);
+    mesh2, mesh1, opt);
   // number of samples may differ between meshes
   const std::size_t nDst = dsts12.size() + dsts21.size();
   // Hausdorff distance quantile
@@ -182,21 +179,11 @@ template std::tuple<double, double, double> get_metro<K, Mesh3, Point3>(
   const Mesh3&,
   const bool,
   const double,
-  const unsigned int,
-  const bool,
-  const bool,
-  const bool,
-  const unsigned int,
-  const unsigned int);
+  const sample_opts&);
 
 template std::tuple<double, double, double> get_metro<EK, EMesh3, EPoint3>(
   const EMesh3&,
   const EMesh3&,
   const bool,
   const double,
-  const unsigned int,
-  const bool,
-  const bool,
-  const bool,
-  const unsigned int,
-  const unsigned int);
+  const sample_opts&);

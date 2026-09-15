@@ -66,20 +66,19 @@ getHausdorff <- function(mesh1, mesh2, symmetric = TRUE, n, errorBound) {
 #'   instead of their maximum. This is less sensitive to small, isolated
 #'   outlying regions than the full Hausdorff distance.
 #' @param mesh1 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
-#' @param mesh1 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param mesh2 A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
 #' @param symmetric Boolean. Whether to pool the sampled distances from
 #'   \code{mesh1} to \code{mesh2} with those from \code{mesh2} to \code{mesh1}
 #'   before taking the quantile.
 #' @param p A number in \eqn{[0, 1]}. The quantile probability, defaults
 #'   to \code{0.95}.
-#' @param n \code{integer}. Number of points sampled on each mesh.
-#'   If missing, the number of vertices is used.
+#' @param ... Sampling options passed on to \code{\link[MeshUtils]{getMetro}}.
 #' @returns A number: the requested quantile of the sampled point-to-mesh
 #'   distances. The algorithm uses random sampling, so the result can vary.
 #' @details See \url{https://metrics-reloaded.dkfz.de/metric-library/xhd} for details.
-#'   Note: This function under the hood simply calls
-#'   \code{\link[MeshUtils]{getMetro}} and extracts the quantile Hausdorff distance.
-#'   See there for details on the sampling process.
+#'   Note: This function is just a wrapper for
+#'   \code{\link[MeshUtils]{getMetro}}, and extracts the quantile Hausdorff distance.
+#'   See there for sampling options.
 #' @seealso See \code{\link[MeshUtils]{getHausdorff}} for the (approximate) Hausdorff distance.
 #'   See \code{\link[MeshUtils]{getMetro}} for other surface metrics.
 #'   See \code{\link[MeshUtils]{getJSCDSC}} for volume-overlap based similarity metrics
@@ -89,11 +88,15 @@ getHausdorff <- function(mesh1, mesh2, symmetric = TRUE, n, errorBound) {
 #' @examples
 #' library(MeshUtils)
 #' ## symmetric 95\% Hausdorff distance ("HD95")
-#' getHausdorffQuantile(dataHeart1, dataHeart2, n=1000L, p=0.95)
+#' getHausdorffQuantile(dataHeart1, dataHeart2, p=0.95)
 #'
 #' @export
-getHausdorffQuantile <- function(mesh1, mesh2, symmetric = TRUE, p = 0.95, n) {
-  metroL <- getMetro(mesh1, mesh2, symmetric, p, n)
+getHausdorffQuantile <- function(mesh1, mesh2, symmetric = TRUE, p = 0.95, ...) {
+  metroL <- getMetro(mesh1,
+                     mesh2,
+                     symmetric=symmetric,
+                     p=p,
+                     ...)
   metroL[["HDq"]]
 }
 
@@ -113,12 +116,15 @@ getHausdorffQuantile <- function(mesh1, mesh2, symmetric = TRUE, p = 0.95, n) {
 #' @param sampleVerts Boolean. Do sample vertices?
 #' @param sampleEdges Boolean. Do sample edges?
 #' @param sampleFaces Boolean. Do sample faces?
-#' @param nPtsFaces \code{integer}. For the random sampling method as the
+#' @param gridSpacing \code{numeric}.
+#' @param ptsOnFaces \code{integer}. For the random sampling method as the
 #'   number of points to pick on the surface.
 #'   If missing, the number of vertices is used.
-#' @param nPtsEdges \code{integer}. For the random sampling method as the
+#' @param ptsOnEdges \code{integer}. For the random sampling method as the
 #'   number of points to pick exclusively on edges.
 #'   If missing, the number of edges is used.
+#' @param ptsPerDist \code{numeric}.
+#' @param ptsPerArea \code{numberic}.
 #' @returns A number: the requested quantile of the sampled point-to-mesh
 #'   distances. The algorithm uses random sampling, so the result can vary.
 #' @details See \code{\link[MeshUtils]{getHausdorffQuantile}} for details on the quantile
@@ -133,7 +139,7 @@ getHausdorffQuantile <- function(mesh1, mesh2, symmetric = TRUE, p = 0.95, n) {
 #'
 #' @examples
 #' library(MeshUtils)
-#' getMetro(dataHeart1, dataHeart2, n=1000L, p=0.95)
+#' getMetro(dataHeart1, dataHeart2, p=0.95, ptsOnFaces=1000L)
 #'
 #' @export
 getMetro <- function(mesh1,
@@ -144,39 +150,33 @@ getMetro <- function(mesh1,
                      sampleVerts = TRUE,
                      sampleEdges = TRUE,
                      sampleFaces = TRUE,
-                     nPtsFaces,
-                     nPtsEdges) {
-  method_choices <- c("random", "grid", "mc")
-  method         <- match.arg(method, choices=method_choices)
-  methodInt      <- match(method, method_choices)
-
+                     gridSpacing = NULL,
+                     ptsOnEdges  = NULL,
+                     ptsOnFaces  = NULL,
+                     ptsPerDist  = NULL,
+                     ptsPerEdge  = NULL,
+                     ptsPerArea  = NULL,
+                     ptsPerFace  = NULL) {
   stopifnot(inherits(mesh1, "CGALmesh"))
   stopifnot(inherits(mesh2, "CGALmesh"))
   stopifnot(isBoolean(symmetric))
-  stopifnot(isBoolean(sampleVerts))
-  stopifnot(isBoolean(sampleEdges))
-  stopifnot(isBoolean(sampleFaces))
   stopifnot(is.numeric(p), length(p) == 1L, p > 0, p < 1)
-  if(missing(nPtsFaces)) {
-    nPtsFaces <- 0L
-  } else {
-    stopifnot(isStrictPositiveInteger(nPtsFaces))
-  }
-  if(missing(nPtsEdges)) {
-    nPtsEdges <- 0L
-  } else {
-    stopifnot(isStrictPositiveInteger(nPtsEdges))
-  }
+  sampleOptL <- checkSampleOpts(list(method,
+                                     sampleVerts,
+                                     sampleEdges,
+                                     sampleFaces,
+                                     gridSpacing,
+                                     ptsOnEdges,
+                                     ptsOnFaces,
+                                     ptsPerDist,
+                                     ptsPerEdge,
+                                     ptsPerArea,
+                                     ptsPerFace))
   meshCPP1 <- fromR(mesh1)
   meshCPP2 <- fromR(mesh2)
   getMetro_cpp(meshCPP1,
                meshCPP2,
                symmetric,
                p,
-               methodInt,
-               sampleVerts,
-               sampleEdges,
-               sampleFaces,
-               as.integer(nPtsFaces),
-               as.integer(nPtsEdges))
+               sampleOptL)
 }

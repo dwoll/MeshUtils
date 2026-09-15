@@ -791,25 +791,58 @@ print.CGALmesh <- function(x, ...) {
 
 #' @title Sample vertices on mesh
 #' @description Random sampling of vertices on a given triangle 3D surface mesh.
-#' @param n \code{integer}. The desired number of sampled vertices.
+#' @param x A \code{CGALmesh} object, i.e., the output of \code{\link[MeshUtils]{makeMesh}}.
+#' @param method \code{character}. \code{"random"} for random uniform sampling,
+#'   \code{"grid"} for grid sampling, \code{"mc"} for Monte Carlo sampling.
+#'   See details.
+#' @param sampleVerts Boolean. Do sample vertices?
+#' @param sampleEdges Boolean. Do sample edges?
+#' @param sampleFaces Boolean. Do sample faces?
+#' @param gridSpacing \code{numeric}.
+#' @param ptsOnFaces \code{integer}. For the random sampling method as the
+#'   number of points to pick on the surface.
+#'   If missing, the number of vertices is used.
+#' @param ptsOnEdges \code{integer}. For the random sampling method as the
+#'   number of points to pick exclusively on edges.
+#'   If missing, the number of edges is used.
+#' @param ptsPerDist \code{numeric}.
+#' @param ptsPerArea \code{numberic}.
 #' @return A \code{n x 3} numeric matrix containing the sampled vertices.
 #' @author Originally developed by Stephane Laurent, adapted by Daniel Wollschlaeger.
 #'
 #' @examples
 #' library(MeshUtils)
-#' makeMesh(dataPentaPrism, triangulate=TRUE)
-#' sampleVerts(mesh, n=5L)
+#' mesh <- makeMesh(dataPentaPrism, triangulate=TRUE)
+#' samplePoints(mesh, ptsOnFaces=2L)
 #'
 #' @export
-sampleVerts <- function(x, n = 1L) {
-  if(!inherits(x, "CGALmesh")) {
-      stop("The `x` argument must be of class 'CGALmesh'",
-			       " (i.e., the output of the `makeMesh()` function).")
-  }
-  stopifnot(isStrictPositiveInteger(n))
+samplePoints <- function(x,
+                         method = c("random", "grid", "mc"),
+                         sampleVerts = TRUE,
+                         sampleEdges = TRUE,
+                         sampleFaces = TRUE,
+                         gridSpacing = NULL,
+                         ptsOnEdges  = NULL,
+                         ptsOnFaces  = NULL,
+                         ptsPerDist  = NULL,
+                         ptsPerEdge  = NULL,
+                         ptsPerArea  = NULL,
+                         ptsPerFace  = NULL) {
+  stopifnot(!inherits(x, "CGALmesh"))
+  sampleOptL <- checkSampleOpts(list(method,
+                                     sampleVerts,
+                                     sampleEdges,
+                                     sampleFaces,
+                                     gridSpacing,
+                                     ptsOnEdges,
+                                     ptsOnFaces,
+                                     ptsPerDist,
+                                     ptsPerEdge,
+                                     ptsPerArea,
+                                     ptsPerFace))
   meshCPP <- fromR(x)
-  ## output matrix already transposed in sampleVerts_cpp()
-  sampleVerts_cpp(meshCPP, as.integer(n))
+  ## output matrix already transposed in samplePoints_cpp()
+  samplePoints_cpp(meshCPP, sampleOptL)
 }
 
 #' @title Conversion to 'rgl' mesh

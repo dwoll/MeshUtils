@@ -83,6 +83,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// getJSCDSC_cpp
+Rcpp::List getJSCDSC_cpp(const Rcpp::List rmeshes, const bool repairSoup, const bool verbose);
+RcppExport SEXP _MeshUtils_getJSCDSC_cpp(SEXP rmeshesSEXP, SEXP repairSoupSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type rmeshes(rmeshesSEXP);
+    Rcpp::traits::input_parameter< const bool >::type repairSoup(repairSoupSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(getJSCDSC_cpp(rmeshes, repairSoup, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getHausdorffApprox_cpp
 double getHausdorffApprox_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const unsigned int n);
 RcppExport SEXP _MeshUtils_getHausdorffApprox_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP nSEXP) {
@@ -112,8 +125,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // getMetro_cpp
-Rcpp::List getMetro_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const double p, const unsigned int method, const bool sampleVerts, const bool sampleEdges, const bool sampleFaces, const unsigned int nPtsFaces, const unsigned int nPtsEdges);
-RcppExport SEXP _MeshUtils_getMetro_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP pSEXP, SEXP methodSEXP, SEXP sampleVertsSEXP, SEXP sampleEdgesSEXP, SEXP sampleFacesSEXP, SEXP nPtsFacesSEXP, SEXP nPtsEdgesSEXP) {
+Rcpp::List getMetro_cpp(const Rcpp::List rmesh1, const Rcpp::List rmesh2, const bool symmetric, const double p, const Rcpp::List ropt);
+RcppExport SEXP _MeshUtils_getMetro_cpp(SEXP rmesh1SEXP, SEXP rmesh2SEXP, SEXP symmetricSEXP, SEXP pSEXP, SEXP roptSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -121,13 +134,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh2(rmesh2SEXP);
     Rcpp::traits::input_parameter< const bool >::type symmetric(symmetricSEXP);
     Rcpp::traits::input_parameter< const double >::type p(pSEXP);
-    Rcpp::traits::input_parameter< const unsigned int >::type method(methodSEXP);
-    Rcpp::traits::input_parameter< const bool >::type sampleVerts(sampleVertsSEXP);
-    Rcpp::traits::input_parameter< const bool >::type sampleEdges(sampleEdgesSEXP);
-    Rcpp::traits::input_parameter< const bool >::type sampleFaces(sampleFacesSEXP);
-    Rcpp::traits::input_parameter< const unsigned int >::type nPtsFaces(nPtsFacesSEXP);
-    Rcpp::traits::input_parameter< const unsigned int >::type nPtsEdges(nPtsEdgesSEXP);
-    rcpp_result_gen = Rcpp::wrap(getMetro_cpp(rmesh1, rmesh2, symmetric, p, method, sampleVerts, sampleEdges, sampleFaces, nPtsFaces, nPtsEdges));
+    Rcpp::traits::input_parameter< const Rcpp::List >::type ropt(roptSEXP);
+    rcpp_result_gen = Rcpp::wrap(getMetro_cpp(rmesh1, rmesh2, symmetric, p, ropt));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -377,15 +385,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sampleVerts_cpp
-Rcpp::NumericMatrix sampleVerts_cpp(const Rcpp::List rmesh, const unsigned n);
-RcppExport SEXP _MeshUtils_sampleVerts_cpp(SEXP rmeshSEXP, SEXP nSEXP) {
+// samplePoints_cpp
+Rcpp::NumericMatrix samplePoints_cpp(const Rcpp::List rmesh, const Rcpp::List ropt);
+RcppExport SEXP _MeshUtils_samplePoints_cpp(SEXP rmeshSEXP, SEXP roptSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type rmesh(rmeshSEXP);
-    Rcpp::traits::input_parameter< const unsigned >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(sampleVerts_cpp(rmesh, n));
+    Rcpp::traits::input_parameter< const Rcpp::List >::type ropt(roptSEXP);
+    rcpp_result_gen = Rcpp::wrap(samplePoints_cpp(rmesh, ropt));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -610,9 +618,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_boolIntersectionEK_cpp", (DL_FUNC) &_MeshUtils_boolIntersectionEK_cpp, 4},
     {"_MeshUtils_boolDifferenceEK_cpp", (DL_FUNC) &_MeshUtils_boolDifferenceEK_cpp, 5},
     {"_MeshUtils_boolUnionEK_cpp", (DL_FUNC) &_MeshUtils_boolUnionEK_cpp, 4},
+    {"_MeshUtils_getJSCDSC_cpp", (DL_FUNC) &_MeshUtils_getJSCDSC_cpp, 3},
     {"_MeshUtils_getHausdorffApprox_cpp", (DL_FUNC) &_MeshUtils_getHausdorffApprox_cpp, 4},
     {"_MeshUtils_getHausdorffEst_cpp", (DL_FUNC) &_MeshUtils_getHausdorffEst_cpp, 4},
-    {"_MeshUtils_getMetro_cpp", (DL_FUNC) &_MeshUtils_getMetro_cpp, 10},
+    {"_MeshUtils_getMetro_cpp", (DL_FUNC) &_MeshUtils_getMetro_cpp, 5},
     {"_MeshUtils_makeMesh_cpp", (DL_FUNC) &_MeshUtils_makeMesh_cpp, 10},
     {"_MeshUtils_makeMeshFF_cpp", (DL_FUNC) &_MeshUtils_makeMeshFF_cpp, 10},
     {"_MeshUtils_makeMeshValid_cpp", (DL_FUNC) &_MeshUtils_makeMeshValid_cpp, 5},
@@ -632,7 +641,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MeshUtils_isValid_cpp", (DL_FUNC) &_MeshUtils_isValid_cpp, 1},
     {"_MeshUtils_orientToBoundVolume_cpp", (DL_FUNC) &_MeshUtils_orientToBoundVolume_cpp, 2},
     {"_MeshUtils_removeSelfIntersections_cpp", (DL_FUNC) &_MeshUtils_removeSelfIntersections_cpp, 4},
-    {"_MeshUtils_sampleVerts_cpp", (DL_FUNC) &_MeshUtils_sampleVerts_cpp, 2},
+    {"_MeshUtils_samplePoints_cpp", (DL_FUNC) &_MeshUtils_samplePoints_cpp, 2},
     {"_MeshUtils_triangulateMesh_cpp", (DL_FUNC) &_MeshUtils_triangulateMesh_cpp, 2},
     {"_MeshUtils_jet_pca_normals_cpp", (DL_FUNC) &_MeshUtils_jet_pca_normals_cpp, 3},
     {"_MeshUtils_readFileSoup_cpp", (DL_FUNC) &_MeshUtils_readFileSoup_cpp, 2},

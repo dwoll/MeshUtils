@@ -21,6 +21,10 @@ boolUnionEK_cpp <- function(rmeshes, repairSoup, normals, verbose) {
     .Call(`_MeshUtils_boolUnionEK_cpp`, rmeshes, repairSoup, normals, verbose)
 }
 
+getJSCDSC_cpp <- function(rmeshes, repairSoup, verbose) {
+    .Call(`_MeshUtils_getJSCDSC_cpp`, rmeshes, repairSoup, verbose)
+}
+
 getHausdorffApprox_cpp <- function(rmesh1, rmesh2, symmetric, n) {
     .Call(`_MeshUtils_getHausdorffApprox_cpp`, rmesh1, rmesh2, symmetric, n)
 }
@@ -29,8 +33,8 @@ getHausdorffEst_cpp <- function(rmesh1, rmesh2, symmetric, error_bound) {
     .Call(`_MeshUtils_getHausdorffEst_cpp`, rmesh1, rmesh2, symmetric, error_bound)
 }
 
-getMetro_cpp <- function(rmesh1, rmesh2, symmetric, p, method, sampleVerts, sampleEdges, sampleFaces, nPtsFaces, nPtsEdges) {
-    .Call(`_MeshUtils_getMetro_cpp`, rmesh1, rmesh2, symmetric, p, method, sampleVerts, sampleEdges, sampleFaces, nPtsFaces, nPtsEdges)
+getMetro_cpp <- function(rmesh1, rmesh2, symmetric, p, ropt) {
+    .Call(`_MeshUtils_getMetro_cpp`, rmesh1, rmesh2, symmetric, p, ropt)
 }
 
 makeMesh_cpp <- function(rmesh, triangulate, repairSoup, removeIntersections, removeMethod, fillHoles, fairHole, maxNumHoles, normals, verbose) {
@@ -109,8 +113,8 @@ removeSelfIntersections_cpp <- function(rmesh, method, normals, verbose) {
     .Call(`_MeshUtils_removeSelfIntersections_cpp`, rmesh, method, normals, verbose)
 }
 
-sampleVerts_cpp <- function(rmesh, n) {
-    .Call(`_MeshUtils_sampleVerts_cpp`, rmesh, n)
+samplePoints_cpp <- function(rmesh, ropt) {
+    .Call(`_MeshUtils_samplePoints_cpp`, rmesh, ropt)
 }
 
 triangulateMesh_cpp <- function(rmesh, normals) {

@@ -208,13 +208,12 @@ Rcpp::List getBoundingBox_cpp(const Rcpp::List rmesh) {
       false,       // triangulate
       false,       // repair_soup
       false);      // verbose
-   CGAL::Bbox_3 bbox = PMP::bbox(mesh);
+  CGAL::Bbox_3 bbox = PMP::bbox(mesh);
   Rcpp::NumericVector lcorner = { bbox.xmin(), bbox.ymin(), bbox.zmin() };
   Rcpp::NumericVector ucorner = { bbox.xmax(), bbox.ymax(), bbox.zmax() };
   return Rcpp::List::create(
     Rcpp::Named("lcorner") = lcorner,
-    Rcpp::Named("ucorner") = ucorner
-  );
+    Rcpp::Named("ucorner") = ucorner);
 }
 
 // ----------------------------------------------------------------------- //
@@ -235,8 +234,7 @@ Rcpp::List getBoundingBoxOptimal_cpp(
   CGAL::make_hexahedron(
     obb_pts[0], obb_pts[1], obb_pts[2], obb_pts[3],
     obb_pts[4], obb_pts[5], obb_pts[6], obb_pts[7],
-    obb_mesh
-  );
+    obb_mesh);
   Rcpp::List rmesh_obb = get_rmesh<K, Mesh3, Point3, Vector3>(obb_mesh, triangulate, normals);
   Rcpp::NumericMatrix hex_verts(3, 8);
   for(int i = 0; i < 8; i++) {
@@ -246,9 +244,8 @@ Rcpp::List getBoundingBoxOptimal_cpp(
     hex_verts(Rcpp::_, i) = v;
   }
   return Rcpp::List::create(
-    Rcpp::Named("mesh") = rmesh_obb,
-    Rcpp::Named("hxVertices") = hex_verts
-  );
+    Rcpp::Named("mesh")       = rmesh_obb,
+    Rcpp::Named("hxVertices") = hex_verts);
 }
 
 // ----------------------------------------------------------------------- //
@@ -405,7 +402,9 @@ Rcpp::List removeSelfIntersections_cpp(
 
 // ----------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::NumericMatrix sampleVerts_cpp(const Rcpp::List rmesh, const unsigned n) {
+Rcpp::NumericMatrix samplePoints_cpp(const Rcpp::List rmesh, const Rcpp::List ropt) {
+  Rcpp::List ropt_l = Rcpp::as<Rcpp::List>(ropt);
+  sample_opts opt = ropts_to_sample_opts(ropt_l);
   Mesh3 mesh = make_surf_mesh_valid<Mesh3, Point3>(
     rmesh,
     false,       // soup
@@ -429,8 +428,8 @@ Rcpp::NumericMatrix sampleVerts_cpp(const Rcpp::List rmesh, const unsigned n) {
   // PMP::parameters::number_of_points_per_face(n)          // unsigned int
   PMP::sample_triangle_mesh(
     mesh, std::back_inserter(verts),
-    PMP::parameters::number_of_points_on_faces(n));
-  Rcpp::NumericMatrix r_verts = points3_to_matrix<K, Point3>(verts);
+    PMP::parameters::number_of_points_on_faces(opt.ptsOnFaces));
+  const Rcpp::NumericMatrix r_verts = points3_to_matrix<K, Point3>(verts);
   return Rcpp::transpose(r_verts);
 }
 
